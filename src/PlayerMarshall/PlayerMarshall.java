@@ -2,6 +2,18 @@ package PlayerMarshall;
 
 import PlayerMarshall.DataModel.PlayerSubmission;
 import PlayerMarshall.DataModel.Tournament;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -10,8 +22,16 @@ import java.nio.file.Paths;
 
 /**
  * Created by nsifniotis on 31/08/15.
+ *
+ * Main PlayerMarshall class
+ * Functionality and GUI - not great design, Nick
  */
-public class PlayerMarshall {
+public class PlayerMarshall extends Application {
+
+    private static String last_log_message;
+    private static Label log_label;
+    private static Label tourney_label;
+    private static Label player_label;
 
     private static final String marshalling_folder = "src/marshalling/";
     private static final String input_folder = "src/submissions/inputs/";
@@ -27,7 +47,7 @@ public class PlayerMarshall {
      * @param t - the tournament who's players we seek
      * @return - the much-sought-after players
      */
-    public File [] GetNewSubmissions (Tournament t)
+    public static File [] GetNewSubmissions (Tournament t)
     {
         String full_path = input_folder + t.SubmissionsPath() + "/";
         SystemState.Log ("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
@@ -54,16 +74,18 @@ public class PlayerMarshall {
      * Called every few seconds by the main program loop.
      *
      */
-    public void ProcessNewSubmissions ()
+    public static void ProcessNewSubmissions ()
     {
+        LogMessage("Waiting for new submissions ..");
+
         Tournament[] tourneys = Tournament.LoadAll();
 
         for (Tournament t: tourneys)
         {
-            System.out.println ("Checking " + t.Name());
             File [] files = GetNewSubmissions(t);
             for (File f: files)
             {
+                LogMessage ("Processing " + f.getName() + " for tournament " + t.Name());
                 if (t.VerifySubmission(f))
                 {
                     // this submission is good, so lets move it to marshalling and get ready to rumble
@@ -132,6 +154,71 @@ public class PlayerMarshall {
                 }
             }
         }
+
+        tourney_label.setText(String.valueOf(tourneys.length));
     }
 
+    @Override
+    public void start(Stage primaryStage) throws Exception
+    {
+        BorderPane componentLayout = new BorderPane();
+
+        final HBox statusBar = new HBox();
+        statusBar.setPadding(new Insets(12, 15, 12, 15));
+        statusBar.setSpacing(10);
+
+        Label tourneyLbl = new Label("Tournaments:");
+        statusBar.getChildren().add(tourneyLbl);
+        tourney_label = new Label ("0");
+        statusBar.getChildren().add(tourney_label);
+        Label playersLbl = new Label ("Registered Players:");
+        statusBar.getChildren().add(playersLbl);
+        player_label = new Label ("0");
+        statusBar.getChildren().add (player_label);
+
+        FlowPane centrePane = new FlowPane();
+        log_label = new Label("Player Marshall 1.0\nSystem initialised.");
+        log_label.setWrapText(true);
+
+        centrePane.getChildren().add (log_label);
+
+        componentLayout.setBottom(statusBar);
+        componentLayout.setTop(centrePane);
+
+        primaryStage.setTitle("Player Marshall - Tournament Server");
+        primaryStage.setScene(new Scene(componentLayout, 400, 575));
+        primaryStage.show();
+
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(5000),
+                ae -> ProcessNewSubmissions()));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+    }
+
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Dump a message to the status log.
+     *
+     * @param msg
+     */
+    public static void LogMessage (String msg)
+    {
+        if (msg.equals (last_log_message))
+            return;
+
+        String text = log_label.getText() + "\n" + msg;
+        log_label.setText(text);
+
+        last_log_message = msg;
+    }
 }
