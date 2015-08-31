@@ -3,8 +3,10 @@ package PlayerMarshall.DataModel;
 import PlayerMarshall.DBManager;
 import PlayerMarshall.SystemState;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -65,7 +67,31 @@ public class PlayerSubmission {
             saveState();
     }
 
-    
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Construct using the current record in the provided database recordset.
+     * This is the way that most of these objects will be created.
+     *
+     * @param input - the DB recordset that points to the object that we want to create
+     * @throws SQLException - because what the fuck
+     */
+    public PlayerSubmission (ResultSet input) throws SQLException
+    {
+        this.id = input.getInt ("id");
+        this.name = input.getString("team_name");
+        this.email = input.getString("team_email");
+        this.avatar_file = input.getString("team_avatar");
+        this.orig_file = input.getString("original_filename");
+        this.retired = (input.getInt("retired") == 1);
+        this.ready = (input.getInt("ready") == 1);
+        this.disqualified_count = input.getInt("disqualified");
+        this.tournament_id = input.getInt ("tournament_id");
+    }
+
+
     /**
      * Nick Sifniotis u5809912
      * 31/08/2015
@@ -133,4 +159,116 @@ public class PlayerSubmission {
             this.id = DBManager.ExecuteReturnKey(query);
         }
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Retires this player submission.
+     * A retirement occurs when a student uploads a newer version of their player.
+     * The old version is disabled, the game logs archived, and any future games involving this
+     * player are removed from the list.
+     *
+     * This object is only responsible for the first task - retiring itself.
+     *
+     */
+    public void Retire()
+    {
+        SystemState.Log("PlayerSubmission.Retire - attempting to retire player with PK " + this.id);
+        this.retired = true;
+        saveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Searches player submissions for any that were submitted using this filename
+     * Since that is how they will be differentiated - by UID - and for the same
+     * tournament, for what I hope are obvious reasons.
+     *
+     * This method returns only the one unretired player, not the complete set of all submissions
+     *
+     * @param original - the filename that has been detected in the input folder.
+     * @param t - the tournament in question. Clearly it is desirable to support multiple
+     *          tournaments and submissions with common filenames thereof
+     *          What a shocker of a sentence that was.
+     * @return
+     */
+    public static PlayerSubmission GetActiveWithOriginalFilename (String original, Tournament t)
+    {
+        PlayerSubmission res = null;
+
+        String query = "SELECT * FROM submission WHERE original_filename = '"
+                + original + "' AND retired = 0 AND tournament_id = " + t.PrimaryKey();
+        SystemState.Log("PlayerSubmission.GetActiveWithOriginalFilename - attempting to query database: " + query);
+
+        try
+        {
+            Connection con = DBManager.connect();
+            ResultSet ressie = DBManager.ExecuteQuery(query, con);
+            if (ressie.next())
+                res = new PlayerSubmission(ressie);
+
+            DBManager.disconnect(ressie);
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerSubmission.GetActiveWithOriginalFilename - Error executing SQL query: "
+                    + query + ": " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+
+        return res;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Accessor / getter functions.
+     *
+     * @return
+     */
+    public int PrimaryKey () { return this.id; }
+    public String Name () { return this.name; }
+    public String Email () { return this.email; }
+    public String Motto () { return this.motto; }
+    public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
+    public String SubmissionKey () { return this.orig_file; }
+    public int Tournament () { return this.tournament_id; }
+    public boolean ReadyToPlay () { return this.ready & !this.retired & (this.disqualified_count == 0); }
+    public boolean Active () { return !this.retired; }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Setter functions.
+     *
+     * @param s
+     */
+    public void setName (String s) { this.name = s; }
+    public void setEmail (String s) { this.email = s; }
+    public void setAvatar (String s) { this.avatar_file = s; }
+    public void setMotto (String s) { this.motto = s; }
+    public void setSubmissionKey (String s) { this.orig_file = s; }
+    public void setTournament (int fk) { this.tournament_id = fk; }
+
+    public void Ready ()
+    {
+        this.ready = true;
+        this.retired = false;
+        this.disqualified_count = 0;
+
+        saveState();
+    }
 }
+

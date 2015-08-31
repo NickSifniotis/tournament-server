@@ -1,11 +1,11 @@
 package PlayerMarshall;
 
+import PlayerMarshall.DataModel.PlayerSubmission;
 import PlayerMarshall.DataModel.Tournament;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 
 /**
@@ -22,13 +22,12 @@ public class PlayerMarshall {
      * 31/08/2015
      *
      * Checks the player submissions input folder for the given tournament.
-     * If any new players have been uploaded, return the fully qualified file names of the
-     * new submissions as an array (or List? we'll see) of Strings.
-     * @TODO: Verify the way that this thing will work.
+     * If any new players have been uploaded, return the submissions as an array of files
+     *
      * @param t - the tournament who's players we seek
      * @return - the much-sought-after players
      */
-    public String [] GetNewSubmissions (Tournament t)
+    public File [] GetNewSubmissions (Tournament t)
     {
         String full_path = input_folder + t.SubmissionsPath() + "/";
         SystemState.Log ("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
@@ -36,15 +35,12 @@ public class PlayerMarshall {
         File folder = new File (full_path);
         File[] listOfFiles = folder.listFiles();
 
-        List<String> res = new ArrayList<>();
-        for (File f: listOfFiles)
-            res.add (full_path + f.getName());
+        if (listOfFiles != null)
+            SystemState.Log("PlayerMarshall.GetNewSubmissions - returning " + listOfFiles.length + " files found.");
+        else
+            SystemState.Log("PlayerMarshall.GetNewSubmissions - " + full_path + " is not a directory.");
 
-        int size = res.size();
-        SystemState.Log ("PlayerMarshall.GetNewSubmissions - returning " + size + " files found.");
-
-        String [] resres = new String[size];
-        return res.toArray(resres);
+        return listOfFiles;
     }
 
 
@@ -65,13 +61,51 @@ public class PlayerMarshall {
         for (Tournament t: tourneys)
         {
             System.out.println ("Checking " + t.Name());
-            String [] files = GetNewSubmissions(t);
-            for (String s: files)
+            File [] files = GetNewSubmissions(t);
+            for (File f: files)
             {
-                if (t.VerifySubmission(new File(s)))
+                if (t.VerifySubmission(f))
                 {
                     // this submission is good, so lets move it to marshalling and get ready to rumble
+                    // has this player been submitted before? We will know because submissions are identified
+                    // by filenames.
 
+                    String original = f.getName();
+                    PlayerSubmission oldie = PlayerSubmission.GetActiveWithOriginalFilename(original, t);
+
+                    if (oldie != null)
+                    {
+                        // @TODO: More retirement code here. The games and the logs!
+                        oldie.Retire();
+                    }
+
+                    PlayerSubmission new_submission = new PlayerSubmission(true);
+                    new_submission.setName("Default Name");
+                    new_submission.setEmail("Default Email");
+                    new_submission.setTournament(1);
+
+
+                    // copy the submission over to the marshalling folder.
+                    String destination = marshalling_folder + new_submission.PrimaryKey() + "." + original.split("\\.")[1];
+
+                    try
+                    {
+                        Files.copy(f.toPath(), Paths.get(destination));
+                        f.delete();
+                    }
+                    catch (Exception e)
+                    {
+                        String error = "PlayerMarshall.ProcessNewSubmissions - Error copying player file to marshalling: " + e;
+                        SystemState.Log(error);
+
+                        if (SystemState.DEBUG)
+                            System.out.println (error);
+                    }
+
+                    // last but not least, go ahead and signal that this player is good to go
+                    new_submission.ReadyToPlay();
+
+                    // @TODO: Add the player to the games fixture
                 }
                 else
                 {
@@ -81,9 +115,8 @@ public class PlayerMarshall {
                     // erase the offending submission
                     try
                     {
-                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - file " + s + " failed verification. Attempting to delete it.");
+                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - file " + f.getName() + " failed verification. Attempting to delete it.");
 
-                        File f = new File (s);
                         f.delete();
 
                         SystemState.Log("PlayerMarshall.ProcessNewSubmissions - delete successful.");
@@ -100,4 +133,5 @@ public class PlayerMarshall {
             }
         }
     }
+
 }

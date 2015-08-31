@@ -93,6 +93,8 @@ public class Tournament {
         return this.name;
     }
 
+    public int PrimaryKey () { return this.id; }
+
 
     /**
      * Nick Sifniotis u5809912
