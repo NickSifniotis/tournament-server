@@ -2,8 +2,10 @@ package PlayerMarshall.DataModel;
 
 import PlayerMarshall.DBManager;
 import PlayerMarshall.SystemState;
+import PlayerMarshall.Verification.IVerification;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -103,6 +105,34 @@ public class Tournament {
      */
     public boolean VerifySubmission (File filename)
     {
+        if (!uses_verification)
+            return true;
 
+        boolean result = false;
+        String className = "PlayerMarshall.Verification." + verification_package;
+        SystemState.Log ("Tournament.VerifySubmission - attempting to load verification package " + className);
+
+        try
+        {
+            Class verifier = Class.forName(className);
+            if (!IVerification.class.isAssignableFrom(verifier))
+                throw new ClassNotFoundException("The class does not correctly implement IVerification");
+
+            SystemState.Log ("Tournament.VerifySubmission - class loaded and implements IVerification.");
+
+            Method verification_method = verifier.getMethod("VerifySubmission", File.class);
+            Object res = verification_method.invoke(verifier.newInstance(), filename);
+            result = (boolean) res;
+        }
+        catch (Exception e)
+        {
+            String error = "Tournament.VerifySubmission - Error processing verification class: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+
+        return result;
     }
 }
