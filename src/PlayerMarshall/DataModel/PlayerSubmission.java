@@ -95,11 +95,4 @@ public class PlayerSubmission {
             this.id = DBManager.ExecuteReturnKey(query);
         }
     }
-
-    public static void main(String[] args) {
-        SystemState.Log("System restarted!");
-
-        PlayerSubmission s = new PlayerSubmission();
-        s.saveState();
-    }
 }

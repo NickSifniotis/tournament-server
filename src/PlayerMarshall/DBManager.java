@@ -79,7 +79,7 @@ public class DBManager {
                     SystemState.Log(error);
 
                     if (SystemState.DEBUG)
-                        System.out.println ();
+                        System.out.println (error);
                 }
                 else
                 {
@@ -104,7 +104,7 @@ public class DBManager {
                 SystemState.Log(error);
 
                 if (SystemState.DEBUG)
-                    System.out.println ();
+                    System.out.println (error);
             }
         }
 
@@ -133,7 +133,7 @@ public class DBManager {
             try
             {
                 Statement statement = connection.createStatement();
-                statement.execute(query);
+                results = statement.executeQuery(query);
 
                 SystemState.Log ("DBManager.ExecuteQuery - Execution of query successful, results obtained for " + query);
             }
@@ -143,7 +143,7 @@ public class DBManager {
                 SystemState.Log(error);
 
                 if (SystemState.DEBUG)
-                    System.out.println ();
+                    System.out.println (error);
             }
         }
 
@@ -176,7 +176,7 @@ public class DBManager {
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
-                System.out.println ();
+                System.out.println (error);
         }
 
         return connection;
@@ -205,7 +205,7 @@ public class DBManager {
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
-                System.out.println ();
+                System.out.println (error);
         }
     }
 
@@ -227,7 +227,7 @@ public class DBManager {
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
-                System.out.println ();
+                System.out.println (error);
         }
     }
 

@@ -44,4 +44,19 @@ public class SystemState {
             System.out.println ("ERROR APPENDING TO LOG FILE.\nTHE ENTIRE PROGRAM IS FUCKED RUN FOR THE HILLS.");
         }
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Initialises the system.
+     * Which means, deletes the log file.
+     *
+     */
+    public static void initialise()
+    {
+        File logFile = new File (log_file);
+        logFile.delete();
+    }
 }
