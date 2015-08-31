@@ -32,6 +32,44 @@ public class PlayerSubmission {
      * Nick Sifniotis u5809912
      * 31/08/2015
      *
+     * Default blank constructor.
+     *
+     */
+    public PlayerSubmission()
+    {
+        id = 0;
+        tournament_id = 0;
+        name = "";
+        email = "";
+        motto = "";
+        avatar_file = "";
+        orig_file = "";
+        retired = false;
+        disqualified_count = 0;
+        ready = false;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Constructor - the flag specifies whether to create a blank entry in the DB and
+     * extract the new prikey, or, whether to simply create a blank object.
+     */
+    public PlayerSubmission (boolean create_database)
+    {
+        this();
+
+        if (create_database)
+            saveState();
+    }
+
+    
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
      * Dump the current state into the database.
      * The exact method used will depend on whether or not the record already exists
      * in the database ..

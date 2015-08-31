@@ -5,6 +5,8 @@ import PlayerMarshall.DataModel.Tournament;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -43,5 +45,59 @@ public class PlayerMarshall {
 
         String [] resres = new String[size];
         return res.toArray(resres);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 31/08/2015
+     *
+     * Searches the input folders for new submissions, verifies
+     * and processes them.
+     *
+     * Called every few seconds by the main program loop.
+     *
+     */
+    public void ProcessNewSubmissions ()
+    {
+        Tournament[] tourneys = Tournament.LoadAll();
+
+        for (Tournament t: tourneys)
+        {
+            System.out.println ("Checking " + t.Name());
+            String [] files = GetNewSubmissions(t);
+            for (String s: files)
+            {
+                if (t.VerifySubmission(new File(s)))
+                {
+                    // this submission is good, so lets move it to marshalling and get ready to rumble
+
+                }
+                else
+                {
+                    // failed the verification test. Fuck. Now I have to send a dirty email
+                    // @TODO: Figure out how to do emails
+
+                    // erase the offending submission
+                    try
+                    {
+                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - file " + s + " failed verification. Attempting to delete it.");
+
+                        File f = new File (s);
+                        f.delete();
+
+                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - delete successful.");
+                    }
+                    catch (Exception e)
+                    {
+                        String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
+                        SystemState.Log(error);
+
+                        if (SystemState.DEBUG)
+                            System.out.println (error);
+                    }
+                }
+            }
+        }
     }
 }
