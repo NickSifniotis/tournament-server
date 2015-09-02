@@ -13,7 +13,7 @@ import java.net.URLClassLoader;
  * With thanks to Benjamin Roberts for the first version of this class.
  *
  */
-public class SubmittedPlayer
+public class PlayerManager
 {
     private static final String playerClassName = "comp1140.ass2.BlokGame";
     private final Class playerClass;
@@ -23,7 +23,7 @@ public class SubmittedPlayer
      * Construct a new player thread using the submitted jarfile
      * @param submissionJarFile URL of JAR file containing player submission
      */
-    public SubmittedPlayer(URL submissionJarFile) throws ClassNotFoundException
+    public PlayerManager(URL submissionJarFile) throws ClassNotFoundException
     {
         final URL[] classPath = {submissionJarFile};
         ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
@@ -88,7 +88,7 @@ public class SubmittedPlayer
         {
             final Method makeMove;
             try {
-                makeMove = SubmittedPlayer.this.playerClass.getMethod("makeMove", String.class);
+                makeMove = GameManager.PlayerManager.this.playerClass.getMethod("makeMove", String.class);
             } catch (NoSuchMethodException e) {
                 throw new NoSuchMethodError("Could not instantiate player class inside player thread. Should be unreachable");
             }

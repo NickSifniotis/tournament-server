@@ -1,6 +1,8 @@
 package PlayerMarshall;
 
 
+import Common.SystemState;
+
 /**
  * Created by nsifniotis on 31/08/15.
  *

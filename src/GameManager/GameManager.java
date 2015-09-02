@@ -5,7 +5,7 @@ package GameManager;
  */
 public class GameManager {
 
-    public void run_game (IGameEngine game, SubmittedPlayer [] players)
+    public void run_game (IGameEngine game, GameManager.PlayerManager[] players)
     {
         // fuck yeah, let's RUN THIS GAME
 

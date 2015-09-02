@@ -19,5 +19,19 @@ package GameManager;
  * Luckily it's only one function. But lord knows how convoluted it's going to need to be if they
  * are working in Haskell or whatever.
  */
-public class IPlayer {
+public interface IPlayer {
+
+    /**
+     * Nick Sifniotis u5809912
+     * 2/9/2015
+     *
+     * You are given the current state of the game. Make your next move son.
+     * Note that you (the academic / tutor) are responsible for properly casting
+     * these objects into whatever data structures your assignment specs
+     * have indicated need to be used
+     *
+     * @param game_state - the current state of the game
+     * @return the move that the player wishes to make
+     */
+    Object get_move (Object game_state);
 }

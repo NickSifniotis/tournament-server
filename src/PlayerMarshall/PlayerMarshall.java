@@ -1,7 +1,8 @@
 package PlayerMarshall;
 
-import PlayerMarshall.DataModel.PlayerSubmission;
-import PlayerMarshall.DataModel.Tournament;
+import Common.DataModel.PlayerSubmission;
+import Common.DataModel.Tournament;
+import Common.SystemState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -50,7 +51,7 @@ public class PlayerMarshall extends Application {
     public static File [] GetNewSubmissions (Tournament t)
     {
         String full_path = input_folder + t.SubmissionsPath() + "/";
-        SystemState.Log ("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
+        SystemState.Log("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
 
         File folder = new File (full_path);
         File[] listOfFiles = folder.listFiles();

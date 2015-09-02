@@ -1,7 +1,7 @@
-package PlayerMarshall.DataModel;
+package Common.DataModel;
 
-import PlayerMarshall.DBManager;
-import PlayerMarshall.SystemState;
+import Common.DBManager;
+import Common.SystemState;
 
 import java.io.File;
 import java.sql.Connection;
@@ -39,16 +39,7 @@ public class PlayerSubmission {
      */
     public PlayerSubmission()
     {
-        id = 0;
-        tournament_id = 0;
-        name = "";
-        email = "";
-        motto = "";
-        avatar_file = "";
-        orig_file = "";
-        retired = false;
-        disqualified_count = 0;
-        ready = false;
+        this.loadState();
     }
 
 
@@ -80,6 +71,70 @@ public class PlayerSubmission {
      */
     public PlayerSubmission (ResultSet input) throws SQLException
     {
+        this.loadState(input);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 2/9/2015
+     *
+     * Construct the player object by retrieving from the database the record
+     * that corresponds to the player_id that has been provided.
+     *
+     * If the player_id corresponds to no record, then construct the default new player.
+     *
+     * @param player_id - the record to retrieve.
+     */
+    public PlayerSubmission (int player_id)
+    {
+        SystemState.Log("PlayerSubmission constructor (player_id) - attempting to load player " + player_id);
+        String query;
+
+        if (player_id != 0) {
+            query = "SELECT * FROM submission WHERE id = " + player_id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                try
+                {
+                    this.loadState(res);
+                    DBManager.disconnect(res);          // disconnect by result
+                }
+                catch (Exception e)
+                {
+                    String error = "PlayerSubmission constructor (player_id) - SQL error retrieving player data. " + e;
+                    SystemState.Log(error);
+
+                    if (SystemState.DEBUG)
+                        System.out.println (error);
+
+                    this.loadState();
+                }
+            }
+            else
+            {
+                this.loadState();
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 2/9/2015
+     *
+     * Load this players details from the database recordset provided.
+     *
+     * @param input
+     * @throws SQLException
+     */
+    private void loadState (ResultSet input) throws SQLException
+    {
         this.id = input.getInt ("id");
         this.name = input.getString("team_name");
         this.email = input.getString("team_email");
@@ -91,6 +146,29 @@ public class PlayerSubmission {
         this.tournament_id = input.getInt ("tournament_id");
     }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 2/9/2015
+     *
+     * Loads the default / blank / new player. It should be in a constructor
+     * but you know what java is so bitchy about calling constructors from other
+     * constructors ON THE FIRST LINE that I have to do it this way.
+     *
+     */
+    private void loadState()
+    {
+        id = 0;
+        tournament_id = 0;
+        name = "";
+        email = "";
+        motto = "";
+        avatar_file = "";
+        orig_file = "";
+        retired = false;
+        disqualified_count = 0;
+        ready = false;
+    }
 
     /**
      * Nick Sifniotis u5809912

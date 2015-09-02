@@ -1,7 +1,7 @@
-package PlayerMarshall.DataModel;
+package Common.DataModel;
 
-import PlayerMarshall.DBManager;
-import PlayerMarshall.SystemState;
+import Common.DBManager;
+import Common.SystemState;
 import PlayerMarshall.Verification.IVerification;
 
 import java.io.File;

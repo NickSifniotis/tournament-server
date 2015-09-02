@@ -1,4 +1,4 @@
-package PlayerMarshall;
+package Common;
 
 import java.sql.*;
 
