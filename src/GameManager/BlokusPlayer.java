@@ -11,7 +11,7 @@ import java.net.URLClassLoader;
  * Created by nsifniotis on 3/09/15.
  *
  * Interface between the player manager and student Blokus player submissions.
- * 
+ *
  */
 
 public class BlokusPlayer implements IPlayer {

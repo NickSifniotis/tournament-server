@@ -18,6 +18,8 @@ public class PlayerManager
     private static final String playerClassName = "comp1140.ass2.BlokGame";
     private final Class playerClass;
 
+    private IPlayer player;
+
 
     /**
      * Construct a new player thread using the submitted jarfile

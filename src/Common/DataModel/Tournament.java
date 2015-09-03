@@ -24,6 +24,9 @@ public class Tournament {
 
     private boolean uses_verification;
     private String verification_package;
+    private String game_engine_class;
+    private String player_interface_class;
+
 
 
     /**
@@ -52,7 +55,8 @@ public class Tournament {
                 t.id = results.getInt("id");
                 t.uses_verification = (results.getInt("uses_verification") == 1);
                 t.verification_package = results.getString("verification_package");
-
+                t.game_engine_class = results.getString ("game_engine_class");
+                t.player_interface_class = results.getString ("player_interface_class");
                 temp.add (t);
             }
 
@@ -137,4 +141,8 @@ public class Tournament {
 
         return result;
     }
+
+    //@TODO: Return the farking game engine and player interface classes.
+    //@TODO: seriously it makes sense to keep this stuff within this class
+    //@TODO: So that the system itself wont need to worry about classnotfound exceptions.
 }
