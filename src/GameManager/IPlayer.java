@@ -1,5 +1,8 @@
 package GameManager;
 
+import Common.DataModel.PlayerSubmission;
+import GameManager.Exceptions.PlayerMoveException;
+
 /**
  * Created by nsifniotis on 2/09/15.
  *
@@ -23,6 +26,19 @@ public interface IPlayer {
 
     /**
      * Nick Sifniotis u5809912
+     * 3/9/2015
+     *
+     * Create whatever is necessary to link the player submission to the tournament.
+     *
+     * @param player - the data structure that contains all the information about the submitted player
+     * @return  true if the player has loaded successfully, false if there was a problem connecting
+     * to the submission
+     */
+    boolean initialise (PlayerSubmission player);
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 2/9/2015
      *
      * You are given the current state of the game. Make your next move son.
@@ -33,5 +49,5 @@ public interface IPlayer {
      * @param game_state - the current state of the game
      * @return the move that the player wishes to make
      */
-    Object get_move (Object game_state);
+    Object get_move (Object game_state) throws PlayerMoveException;
 }

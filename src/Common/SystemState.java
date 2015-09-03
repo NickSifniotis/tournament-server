@@ -17,6 +17,9 @@ public class SystemState {
 
     private static final String log_file = "log.txt";
 
+    public static final String marshalling_folder = "src/marshalling/";
+    public static final String input_folder = "src/submissions/inputs/";
+
 
     /**
      * Nick Sifniotis u5809912
