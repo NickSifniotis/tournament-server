@@ -23,7 +23,7 @@ public interface IGameEngine {
      *
      * I am aware that Blokus simply uses a string to represent its game state.
      * In future who knows what sort of games will be run through this tournament engine.
-     * To keep the future as alive as possible I remain cognizant of the fact that
+     * To keep the future as Alive as possible I remain cognizant of the fact that
      * game states may be things other than strings. They may require initialisation.
      *
      * You get the number of players, because that might be relevant. Whatever
@@ -99,7 +99,7 @@ public interface IGameEngine {
      * played, and false if the game is over.
      *
      * @param game_state - the current state of the game
-     * @return whether or not the game is still alive
+     * @return whether or not the game is still Alive
      */
-    boolean alive (Object game_state);
+    boolean Alive(Object game_state);
 }

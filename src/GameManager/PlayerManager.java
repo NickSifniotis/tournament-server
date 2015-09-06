@@ -21,6 +21,7 @@ public class PlayerManager
 {
     private Tournament tournament;
     private IPlayer my_player;
+    private PlayerSubmission data_link;
 
 
     /**
@@ -35,6 +36,7 @@ public class PlayerManager
     public PlayerManager(Tournament tourney, PlayerSubmission player)
     {
         this.tournament = tourney;
+        this.data_link = player;
 
         // create the IPlayer player interface for the player that this manager manages.
         try
@@ -93,5 +95,20 @@ public class PlayerManager
             throw new NoMoveMadeException();
 
         return playerThread.getMove();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 6/9/2015
+     *
+     * Returns the PlayerSubmission database record object.
+     * It's held so that the end of game scores can be attached to this player.
+     *
+     * @return the record.
+     */
+    public PlayerSubmission GetDatalink()
+    {
+        return this.data_link;
     }
 }

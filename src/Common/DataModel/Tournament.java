@@ -231,7 +231,7 @@ public class Tournament {
             legitimate_move
                     score_game
             make_move
-                    alive
+                    Alive
 
             Method tester;
             tester = res.getMethod(methodName, String.class);
