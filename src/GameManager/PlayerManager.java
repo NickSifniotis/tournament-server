@@ -5,6 +5,9 @@ import AcademicsInterface.IPlayer;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.SystemState;
+import GameManager.Exceptions.NoMoveMadeException;
+import GameManager.Exceptions.PlayerMoveException;
+import GameManager.Exceptions.TimeoutException;
 
 
 /**
@@ -51,28 +54,44 @@ public class PlayerManager
 
 
     /**
-     * Waits 10s for player to make move, will return null if move results in illegal game string or wasn't made.
-     * Move is not guarenteed to be legal when compared against Blokus rules
-     * @param boardState current board state string
-     * @return newest move (ie "AAAA")
+     * Nick Sifniotis u5809912
+     * 6/9/2015
+     *
+     * Spawns a child thread and executes a submitted player's getmove function within it.
+     * If the thread times out, kill it and return nothing.
+     *
+     * @param boardState - the current state of the game.
+     * @return an object that represents the computer player's move.
      */
-    public String nextMove(String boardState)
+    public Object nextMove(Object boardState) throws PlayerMoveException
     {
-        PlayerMoveThread playerThread = new PlayerMoveThread(boardState);
+        //@TODO implement the tournament rule 'playertimeout'
+        //@TODO also implement 'if zero timeout then keep going' condition
+        int player_timeout = 10 * 1000;        // measured in milliseconds
+
+        PlayerChildThread playerThread = new PlayerChildThread(boardState, this.my_player);
         playerThread.start();
         long turnStartTime = System.currentTimeMillis();
-        do {
-            try {
+        do
+        {
+            try
+            {
                 Thread.sleep(20);
-            } catch (InterruptedException e) { /* Ignore as we will try sleep again */}
-        } while (System.currentTimeMillis() - turnStartTime < 10000 && !playerThread.finished);
+            }
+            catch (InterruptedException e)
+            { /* Ignore as we will try sleep again */}
+        }
+        while (System.currentTimeMillis() - turnStartTime < player_timeout && !playerThread.Finished());
 
         if (playerThread.isAlive())
+        {
             playerThread.interrupt();
+            throw new TimeoutException();
+        }
 
-        if (playerThread.moveWasLegal() && playerThread.moveWasMade())
-            return playerThread.getMove();
-        else
-            return null;
+        if (!playerThread.GotMove())
+            throw new NoMoveMadeException();
+
+        return playerThread.getMove();
     }
 }
