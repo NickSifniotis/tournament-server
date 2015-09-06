@@ -42,7 +42,7 @@ public class PlayerManager
         try
         {
             this.my_player = (IPlayer) tournament.PlayerInterfaceClass().newInstance();
-            this.my_player.initialise(player, tourney);
+            this.my_player.InitialisePlayer(player, tourney);
         }
         catch (Exception e)
         {

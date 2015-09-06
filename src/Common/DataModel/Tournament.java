@@ -158,14 +158,13 @@ public class Tournament {
             return null;
 
         Class res = null;
-        String fullClassName = SystemState.sources_classpath + "." + this.game_engine_class;
         String fullFileName = SystemState.sources_folder + this.sources_jarfile + ".jar";
 
         try
         {
             URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
             ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
-            res = playerClassLoader.loadClass(fullClassName);
+            res = playerClassLoader.loadClass(this.game_engine_class);
         }
         catch (Exception e)
         {
@@ -187,14 +186,13 @@ public class Tournament {
             return null;
 
         Class res = null;
-        String fullClassName = SystemState.sources_classpath + "." + this.player_interface_class;
         String fullFileName = SystemState.sources_folder + this.sources_jarfile + ".jar";
 
         try
         {
             URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
             ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
-            res = playerClassLoader.loadClass(fullClassName);
+            res = playerClassLoader.loadClass(this.player_interface_class);
         }
         catch (Exception e)
         {

@@ -79,7 +79,7 @@ public class PlayerChildThread extends Thread
      */
     private void makeMove()
     {
-        this.move = this.player_link.get_move(this.initialBoardState);
+        this.move = this.player_link.GetMove(this.initialBoardState);
     }
 
 
