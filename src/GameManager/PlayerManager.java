@@ -2,44 +2,50 @@ package GameManager;
 
 
 import AcademicsInterface.IPlayer;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+import Common.DataModel.PlayerSubmission;
+import Common.DataModel.Tournament;
+import Common.SystemState;
 
 
 /**
  * Created by nsifniotis on 26/08/15.
+ * Modified quite heavily on the 6th September 2015
  *
  * With thanks to Benjamin Roberts for the first version of this class.
  *
  */
 public class PlayerManager
 {
-    private static final String playerClassName = "comp1140.ass2.BlokGame";
-    private final Class playerClass;
-
-    private IPlayer player;
+    private Tournament tournament;
+    private IPlayer my_player;
 
 
     /**
-     * Construct a new player thread using the submitted jarfile
-     * @param submissionJarFile URL of JAR file containing player submission
+     * Nick Sifniotis u5809912
+     * 6/9/2015
+     *
+     * Constructor for this player manager.
+     *
+     * @param tourney - the tournament that we are playing in
+     * @param player - the player that I am responsible for
      */
-    public PlayerManager(URL submissionJarFile) throws ClassNotFoundException
+    public PlayerManager(Tournament tourney, PlayerSubmission player)
     {
-        final URL[] classPath = {submissionJarFile};
-        ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+        this.tournament = tourney;
 
-        playerClass = playerClassLoader.loadClass(playerClassName);
+        // create the IPlayer player interface for the player that this manager manages.
+        try
+        {
+            this.my_player = (IPlayer) tournament.PlayerInterfaceClass().newInstance();
+            this.my_player.initialise(player, tourney);
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerManager.constructor - error creating IPlayer object: " + e;
+            SystemState.Log(error);
 
-        try {
-            playerClass.getMethod("makeMove", String.class).invoke(null, "");
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new ClassNotFoundException(
-                    String.format("Unable to makeMove player class for ", submissionJarFile.getFile()),
-                    e);
+            if (SystemState.DEBUG)
+                System.out.println (error);
         }
     }
 
@@ -59,19 +65,14 @@ public class PlayerManager
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) { /* Ignore as we will try sleep again */}
-        } while(System.currentTimeMillis() - turnStartTime < 10000 && !playerThread.finished);
+        } while (System.currentTimeMillis() - turnStartTime < 10000 && !playerThread.finished);
 
-        if(playerThread.isAlive())
+        if (playerThread.isAlive())
             playerThread.interrupt();
 
-        if(playerThread.moveWasLegal() && playerThread.moveWasMade())
+        if (playerThread.moveWasLegal() && playerThread.moveWasMade())
             return playerThread.getMove();
         else
             return null;
-    }
-
-    private class PlayerMoveThread extends Thread {
-
-
     }
 }

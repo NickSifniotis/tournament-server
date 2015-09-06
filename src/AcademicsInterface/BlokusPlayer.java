@@ -2,6 +2,7 @@ package AcademicsInterface;
 
 import AcademicsInterface.IPlayer;
 import Common.DataModel.PlayerSubmission;
+import Common.DataModel.Tournament;
 import Common.SystemState;
 import GameManager.Exceptions.PlayerMoveException;
 import java.lang.reflect.Method;
@@ -15,15 +16,18 @@ import java.net.URLClassLoader;
  *
  */
 
-public class BlokusPlayer implements IPlayer {
-
-    private static final String playerClassName = "comp1140.ass2.BlokGame";
-    private static final String methodName = "makeMove";
+public class BlokusPlayer implements IPlayer
+{
+    private String playerClassName;
+    private String methodName;
     private Class playerClass;
 
 
     @Override
-    public boolean initialise(PlayerSubmission player) {
+    public boolean initialise(PlayerSubmission player, Tournament tourney)
+    {
+        this.playerClassName = tourney.SubmissionClassName();
+        //this.methodName = tourney.
         String fullFileName = SystemState.marshalling_folder + player.PrimaryKey() + ".sub";
 
         try

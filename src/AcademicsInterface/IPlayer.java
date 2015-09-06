@@ -1,6 +1,7 @@
 package AcademicsInterface;
 
 import Common.DataModel.PlayerSubmission;
+import Common.DataModel.Tournament;
 import GameManager.Exceptions.PlayerMoveException;
 
 /**
@@ -31,10 +32,11 @@ public interface IPlayer {
      * Create whatever is necessary to link the player submission to the tournament.
      *
      * @param player - the data structure that contains all the information about the submitted player
+     * @param tourney - the tournament that this player is competing in
      * @return  true if the player has loaded successfully, false if there was a problem connecting
      * to the submission
      */
-    boolean initialise (PlayerSubmission player);
+    boolean initialise (PlayerSubmission player, Tournament tourney);
 
 
     /**
