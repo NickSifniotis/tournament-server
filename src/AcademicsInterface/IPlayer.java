@@ -36,7 +36,7 @@ public interface IPlayer {
      * @return  true if the player has loaded successfully, false if there was a problem connecting
      * to the submission
      */
-    boolean initialise (PlayerSubmission player, Tournament tourney);
+    boolean InitialisePlayer (PlayerSubmission player, Tournament tourney);
 
 
     /**
@@ -51,5 +51,5 @@ public interface IPlayer {
      * @param game_state - the current state of the game
      * @return the move that the player wishes to make
      */
-    Object get_move (Object game_state);
+    Object GetMove (Object game_state);
 }

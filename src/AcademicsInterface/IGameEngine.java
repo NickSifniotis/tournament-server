@@ -32,7 +32,7 @@ public interface IGameEngine {
      * @param number_of_players - the number of players this game will have
      * @return - a blank / new / unplayed game state
      */
-    Object initialise (int number_of_players);
+    Object InitialiseGame (int number_of_players);
 
 
     /**
@@ -46,7 +46,7 @@ public interface IGameEngine {
      * @param move the move being considered
      * @return a boolean that is true if the move is a legal move
      */
-    boolean legitimate_move (Object game_state, Object move);
+    boolean IsLegitimateMove (Object game_state, Object move);
 
 
     /**
@@ -60,7 +60,7 @@ public interface IGameEngine {
      * @param game_state - do I need to explain this again?
      * @return whoevers turn it is
      */
-    int current_player (Object game_state);
+    int GetCurrentPlayer (Object game_state);
 
 
     /**
@@ -74,7 +74,7 @@ public interface IGameEngine {
      * @param game_state the current state of the game
      * @return the array of (possibly intermediate) player scores
      */
-    int [] score_game (Object game_state);
+    int [] ScoreGame (Object game_state);
 
 
     /**
@@ -88,7 +88,7 @@ public interface IGameEngine {
      * @param move - the move to play
      * @return - the new game state
      */
-    Object make_move (Object game_state, Object move);
+    Object MakeMove (Object game_state, Object move);
 
 
     /**
@@ -101,5 +101,5 @@ public interface IGameEngine {
      * @param game_state - the current state of the game
      * @return whether or not the game is still Alive
      */
-    boolean Alive(Object game_state);
+    boolean AreYouStillAlive(Object game_state);
 }

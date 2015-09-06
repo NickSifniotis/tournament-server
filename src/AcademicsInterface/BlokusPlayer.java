@@ -24,7 +24,7 @@ public class BlokusPlayer implements IPlayer
 
 
     @Override
-    public boolean initialise(PlayerSubmission player, Tournament tourney)
+    public boolean InitialisePlayer(PlayerSubmission player, Tournament tourney)
     {
         this.playerClassName = tourney.SubmissionClassName();
         //this.methodName = tourney.
@@ -66,7 +66,7 @@ public class BlokusPlayer implements IPlayer
     }
 
     @Override
-    public Object get_move(Object game_state)
+    public Object GetMove(Object game_state)
     {
         String initialBoardState = "";
         try
@@ -101,7 +101,7 @@ public class BlokusPlayer implements IPlayer
             return null;
         }
 
-        String move = "";
+        String move;
         try
         {
             move = (String) makeMove.invoke(null, initialBoardState);

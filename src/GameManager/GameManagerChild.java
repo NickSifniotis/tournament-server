@@ -71,15 +71,15 @@ public class GameManagerChild extends Thread {
     {
         // fuck yeah, let's RUN THIS GAME
 
-        Object game_state = game.initialise(players.length);
+        Object game_state = game.InitialiseGame(players.length);
         Scores game_scores = new Scores (game_id, this.players);
 
-        while (game.Alive(game_state) && game_scores.GameOn())
+        while (game.AreYouStillAlive(game_state) && game_scores.GameOn())
         {
             Object move = null;
             try
             {
-                move = players[game.current_player(game_state)].nextMove(game_state);
+                move = players[game.GetCurrentPlayer(game_state)].nextMove(game_state);
             }
             catch (PlayerMoveException e)
             {
@@ -87,7 +87,7 @@ public class GameManagerChild extends Thread {
                 // they have nothing to say about the validity of the move that was returned. That
                 // is a separate test...
 
-                game_scores.Disqualify(game.current_player(game_state));
+                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -97,7 +97,7 @@ public class GameManagerChild extends Thread {
             // who knows. If there's a way to screw up, you can be sure Java will find it
             if (move == null)
             {
-                game_scores.Disqualify(game.current_player(game_state));
+                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -105,9 +105,9 @@ public class GameManagerChild extends Thread {
 
             // this is more like it
             // fuck you cheats
-            if (!game.legitimate_move(game_state, move))
+            if (!game.IsLegitimateMove(game_state, move))
             {
-                game_scores.Disqualify(game.current_player(game_state));
+                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -116,8 +116,8 @@ public class GameManagerChild extends Thread {
 
             // the move passed the threefold barriers
             // progress the game.
-            game_state = game.make_move(game_state, move);
-            game_scores.Update (game.score_game(game_state));
+            game_state = game.MakeMove(game_state, move);
+            game_scores.Update (game.ScoreGame(game_state));
         }
 
     }
