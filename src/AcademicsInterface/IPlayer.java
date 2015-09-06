@@ -1,4 +1,4 @@
-package GameManager;
+package AcademicsInterface;
 
 import Common.DataModel.PlayerSubmission;
 import GameManager.Exceptions.PlayerMoveException;
@@ -49,5 +49,5 @@ public interface IPlayer {
      * @param game_state - the current state of the game
      * @return the move that the player wishes to make
      */
-    Object get_move (Object game_state) throws PlayerMoveException;
+    Object get_move (Object game_state);
 }

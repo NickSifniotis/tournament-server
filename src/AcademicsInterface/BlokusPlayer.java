@@ -1,5 +1,6 @@
-package GameManager;
+package AcademicsInterface;
 
+import AcademicsInterface.IPlayer;
 import Common.DataModel.PlayerSubmission;
 import Common.SystemState;
 import GameManager.Exceptions.PlayerMoveException;
@@ -61,7 +62,7 @@ public class BlokusPlayer implements IPlayer {
     }
 
     @Override
-    public Object get_move(Object game_state) throws PlayerMoveException
+    public Object get_move(Object game_state)
     {
         String initialBoardState = "";
         try

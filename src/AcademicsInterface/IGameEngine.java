@@ -1,4 +1,4 @@
-package GameManager;
+package AcademicsInterface;
 
 /**
  * Created by nsifniotis on 2/09/15.

@@ -1,6 +1,8 @@
 package GameManager;
 
 
+import AcademicsInterface.IPlayer;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -69,75 +71,7 @@ public class PlayerManager
     }
 
     private class PlayerMoveThread extends Thread {
-        private final String initialBoardState;
-        public boolean finished;
-        private boolean moveWasMade = false,
-                moveWasLegal = false;
-        private String  newBoardState,
-                move;
 
-        public PlayerMoveThread(String boardState) {
-            this.initialBoardState = boardState;
-        }
-
-        public void run() {
-            finished = false;
-            makeMove();
-            finished = true;
-        }
-
-        private void makeMove()
-        {
-            final Method makeMove;
-            try {
-                makeMove = GameManager.PlayerManager.this.playerClass.getMethod("makeMove", String.class);
-            } catch (NoSuchMethodException e) {
-                throw new NoSuchMethodError("Could not instantiate player class inside player thread. Should be unreachable");
-            }
-
-            try {
-                newBoardState = (String) makeMove.invoke(null, initialBoardState);
-                moveWasMade = true;
-            } catch (InvocationTargetException | IllegalAccessException e) {
-                moveWasMade = false;
-                return;
-            }
-
-            if (newBoardState.length() != 4 && newBoardState.length() != 1)
-            {
-                moveWasLegal = false;
-                return;
-            }
-
-            moveWasLegal = true;
-            move = newBoardState;
-        }
-
-        /**
-         * Move the player made
-         * @return move string
-         */
-        private String getMove() {
-            if(!(moveWasLegal && moveWasMade))
-                return null;
-            return move;
-        }
-
-        /**
-         * Player actually made a move. Doesn't mean move was legal
-         * @return move was made
-         */
-        private boolean moveWasMade() {
-            return this.moveWasMade;
-        }
-
-        /**
-         * Player manipulated the board string in a legal way. This doesn't mean the placement of the piece was legal
-         * @return
-         */
-        private boolean moveWasLegal() {
-            return this.moveWasLegal;
-        }
 
     }
 }

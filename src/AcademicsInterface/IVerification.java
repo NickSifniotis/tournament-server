@@ -1,4 +1,4 @@
-package PlayerMarshall.Verification;
+package AcademicsInterface;
 
 import java.io.File;
 
