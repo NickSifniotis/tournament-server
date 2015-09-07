@@ -107,11 +107,9 @@ public class PlayerMarshall extends Application {
 
 
                     // copy the submission over to the marshalling folder.
-                    String destination = SystemState.marshalling_folder + new_submission.PrimaryKey() + ".sub";
-
                     try
                     {
-                        Files.copy(f.toPath(), Paths.get(destination));
+                        Files.copy(f.toPath(), Paths.get(new_submission.MarshalledSource()));
                         f.delete();
                     }
                     catch (Exception e)

@@ -324,6 +324,7 @@ public class PlayerSubmission {
     public int Tournament () { return this.tournament_id; }
     public boolean ReadyToPlay () { return this.ready & !this.retired & (this.disqualified_count == 0); }
     public boolean Active () { return !this.retired; }
+    public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
 
 
     /**
