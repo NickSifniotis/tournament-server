@@ -208,7 +208,7 @@ public class PlayerSubmission {
                     + "', team_motto = '" + this.motto
                     + "', original_filename = '" + this.orig_file
                     + "', retired = " + DBManager.BoolValue(this.retired)
-                    + ", disqualified = , " + this.disqualified_count
+                    + ", disqualified = " + this.disqualified_count
                     + ", ready = " + DBManager.BoolValue(this.ready)
                     + ", tournament_id = " + this.tournament_id
                     + " WHERE id = " + this.id;

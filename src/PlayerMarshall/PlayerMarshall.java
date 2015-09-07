@@ -124,7 +124,7 @@ public class PlayerMarshall extends Application {
                     }
 
                     // last but not least, go ahead and signal that this player is good to go
-                    new_submission.ReadyToPlay();
+                    new_submission.Ready();
 
                     // @TODO: Add the player to the games fixture
                 }

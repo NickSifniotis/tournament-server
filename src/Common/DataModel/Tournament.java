@@ -121,12 +121,15 @@ public class Tournament {
             return true;
 
         boolean result = false;
-        String className = "PlayerMarshall.Verification." + verification_package;
-        SystemState.Log ("Tournament.VerifySubmission - attempting to load verification package " + className);
+        SystemState.Log ("Tournament.VerifySubmission - attempting to load verification package " + verification_package);
+        String fullFileName = SystemState.sources_folder + this.sources_jarfile + ".jar";
 
         try
         {
-            Class verifier = Class.forName(className);
+            URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
+            ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+            Class verifier = playerClassLoader.loadClass(this.verification_package);
+
             if (!IVerification.class.isAssignableFrom(verifier))
                 throw new ClassNotFoundException("The class does not correctly implement IVerification");
 
