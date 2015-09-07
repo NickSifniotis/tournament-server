@@ -1,5 +1,7 @@
 package Common.DataModel;
 
+import AcademicsInterface.IGameEngine;
+import AcademicsInterface.IPlayer;
 import Common.DBManager;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
@@ -152,16 +154,22 @@ public class Tournament {
         return result;
     }
 
-    //@TODO: Return the farking game engine and player interface classes.
-    //@TODO: seriously it makes sense to keep this stuff within this class
-    //@TODO: So that the system itself wont need to worry about classnotfound exceptions.
 
+    /**
+     * Nick Sifniotis u5809912
+     * 7/9/2015
+     *
+     * Loads the game engine interface class from the Academics JAR file
+     * Tests to ensure that it correctly implements the IGameEngine interface
+     *
+     * @return the class itself - not an instance of it.
+     */
     public Class GameEngineClass()
     {
         if (this.game_engine_class.equals (""))
             return null;
 
-        Class res = null;
+        Class res;
         String fullFileName = SystemState.sources_folder + this.sources_jarfile + ".jar";
 
         try
@@ -169,6 +177,9 @@ public class Tournament {
             URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
             ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
             res = playerClassLoader.loadClass(this.game_engine_class);
+
+            if (!IGameEngine.class.isAssignableFrom(res))
+                throw new ClassNotFoundException("The class does not correctly implement IGameEngine");
         }
         catch (Exception e)
         {
@@ -184,12 +195,22 @@ public class Tournament {
         return res;
     }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 7/9/2015
+     *
+     * Loads the player submission interface class from the Academics JAR file
+     * Tests to ensure that it correctly implements the IPlayer interface
+     *
+     * @return the class itself - not an instance of it.
+     */
     public Class PlayerInterfaceClass()
     {
         if (this.player_interface_class.equals (""))
             return null;
 
-        Class res = null;
+        Class res;
         String fullFileName = SystemState.sources_folder + this.sources_jarfile + ".jar";
 
         try
@@ -197,6 +218,9 @@ public class Tournament {
             URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
             ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
             res = playerClassLoader.loadClass(this.player_interface_class);
+
+            if (!IPlayer.class.isAssignableFrom(res))
+                throw new ClassNotFoundException("The class does not correctly implement IPlayer");
         }
         catch (Exception e)
         {
@@ -210,49 +234,6 @@ public class Tournament {
         }
 
         return res;
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 6/9/2015
-     *
-     * Returns true if the current game engine class is loadable and contains
-     * the methods that it is supposed to contain.
-     * @TODO make it work
-     * @return true f the game engine is good, false otherwise
-     */
-    public boolean VerifyGameEngine ()
-    {
-        /*
-        // verify that the methods that are meant to be there, are there.
-        try
-        {
-            initialise
-                    current_player
-            legitimate_move
-                    score_game
-            make_move
-                    Alive
-
-            Method tester;
-            tester = res.getMethod(methodName, String.class);
-            if (tester == null)
-            {
-
-            }
-        }
-        catch (Exception e)
-        {
-            String error = "initialise - error accessing makeMove method " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
-
-        }
-        */
-        return true;
     }
 
 
