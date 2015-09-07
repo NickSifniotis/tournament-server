@@ -31,12 +31,11 @@ public interface IPlayer {
      *
      * Create whatever is necessary to link the player submission to the tournament.
      *
-     * @param player - the data structure that contains all the information about the submitted player
-     * @param tourney - the tournament that this player is competing in
+     * @param - the path/file name of the code, the classname, and the method within the class
      * @return  true if the player has loaded successfully, false if there was a problem connecting
      * to the submission
      */
-    boolean InitialisePlayer (PlayerSubmission player, Tournament tourney);
+    boolean InitialisePlayer (String path_name, String class_name, String method_name);
 
 
     /**

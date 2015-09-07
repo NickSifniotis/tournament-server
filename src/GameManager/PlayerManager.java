@@ -42,7 +42,7 @@ public class PlayerManager
         try
         {
             this.my_player = (IPlayer) tournament.PlayerInterfaceClass().newInstance();
-            this.my_player.InitialisePlayer(player, tourney);
+            this.my_player.InitialisePlayer(SystemState.marshalling_folder + player.PrimaryKey() + ".sub", tournament.SubmissionClassName(), tournament.SubmissionMethod());
         }
         catch (Exception e)
         {

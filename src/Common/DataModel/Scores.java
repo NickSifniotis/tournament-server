@@ -104,4 +104,44 @@ public class Scores
     {
 
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 7/9/2015
+     *
+     * Simple toString function to allow for game and player testing
+     * on the console.
+     *
+     * @return a string containing the current game state.
+     */
+    @Override
+    public String toString ()
+    {
+        String res = "";
+
+        boolean disq = false;
+        for (boolean b: this.disqualified)
+            disq |= b;
+
+        if (disq)
+        {
+            res += "Game Status: Disqualification\n";
+            for (int i = 0; i < this.raw_scores.length; i ++)
+            {
+                if (this.disqualified[i])
+                    res += "Player " + (i + 1) + ": DISQUALIFIED\n";
+                else
+                    res += "Player " + (i + 1) + ": No score recorded\n";
+            }
+        }
+        else
+        {
+            res += "Game Status: Legal\n";
+            for (int i = 0; i < this.raw_scores.length; i ++)
+                    res += "Player " + (i + 1) + ": " + this.raw_scores[i] + "\n";
+        }
+
+        return res;
+    }
 }

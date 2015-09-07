@@ -118,6 +118,8 @@ public class GameManagerChild extends Thread {
             // progress the game.
             game_state = game.MakeMove(game_state, move);
             game_scores.Update (game.ScoreGame(game_state));
+
+            System.out.println (game_scores);
         }
 
     }

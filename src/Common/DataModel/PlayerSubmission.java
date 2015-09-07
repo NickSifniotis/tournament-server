@@ -100,6 +100,7 @@ public class PlayerSubmission {
             {
                 try
                 {
+                    res.next();
                     this.loadState(res);
                     DBManager.disconnect(res);          // disconnect by result
                 }

@@ -30,7 +30,7 @@ public class Tournament {
     private String game_engine_class;
     private String player_interface_class;
     private String submission_class;
-
+    private String submission_method;
 
 
     /**
@@ -63,6 +63,7 @@ public class Tournament {
                 t.player_interface_class = results.getString ("player_interface_class");
                 t.sources_jarfile = results.getString ("sources_jar");
                 t.submission_class = results.getString ("submission_class");
+                t.submission_method = results.getString ("submission_method");
                 temp.add (t);
             }
 
@@ -243,7 +244,7 @@ public class Tournament {
         }
         catch (Exception e)
         {
-            String error = "BlokusPlayer.initialise - error accessing makeMove method " + e;
+            String error = "initialise - error accessing makeMove method " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
@@ -267,4 +268,5 @@ public class Tournament {
     {
         return this.submission_class;
     }
+    public String SubmissionMethod () { return this.submission_method; }
 }
