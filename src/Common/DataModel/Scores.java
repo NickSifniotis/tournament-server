@@ -1,18 +1,21 @@
 package Common.DataModel;
 
-import GameManager.Exceptions.PlayerMoveException;
+import Common.DBManager;
 import GameManager.PlayerManager;
+
 
 /**
  * Created by nsifniotis on 6/09/15.
  *
  * This class holds information relating to a game's current scores.
  *
+ * Database updates occur whenever the scores themselves are updated, so that there is always
+ * a sort of 'live stream' of scores into the database happening.
+ *
  */
 public class Scores
 {
     private int game_id;
-    private PlayerSubmission[] players;
     private int [] raw_scores;
     private int [] score_prikeys;
     private boolean [] disqualified;
@@ -24,6 +27,8 @@ public class Scores
      * 6/9/2015
      *
      * Constructor for the score object.
+     * As well as creating the score object, this constructor also
+     * creates the score records for this game in the database.
      *
      * @param game_id @TODO wtf passing indexes around like candy??
      * @param players
@@ -33,17 +38,19 @@ public class Scores
         this.game_id = game_id;
 
         int num_players = players.length;
-        this.players = new PlayerSubmission[num_players];
         this.raw_scores = new int [num_players];
         this.disqualified = new boolean [num_players];
-
-        for (int i = 0; i < num_players; i ++)
-            this.players[i] = players[i].GetDatalink();
-
         this.game_on = true;
 
-        // @TODO create and execute SQL to INSERT new score data into the table
+        // Create and execute SQL to INSERT new score data into the table
         // save the prikeys in the private int array.
+        this.score_prikeys = new int [num_players];
+        for (int i = 0; i < num_players; i ++)
+        {
+            String query = "INSERT INTO score (submission_id, game_id, score, no_score, disqualified)"
+                    + " VALUES (" + players[i].GetDatalink().PrimaryKey() + ", " + game_id + ", 0, false, false)";
+            this.score_prikeys[i] = DBManager.ExecuteReturnKey(query);
+        }
     }
 
 
@@ -59,6 +66,8 @@ public class Scores
     {
         for (int i = 0; i < this.raw_scores.length; i ++)
             this.raw_scores[i] = new_scores[i];
+
+        this.save_state();
     }
 
 
@@ -74,6 +83,7 @@ public class Scores
     {
         this.disqualified[player_id] = true;
         this.game_on = false;
+        this.save_state();
     }
 
 
@@ -97,12 +107,22 @@ public class Scores
      * 6/9/2015
      *
      * This method saves the current score state into the database.
-     * @TODO: Make it do that
+     * It assumes that the constructor has done its job and created the records
      *
      */
     private void save_state ()
     {
+        boolean no_score = !this.game_on;
 
+        for (int i = 0; i < this.raw_scores.length; i ++)
+        {
+            String query = "UPDATE score SET"
+                    + " score = " + this.raw_scores[i]
+                    + ", no_score = " + no_score
+                    + ", disqualified = " + this.disqualified[i]
+                    + " WHERE id = " + this.score_prikeys[i];
+            DBManager.Execute(query);
+        }
     }
 
 
@@ -120,11 +140,7 @@ public class Scores
     {
         String res = "";
 
-        boolean disq = false;
-        for (boolean b: this.disqualified)
-            disq |= b;
-
-        if (disq)
+        if (!this.game_on)
         {
             res += "Game Status: Disqualification\n";
             for (int i = 0; i < this.raw_scores.length; i ++)
