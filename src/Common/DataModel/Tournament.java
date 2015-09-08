@@ -48,16 +48,54 @@ public class Tournament {
     private String verification_class;
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Empty constructor.
+     *
+     */
     public Tournament ()
     {
-
+        load_state();
     }
 
 
     public Tournament (int id)
     {
+        if (id > 0)
+        {
+            String query = "SELECT * FROM tournament WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
 
+            if (res != null)
+            {
+                try
+                {
+                    res.next();
+                    this.load_state(res);
+                    DBManager.disconnect(res);          // disconnect by result
+                }
+                catch (Exception e)
+                {
+                    String error = "Tournament constructor (id) - SQL error retrieving tournament data. " + e;
+                    SystemState.Log(error);
 
+                    if (SystemState.DEBUG)
+                        System.out.println (error);
+
+                    this.load_state();
+                }
+            }
+            else
+            {
+                this.load_state();
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+        else
+            load_state();
     }
 
 
@@ -82,6 +120,8 @@ public class Tournament {
 
             if (SystemState.DEBUG)
                 System.out.println (error);
+
+            load_state();
         }
     }
 
@@ -105,28 +145,7 @@ public class Tournament {
         {
             while (results.next())
             {
-                Tournament t = new Tournament();
-
-                // the old stuff
-            //    t.submission_folder = results.getString("submissions_folder");
-              //  t.game_engine_class = results.getString ("game_engine_class");
-              //  t.sources_jarfile = results.getString ("sources_jar");
-              //  t.submission_class = results.getString("submission_class");
-              //  t.submission_method = results.getString ("submission_method");
-
-                // the new stuff
-                t.id = results.getInt("id");
-                t.name = results.getString("name");
-                t.uses_verification = (results.getInt("uses_verification") == 1);
-                t.allow_resubmit = (results.getInt("allow_resubmit") == 1);
-                t.allow_resubmit_on = (results.getInt("allow_resubmit_on") == 1);
-                t.game_on = (results.getInt("game_on") == 1);
-                t.verification_class = results.getString("verification_class");
-                t.player_interface_class = results.getString ("player_interface_class");
-                t.timeout = results.getInt("timeout");
-                t.num_players = results.getInt("num_players");
-                t.game = new GameType(results.getInt ("game_id"));
-
+                Tournament t = new Tournament(results);
                 temp.add (t);
             }
 
@@ -176,6 +195,68 @@ public class Tournament {
     }
 
 
+    private void save_state ()
+    {
+        SystemState.Log("Saving state for tournament " + this.id);
+
+        // Is this already in the database?
+        boolean exists = false;
+        String query;
+
+        if (this.id != 0) {
+            query = "SELECT * FROM tournament WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                exists = true;
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        if (exists)
+        {
+            query = "UPDATE tournament SET name = '" + this.name
+                    + "', game_id = '" + this.game.PrimaryKey()
+                    + ", player_interface_class = '" + this.player_interface_class
+                    + "', verification_class = '" + this.verification_class
+                    + "', uses_verification = " + DBManager.BoolValue(this.uses_verification)
+                    + ", allow_resubmit = " + DBManager.BoolValue(this.allow_resubmit)
+                    + ", allow_resubmit_on = " + DBManager.BoolValue(this.allow_resubmit_on)
+                    + ", game_on = " + DBManager.BoolValue(this.game_on)
+                    + ", num_players = " + this.num_players
+                    + ", timeout = '" + this.timeout
+                    + " WHERE id = " + this.id;
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            DBManager.Execute(query);
+        }
+        else
+        {
+            query = "INSERT INTO game_type (name, min_players, max_players, engine_class, viewer_class, uses_viewer)"
+                    + " VALUES ("
+                    + "'" + this.name + "'"
+                    + ", " + this.min_players
+                    + ", " + this.max_players
+                    + ", '" + this.engine_class + "'"
+                    + ", '" + this.viewer_class + "'"
+                    + ", " + DBManager.BoolValue(this.uses_viewer)
+                    + ")";
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            // we do want to know what the primary key of this new record is.
+            this.id = DBManager.ExecuteReturnKey(query);
+        }
+    }
+
+
     /**
      * Nick Sifniotis u5809912
      * 8/9/2015
@@ -218,6 +299,7 @@ public class Tournament {
     public boolean AllowResubmitOff () { return this.allow_resubmit; }
     public boolean AllowResubmitOn () { return this.allow_resubmit_on; }
     public boolean GameOn () { return this.game_on; }
+    public boolean UsesVerification () { return this.uses_verification; }
 
 
     /**
@@ -253,7 +335,7 @@ public class Tournament {
     {
         if (this.game == null)
             return null;
-        
+
         return this.game.Viewer();
     }
 

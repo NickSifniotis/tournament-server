@@ -6,6 +6,9 @@ import Common.DataModel.Tournament;
 
 /**
  * Created by nsifniotis on 7/09/15.
+ *
+ * Just a testing class. Go away warnings.
+ *
  */
 public class tester {
 
@@ -19,14 +22,7 @@ public class tester {
             return;
 
         // create a game engine
-        IGameEngine engine = null;
-        try {
-            engine = (IGameEngine)tourneys[0].GameEngineClass().newInstance();
-        }
-        catch (Exception e)
-        {
-            System.out.println (e);
-        }
+        IGameEngine engine = tourneys[0].GameEngine();
 
         if (engine == null)
             return;

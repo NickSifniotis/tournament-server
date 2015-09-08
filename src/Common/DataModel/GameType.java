@@ -229,6 +229,7 @@ public class GameType
      *
      * @return
      */
+    public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
     public int MinPlayers () { return this.min_players; }
     public int MaxPlayers () { return this.max_players; }
