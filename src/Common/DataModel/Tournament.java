@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +46,44 @@ public class Tournament {
     private String player_interface_class;
     private boolean uses_verification;
     private String verification_class;
+
+
+    public Tournament ()
+    {
+
+    }
+
+
+    public Tournament (int id)
+    {
+
+
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Construct this tournament object using the provided dataset.
+     *
+     * @param input
+     */
+    public Tournament (ResultSet input)
+    {
+        try
+        {
+            this.load_state(input);
+        }
+        catch (Exception e)
+        {
+            String error = "Tournament constructor (resultset) - SQL error: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+    }
 
     /**
      * Nick Sifniotis u5809912
@@ -112,6 +151,56 @@ public class Tournament {
 
     /**
      * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Like the other objects in the data model, this one uses a specialised load state
+     * and save state method to control access to the database.
+     *
+     * This function loads the current record from the provided dataset.
+     *
+     * @param input - the raw data
+     */
+    private void load_state (ResultSet input) throws SQLException
+    {
+        this.id = input.getInt("id");
+        this.name = input.getString("name");
+        this.uses_verification = (input.getInt("uses_verification") == 1);
+        this.allow_resubmit = (input.getInt("allow_resubmit") == 1);
+        this.allow_resubmit_on = (input.getInt("allow_resubmit_on") == 1);
+        this.game_on = (input.getInt("game_on") == 1);
+        this.verification_class = input.getString("verification_class");
+        this.player_interface_class = input.getString ("player_interface_class");
+        this.timeout = input.getInt("timeout");
+        this.num_players = input.getInt("num_players");
+        this.game = new GameType(input.getInt ("game_id"));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Construct an empty tournament object.
+     *
+     */
+    private void load_state ()
+    {
+        this.id = -1;
+        this.name = "";
+        this.uses_verification = false;
+        this.allow_resubmit = false;
+        this.allow_resubmit_on = false;
+        this.game_on = false;
+        this.verification_class = "";
+        this.player_interface_class = "";
+        this.num_players = 0;
+        this.timeout = 0;
+        this.game = null;           // anywhere in which game is used, check for null.
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 31/08/2015
      *
      * Accessor functions
@@ -144,6 +233,9 @@ public class Tournament {
      */
     public IGameEngine GameEngine()
     {
+        if (this.game == null)
+            return null;
+
         return this.game.GameEngine();
     }
 
@@ -159,6 +251,9 @@ public class Tournament {
      */
     public IViewer Viewer()
     {
+        if (this.game == null)
+            return null;
+        
         return this.game.Viewer();
     }
 
