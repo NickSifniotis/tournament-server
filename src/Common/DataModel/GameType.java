@@ -209,6 +209,22 @@ public class GameType
      * Nick Sifniotis u5809912
      * 8/9/2015
      *
+     * Setter functions for this data model.
+     *
+     * @param name - lots of parameters!
+     */
+    public void SetName (String name) { this.name = name; }
+    public void SetMinPlayers (int min) { this.min_players = min; }
+    public void SetMaxPlayers (int max) { this.max_players = max; }
+    public void SetGameEngineClass (String ge) { this.engine_class = ge; }
+    public void SetViewerClass (String v) { this.viewer_class = v; }
+    public void SetUsesViewer (boolean b) { this.uses_viewer = b; }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
      * Accessor functions, including two interesting functions that return instances of interfaces.
      *
      * @return
@@ -288,5 +304,71 @@ public class GameType
     public String toString ()
     {
         return this.Name();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Dump the current state of this record into the database.
+     *
+     */
+    private void save_state ()
+    {
+        SystemState.Log("Saving state for game type " + this.id);
+
+
+        // is this submission already in the database?
+        boolean exists = false;
+        String query;
+
+        if (this.id != 0) {
+            query = "SELECT * FROM submission WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                exists = true;
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        if (exists)
+        {
+            query = "UPDATE game_type SET name = '" + this.name
+                    + "', min_players = '" + this.min_players
+                    + ", max_players = '" + this.max_players
+                    + ", engine_class = '" + this.engine_class
+                    + "', viewer_class = '" + this.viewer_class
+                    + "', uses_viewer = " + DBManager.BoolValue(this.uses_viewer)
+                    + " WHERE id = " + this.id;
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            DBManager.Execute(query);
+        }
+        else
+        {
+            query = "INSERT INTO game_type (name, min_players, max_players, engine_class, viewer_class, uses_viewer)"
+                    + " VALUES ("
+                    + "'" + this.name + "'"
+                    + ", " + this.min_players
+                    + ", " + this.max_players
+                    + ", '" + this.engine_class + "'"
+                    + ", '" + this.viewer_class + "'"
+                    + ", " + DBManager.BoolValue(this.uses_viewer)
+                    + ")";
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            // we do want to know what the primary key of this new record is.
+            this.id = DBManager.ExecuteReturnKey(query);
+        }
     }
 }

@@ -129,7 +129,7 @@ public class MainPanel
         tMax.setText ("" + game.MaxPlayers());
         tGE.setText (game.GameEngineClass());
         tV.setText (game.ViewerClass());
-        
+
         if (curr_jar != null)
             lJARstate.setText ("JAR file loaded - click the button to change it.");
         else
