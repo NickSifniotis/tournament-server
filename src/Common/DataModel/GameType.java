@@ -251,7 +251,7 @@ public class GameType
 
     public IViewer Viewer ()
     {
-        if (this.engine_class.equals("") || !this.uses_viewer)
+        if (this.viewer_class.equals("") || !this.uses_viewer)
             return null;
 
         IViewer res;

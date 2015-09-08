@@ -97,13 +97,19 @@ public class MainPanel
         switch (state)
         {
             case UNLOADED:
+                btnChoose.setDisable(false);
+                btnTest.setDisable(false);
                 my_panel.setDisable(true);
                 break;
             case EDITING:
+                btnChoose.setDisable(false);
                 my_panel.setDisable(false);
+                btnTest.setDisable(false);
                 btnSave.setDisable(true);
                 break;
             case JAR_TESTED:
+                btnChoose.setDisable(true);
+                btnTest.setDisable(true);
                 btnSave.setDisable(false);
                 break;
         }

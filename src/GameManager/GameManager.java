@@ -1,6 +1,9 @@
 package GameManager;
 
+import AcademicsInterface.IGameEngine;
+import AcademicsInterface.IViewer;
 import Common.DataModel.GameType;
+import Common.SystemState;
 import GameManager.GUI.MainPanel;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -14,6 +17,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 /**
  * Created by nsifniotis on 8/09/15.
@@ -176,6 +181,7 @@ public class GameManager extends Application
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select JAR file ..");
         this.selected_JAR = fileChooser.showOpenDialog(my_stage);
+        this.my_panel.btnChoose.setDisable(true);
     }
 
 
@@ -195,6 +201,88 @@ public class GameManager extends Application
         {
             error = true;
             error_message = "No JAR file selected.";
+        }
+
+        String viewer_class = "";
+        String engine_class = "";
+        boolean viewer_state = false;
+
+        if (!error)
+        {
+            viewer_state = this.my_panel.cbV.isSelected();
+            engine_class = this.my_panel.tGE.getText();
+            viewer_class = this.my_panel.tV.getText();
+
+            if (engine_class.equals("") || (viewer_class.equals("") && viewer_state)) {
+                error = true;
+                error_message = "Class names missing.";
+            }
+        }
+
+        // attempt to loaded the viewer class first.
+        if (!error && viewer_state)
+        {
+            String fullFileName = this.selected_JAR.getName();
+
+            try
+            {
+                URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
+                ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+                Class source_class = playerClassLoader.loadClass(viewer_class);
+
+                if (!IViewer.class.isAssignableFrom(source_class))
+                    throw new ClassNotFoundException("The class does not correctly implement IViewer");
+            }
+            catch (Exception e)
+            {
+                // fuck e. We don't care about e.
+                error = true;
+                error_message = "Unable to locate class " + viewer_class + " within specified JAR.";
+            }
+
+        }
+
+        // then try to find the game engine class
+        if (!error)
+        {
+            String fullFileName = this.selected_JAR.getAbsolutePath();
+
+            try
+            {
+                URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
+                ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+                Class source_class = playerClassLoader.loadClass(engine_class);
+
+                if (!IGameEngine.class.isAssignableFrom(source_class))
+                    throw new ClassNotFoundException("The class does not correctly implement IGameEngine");
+            }
+            catch (Exception e)
+            {
+                // fuck e. We don't care about e.
+                error = true;
+                error_message = "Unable to locate class " + engine_class + " within specified JAR.";
+            }
+        }
+
+        if (error)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("JAR file failed the test.");
+            alert.setContentText(error_message);
+
+            alert.showAndWait();
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Much success");
+            alert.setHeaderText("Tests passed.");
+            alert.setContentText("JAR file successfully passes the tests.");
+
+            alert.showAndWait();
+
+            this.setState(GameManagerStates.JAR_TESTED);
         }
     }
 }
