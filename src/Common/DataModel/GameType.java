@@ -1,8 +1,12 @@
 package Common.DataModel;
 
+import AcademicsInterface.IGameEngine;
+import AcademicsInterface.IViewer;
 import Common.DBManager;
 import Common.SystemState;
 
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -213,4 +217,67 @@ public class GameType
     public int MinPlayers () { return this.min_players; }
     public int MaxPlayers () { return this.max_players; }
     public boolean UsesViewer () { return this.uses_viewer; }
+
+    public IGameEngine GameEngine () {
+        if (this.engine_class.equals(""))
+            return null;
+
+        IGameEngine res;
+        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+
+        try
+        {
+            URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
+            ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+            Class source_class = playerClassLoader.loadClass(this.engine_class);
+
+            if (!IGameEngine.class.isAssignableFrom(source_class))
+                throw new ClassNotFoundException("The class does not correctly implement IGameEngine");
+
+            res = (IGameEngine) source_class.newInstance();
+
+        } catch (Exception e) {
+            String error = "GameType.GameEngine - error creating class: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println(error);
+
+            return null;
+        }
+
+        return res;
+    }
+
+    public IViewer Viewer ()
+    {
+        if (this.engine_class.equals("") || !this.uses_viewer)
+            return null;
+
+        IViewer res;
+        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+
+        try
+        {
+            URL[] classPath = {new URL("jar:file:" + fullFileName + "!/")};
+            ClassLoader playerClassLoader = new URLClassLoader(classPath, this.getClass().getClassLoader());
+            Class source_class = playerClassLoader.loadClass(this.viewer_class);
+
+            if (!IViewer.class.isAssignableFrom(source_class))
+                throw new ClassNotFoundException("The class does not correctly implement IViewer");
+
+            res = (IViewer) source_class.newInstance();
+
+        } catch (Exception e) {
+            String error = "GameType.Viewer - error creating class: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println(error);
+
+            return null;
+        }
+
+        return res;
+    }
 }
