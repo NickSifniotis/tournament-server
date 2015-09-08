@@ -280,4 +280,11 @@ public class GameType
 
         return res;
     }
+
+
+    @Override
+    public String toString ()
+    {
+        return this.Name();
+    }
 }
