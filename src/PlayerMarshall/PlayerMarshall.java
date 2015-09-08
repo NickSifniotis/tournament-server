@@ -84,8 +84,9 @@ public class PlayerMarshall extends Application {
             File [] files = GetNewSubmissions(t);
             for (File f: files)
             {
+                //@TODO clarify exactly what UsesVerification is supposed to do, since the class is now manditory.
                 LogMessage ("Processing " + f.getName() + " for tournament " + t.Name());
-                if (t.VerifySubmission(f))
+                if (t.Verification().VerifySubmission(f))
                 {
                     // this submission is good, so lets move it to marshalling and get ready to rumble
                     // has this player been submitted before? We will know because submissions are identified

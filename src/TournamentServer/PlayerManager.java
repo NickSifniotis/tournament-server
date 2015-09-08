@@ -41,7 +41,7 @@ public class PlayerManager
         // create the IPlayer player interface for the player that this manager manages.
         try
         {
-            this.my_player = (IPlayer) tournament.PlayerInterfaceClass().newInstance();
+            this.my_player = tournament.PlayerInterface();
             this.my_player.InitialisePlayer(player.MarshalledSource(), tournament.SubmissionClassName(), tournament.SubmissionMethod());
         }
         catch (Exception e)
@@ -67,9 +67,8 @@ public class PlayerManager
      */
     public Object nextMove(Object boardState) throws PlayerMoveException
     {
-        //@TODO implement the tournament rule 'playertimeout'
         //@TODO also implement 'if zero timeout then keep going' condition
-        int player_timeout = 10 * 1000;        // measured in milliseconds
+        int player_timeout = tournament.Timeout() * 1000;        // measured in milliseconds
 
         PlayerChildThread playerThread = new PlayerChildThread(boardState, this.my_player);
         playerThread.start();
