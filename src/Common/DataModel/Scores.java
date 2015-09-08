@@ -1,7 +1,7 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import GameManager.PlayerManager;
+import TournamentServer.PlayerManager;
 
 
 /**

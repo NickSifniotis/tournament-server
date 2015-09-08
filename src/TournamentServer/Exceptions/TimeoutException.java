@@ -1,4 +1,4 @@
-package GameManager.Exceptions;
+package TournamentServer.Exceptions;
 
 /**
  * Created by nsifniotis on 2/09/15.

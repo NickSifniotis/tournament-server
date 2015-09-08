@@ -1,13 +1,13 @@
-package GameManager;
+package TournamentServer;
 
 
 import AcademicsInterface.IPlayer;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.SystemState;
-import GameManager.Exceptions.NoMoveMadeException;
-import GameManager.Exceptions.PlayerMoveException;
-import GameManager.Exceptions.TimeoutException;
+import TournamentServer.Exceptions.NoMoveMadeException;
+import TournamentServer.Exceptions.PlayerMoveException;
+import TournamentServer.Exceptions.TimeoutException;
 
 
 /**

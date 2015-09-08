@@ -1,8 +1,8 @@
-package GameManager;
+package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
 import Common.DataModel.Scores;
-import GameManager.Exceptions.PlayerMoveException;
+import TournamentServer.Exceptions.PlayerMoveException;
 
 /**
  * Created by nsifniotis on 2/09/15.

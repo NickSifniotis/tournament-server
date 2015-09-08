@@ -1,9 +1,5 @@
 package AcademicsInterface;
 
-import Common.DataModel.PlayerSubmission;
-import Common.DataModel.Tournament;
-import GameManager.Exceptions.PlayerMoveException;
-
 /**
  * Created by nsifniotis on 2/09/15.
  *

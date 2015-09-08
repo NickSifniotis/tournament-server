@@ -1,4 +1,4 @@
-package GameManager;
+package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
 import Common.DataModel.PlayerSubmission;

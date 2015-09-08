@@ -1,4 +1,4 @@
-package GameManager;
+package TournamentServer;
 
 import AcademicsInterface.IPlayer;
 import Common.SystemState;
