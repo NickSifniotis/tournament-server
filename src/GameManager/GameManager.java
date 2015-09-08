@@ -61,6 +61,7 @@ public class GameManager extends Application
         game_chooser = new ChoiceBox();
 
         Button btnNew = new Button ("New Game");
+        Button btnEdit = new Button ("Edit Game");
 
         Separator row0 = new Separator();
         row0.setOrientation(Orientation.VERTICAL);
@@ -70,7 +71,7 @@ public class GameManager extends Application
         HBox [] rows = new HBox [2];
 
         rows[0] = new HBox ();
-        rows[0].getChildren().addAll(btnNew, row0, this.game_chooser);
+        rows[0].getChildren().addAll(btnNew, row0, this.game_chooser, btnEdit);
 
         rows[1] = new HBox();
         rows[1].getChildren().addAll (row1);
@@ -80,11 +81,11 @@ public class GameManager extends Application
         main_layout.getChildren().addAll(rows[0], rows[1], my_panel.initialise());
 
         HBox footer = new HBox ();
-        footer.getChildren().add (this.num_games_status);
+        footer.getChildren().add(this.num_games_status);
 
         BorderPane structural_layout = new BorderPane();
-        structural_layout.setPadding(new Insets(10,10,10,10));
-        structural_layout.setTop (rows[0]);
+        structural_layout.setPadding(new Insets(10, 10, 10, 10));
+        structural_layout.setTop(rows[0]);
         structural_layout.setCenter(main_layout);
         structural_layout.setBottom(footer);
 
@@ -103,6 +104,7 @@ public class GameManager extends Application
         my_panel.btnTest.setOnAction(e -> this.testJARButtonClicked());
         my_panel.btnReset.setOnAction(e-> this.resetButtonClicked());
         my_panel.btnSave.setOnAction(e -> this.saveButtonClicked());
+        btnEdit.setOnAction(e -> this.editButtonClicked());
     }
 
 
@@ -145,8 +147,7 @@ public class GameManager extends Application
     }
 
 
-    private void setState (GameManagerStates new_State)
-    {
+    private void setState (GameManagerStates new_State) {
         this.curr_state = new_State;
         this.my_panel.updateState(new_State);
 
@@ -157,7 +158,7 @@ public class GameManager extends Application
                 this.update_chooser();
                 break;
             case EDITING:
-
+                my_panel.updateFields(this.curr_gametype, this.selected_JAR);
                 break;
             case JAR_TESTED:
 
@@ -168,8 +169,8 @@ public class GameManager extends Application
     public void newButtonClicked ()
     {
         this.curr_gametype = new GameType();
+        this.game_chooser.setValue(null);
         this.setState(GameManagerStates.EDITING);
-        this.my_panel.updateFields(this.curr_gametype, this.selected_JAR);
     }
 
 
@@ -400,5 +401,16 @@ public class GameManager extends Application
         }
 
         this.setState(GameManagerStates.UNLOADED);
+    }
+
+
+    public void editButtonClicked()
+    {
+        if (this.game_chooser.getSelectionModel().getSelectedItem() == null)
+            return;
+
+        this.curr_gametype = (GameType) this.game_chooser.getSelectionModel().getSelectedItem();
+        this.selected_JAR = null;
+        this.setState(GameManagerStates.EDITING);
     }
 }
