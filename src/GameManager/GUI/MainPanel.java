@@ -7,6 +7,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.io.File;
+
 
 /**
  * Created by nsifniotis on 8/09/15.
@@ -22,6 +24,7 @@ public class MainPanel
     public TextField tMax;
     public TextField tGE;
     public TextField tV;
+    public Label lJARstate;
 
     public Button btnSave;
     public Button btnReset;
@@ -34,6 +37,7 @@ public class MainPanel
     {
         Label lPlayers = new Label("Players:");
         Label lSrc = new Label("Source JAR:");
+        lJARstate = new Label("");
 
         cbV = new CheckBox();
         cbV.setText("Uses IViewer:");
@@ -59,7 +63,7 @@ public class MainPanel
         Separator row4 = new Separator();
         row4.setOrientation(Orientation.HORIZONTAL);
 
-        HBox [] rows = new HBox [8];
+        HBox [] rows = new HBox [9];
         rows[0] = new HBox();
         rows[0].getChildren().addAll (tName);
 
@@ -73,16 +77,19 @@ public class MainPanel
         rows[3].getChildren().addAll (lSrc, btnChoose);
 
         rows[4] = new HBox();
-        rows[4].getChildren().addAll (tGE);
+        rows[4].getChildren().addAll (lJARstate);
 
         rows[5] = new HBox();
-        rows[5].getChildren().addAll (tV);
+        rows[5].getChildren().addAll (tGE);
 
         rows[6] = new HBox();
-        rows[6].getChildren().addAll (cbV);
+        rows[6].getChildren().addAll (tV);
 
         rows[7] = new HBox();
-        rows[7].getChildren().addAll (btnTest, btnSave, btnReset);
+        rows[7].getChildren().addAll (cbV);
+
+        rows[8] = new HBox();
+        rows[8].getChildren().addAll (btnTest, btnSave, btnReset);
 
         my_panel = new VBox();
         my_panel.setSpacing(5);
@@ -115,11 +122,17 @@ public class MainPanel
         }
     }
 
-    public void updateFields (GameType game)
+    public void updateFields (GameType game, File curr_jar)
     {
         tName.setText (game.Name());
         tMin.setText ("" + game.MinPlayers());
         tMax.setText ("" + game.MaxPlayers());
-
+        tGE.setText (game.GameEngineClass());
+        tV.setText (game.ViewerClass());
+        
+        if (curr_jar != null)
+            lJARstate.setText ("JAR file loaded - click the button to change it.");
+        else
+            lJARstate.setText ("No JAR file attached to this game.");
     }
 }

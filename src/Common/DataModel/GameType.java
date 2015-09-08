@@ -217,6 +217,8 @@ public class GameType
     public int MinPlayers () { return this.min_players; }
     public int MaxPlayers () { return this.max_players; }
     public boolean UsesViewer () { return this.uses_viewer; }
+    public String GameEngineClass () { return this.engine_class; }
+    public String ViewerClass () { return this.viewer_class; }
 
     public IGameEngine GameEngine () {
         if (this.engine_class.equals(""))

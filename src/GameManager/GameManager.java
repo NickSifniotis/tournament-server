@@ -99,6 +99,7 @@ public class GameManager extends Application
         btnNew.setOnAction(e -> this.newButtonClicked());
         my_panel.btnChoose.setOnAction(e -> this.selectJARButtonClicked());
         my_panel.btnTest.setOnAction(e -> this.testJARButtonClicked());
+        my_panel.btnReset.setOnAction(e-> this.resetButtonClicked());
     }
 
 
@@ -165,7 +166,7 @@ public class GameManager extends Application
     {
         this.curr_gametype = new GameType();
         this.setState(GameManagerStates.EDITING);
-        this.my_panel.updateFields(this.curr_gametype);
+        this.my_panel.updateFields(this.curr_gametype, this.selected_JAR);
     }
 
 
@@ -284,5 +285,14 @@ public class GameManager extends Application
 
             this.setState(GameManagerStates.JAR_TESTED);
         }
+    }
+
+    public void resetButtonClicked ()
+    {
+        curr_gametype = new GameType();
+        selected_JAR = null;
+
+        setState(GameManagerStates.EDITING);
+        this.my_panel.updateFields(curr_gametype, null);
     }
 }
