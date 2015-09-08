@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Created by nsifniotis on 8/09/15.
@@ -100,6 +102,7 @@ public class GameManager extends Application
         my_panel.btnChoose.setOnAction(e -> this.selectJARButtonClicked());
         my_panel.btnTest.setOnAction(e -> this.testJARButtonClicked());
         my_panel.btnReset.setOnAction(e-> this.resetButtonClicked());
+        my_panel.btnSave.setOnAction(e -> this.saveButtonClicked());
     }
 
 
@@ -294,5 +297,108 @@ public class GameManager extends Application
 
         setState(GameManagerStates.EDITING);
         this.my_panel.updateFields(curr_gametype, null);
+    }
+
+    public void saveButtonClicked ()
+    {
+        // conduct some rudimentary tests before adding this thing to the database ..
+        boolean error = false;
+        String error_message = "";
+
+        if (this.selected_JAR == null)
+        {
+            error = true;
+            error_message = "No JAR file selected.";
+        }
+
+        if (!error && this.curr_state != GameManagerStates.JAR_TESTED)
+        {
+            error = true;
+            error_message = "JAR file has not been validated yet.";
+        }
+
+
+        if (!error)
+        {
+            if (this.my_panel.tName.getText().equals(""))
+            {
+                error = true;
+                error_message = "No name supplied.";
+            }
+            else
+                this.curr_gametype.SetName(this.my_panel.tName.getText());
+        }
+
+        if (!error)
+        {
+            int x = Integer.parseInt(this.my_panel.tMin.getText());
+            if (x <= 0)
+            {
+                error = true;
+                error_message = "Bad value supplied in minimum players.";
+            }
+            else
+                this.curr_gametype.SetMinPlayers(x);
+        }
+
+        if (!error)
+        {
+            int x = Integer.parseInt(this.my_panel.tMax.getText());
+            if (x <= 0)
+            {
+                error = true;
+                error_message = "Bad value supplied in maximum players.";
+            }
+            else
+                this.curr_gametype.SetMaxPlayers(x);
+        }
+
+        if (!error)
+        {
+            if (this.curr_gametype.MinPlayers() > this.curr_gametype.MaxPlayers())
+            {
+                error = true;
+                error_message = "Min players cannot be greater than max.";
+            }
+        }
+
+        if (!error)
+        {
+            this.curr_gametype.SetGameEngineClass(this.my_panel.tGE.getText());
+            this.curr_gametype.SetViewerClass(this.my_panel.tV.getText());
+            this.curr_gametype.SetUsesViewer(this.my_panel.cbV.isSelected());
+        }
+
+        if (error)
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Unable to save.");
+            alert.setContentText(error_message);
+
+            alert.showAndWait();
+
+            return;
+        }
+
+        // holy shit. We are saving this game!
+        this.curr_gametype.SaveState();
+        try
+        {
+            Files.deleteIfExists(Paths.get(curr_gametype.SourceFilename()));
+            Files.copy(this.selected_JAR.toPath(), Paths.get(curr_gametype.SourceFilename()));
+        }
+        catch (Exception e)
+        {
+            // you know you're getting tired when you solve variable name clashes by adding an
+            // extra letter to the name
+            String eerror = "GameManager.saveButtonClicked - Error copying JAR file to sources: " + e;
+            SystemState.Log(eerror);
+
+            if (SystemState.DEBUG)
+                System.out.println (eerror);
+        }
+
+        this.setState(GameManagerStates.UNLOADED);
     }
 }

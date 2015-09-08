@@ -235,6 +235,7 @@ public class GameType
     public boolean UsesViewer () { return this.uses_viewer; }
     public String GameEngineClass () { return this.engine_class; }
     public String ViewerClass () { return this.viewer_class; }
+    public String SourceFilename () { return SystemState.engines_folder + this.id + ".jar"; }
 
     public IGameEngine GameEngine () {
         if (this.engine_class.equals(""))
@@ -314,7 +315,7 @@ public class GameType
      * Dump the current state of this record into the database.
      *
      */
-    private void save_state ()
+    public void SaveState ()
     {
         SystemState.Log("Saving state for game type " + this.id);
 

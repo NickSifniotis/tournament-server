@@ -106,18 +106,27 @@ public class MainPanel
             case UNLOADED:
                 btnChoose.setDisable(false);
                 btnTest.setDisable(false);
+                tGE.setDisable(false);
+                tV.setDisable(false);
                 my_panel.setDisable(true);
                 break;
             case EDITING:
                 btnChoose.setDisable(false);
                 my_panel.setDisable(false);
                 btnTest.setDisable(false);
+                tGE.setDisable(false);
+                tV.setDisable(false);
                 btnSave.setDisable(true);
                 break;
             case JAR_TESTED:
                 btnChoose.setDisable(true);
                 btnTest.setDisable(true);
                 btnSave.setDisable(false);
+
+                // lock these mofos in particular
+                // once successfully tested, eleminate the possibililty that the user will change them!
+                tGE.setDisable(true);
+                tV.setDisable(true);
                 break;
         }
     }
