@@ -86,10 +86,10 @@ public class PlayerMarshall extends Application {
         SubmissionMetadata metadata = verifier.ExtractMetaData(submission);
 
         boolean can_resubmit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
-        boolean can_submit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : true;
+        boolean can_submit = (!tournament.GameOn()) | tournament.AllowResubmitOn();
         boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(metadata.team_name, tournament) == null);
 
-        
+
         // the zeroth barrier - no metadata, no proceeding.
         if (metadata.team_name.equals(""))
         {
@@ -217,7 +217,10 @@ public class PlayerMarshall extends Application {
             }
         }
 
+        int registered_players = PlayerSubmission.CountRegisteredPlayers(null);
+
         tourney_label.setText(String.valueOf(tourneys.length));
+        player_label.setText(String.valueOf(registered_players));
     }
 
 
@@ -283,6 +286,8 @@ public class PlayerMarshall extends Application {
      */
     private static void SubmissionFailure (File submission, EmailTypes reason, String destination_address)
     {
+        LogMessage("Failed to add submission. Reason: " + reason.name());
+
         if (destination_address == null || destination_address.equals(""))
         {
             destination_address = "u5809912@anu.edu.au";

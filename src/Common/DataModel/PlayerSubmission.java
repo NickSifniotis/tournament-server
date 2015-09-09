@@ -384,5 +384,57 @@ public class PlayerSubmission
 
         saveState();
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Returns a count of the number of players who have been assigned slots in a tournament.
+     * If the parameter tourney is null, get a count of registrations for all tournaments.
+     *
+     * @param tourney - the tournament to query, or null for all.
+     * @return a count of the number of registered players.
+     */
+    public static int CountRegisteredPlayers (Tournament tourney)
+    {
+        String query = "";
+
+        if (tourney == null)
+            query = "SELECT COUNT(*) AS count FROM fixture_slot"
+                + " WHERE submission_id <> 0";
+        else
+            query = "SELECT COUNT(*) AS count FROM fixture_slot"
+                + " WHERE submission_id <> 0 AND tournament_id = " + tourney.PrimaryKey();
+
+        int res = 0;
+
+        Connection connection = DBManager.connect();
+        ResultSet r = DBManager.ExecuteQuery(query, connection);
+
+        if (r != null)
+        {
+            try
+            {
+                r.next();
+                res = r.getInt("count");
+                DBManager.disconnect(r);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "PlayerSubmission.CountRegisteredPlayers - SQL error retrieving player data. " + e;
+                SystemState.Log(error);
+
+                if (SystemState.DEBUG)
+                    System.out.println (error);
+            }
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        return res;
+    }
 }
 
