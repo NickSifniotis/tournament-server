@@ -2,6 +2,8 @@ package PlayerMarshall;
 
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
+import Common.Email.EmailTypes;
+import Common.Email.Emailer;
 import Common.SystemState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -65,6 +67,50 @@ public class PlayerMarshall extends Application {
 
     /**
      * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Processes a students submission.
+     * Wow such commenting.
+     *
+     * If this submission represents a new player, it will try to add it to the tournament fixture.
+     * If it is a resubmit for an existing player, it will process that as per the tournament rules.
+     *
+     * @param submission
+     * @param tournament
+     */
+    private static void ProcessSingleSubmission (File submission, Tournament tournament)
+    {
+
+
+        boolean can_be_added = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
+        boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(submission.getName(), tournament) == null);
+
+        if (!can_be_added)
+        {
+            if (is_new && tournament.GameOn())
+            {
+                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, "");
+                return;
+            }
+            else
+            {
+                if (tournament.GameOn())
+                {
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, "");
+                    return;
+                }
+                else
+                {
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, "");
+                    return;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 31/08/2015
      *
      * Searches the input folders for new submissions, verifies
@@ -79,24 +125,40 @@ public class PlayerMarshall extends Application {
 
         Tournament[] tourneys = Tournament.LoadAll();
 
-        for (Tournament t: tourneys)
+        for (Tournament tournament: tourneys)
         {
-            File [] files = GetNewSubmissions(t);
+            File [] files = GetNewSubmissions(tournament);
             for (File f: files)
             {
-                //@TODO clarify exactly what UsesVerification is supposed to do, since the class is now manditory.
-                LogMessage ("Processing " + f.getName() + " for tournament " + t.Name());
-                if (t.Verification().VerifySubmission(f))
+                LogMessage("Processing " + f.getName() + " for tournament " + tournament.Name());
+                if (tournament.Verification().VerifySubmission(f))
                 {
                     // this submission is good, so lets move it to marshalling and get ready to rumble
                     // has this player been submitted before? We will know because submissions are identified
                     // by filenames.
 
                     String original = f.getName();
-                    PlayerSubmission oldie = PlayerSubmission.GetActiveWithOriginalFilename(original, t);
+                    PlayerSubmission oldie = PlayerSubmission.GetActiveWithOriginalFilename(original, tournament);
 
                     if (oldie != null)
                     {
+                        if (tournament.GameOn())
+                        {
+                            if (!tournament.AllowResubmitOn())
+                            {
+                                //@TODO: Email. And again below
+                                SubmissionFailure(f, EmailTypes.NO_RESUBMIT_ON, "");
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (!tournament.AllowResubmitOff())
+                            {
+                                SubmissionFailure(f, EmailTypes.NO_RESUBMIT_OFF, "");
+                                return;
+                            }
+                        }
                         // @TODO: More retirement code here. The games and the logs!
                         oldie.Retire();
                     }
@@ -130,25 +192,8 @@ public class PlayerMarshall extends Application {
                 else
                 {
                     // failed the verification test. Fuck. Now I have to send a dirty email
-                    // @TODO: Figure out how to do emails
-
-                    // erase the offending submission
-                    try
-                    {
-                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - file " + f.getName() + " failed verification. Attempting to delete it.");
-
-                        f.delete();
-
-                        SystemState.Log("PlayerMarshall.ProcessNewSubmissions - delete successful.");
-                    }
-                    catch (Exception e)
-                    {
-                        String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
-                        SystemState.Log(error);
-
-                        if (SystemState.DEBUG)
-                            System.out.println (error);
-                    }
+                    //@TODO: Email address again
+                    SubmissionFailure(f, EmailTypes.FAILED_VALIDATION, "");
                 }
             }
         }
@@ -196,7 +241,53 @@ public class PlayerMarshall extends Application {
     }
 
 
-    public static void main(String[] args) {
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Handle a failed submission.
+     * Shoot a dirty email to the student and delete the offending file.
+     *
+     * @param submission - the student's submission that failed
+     * @param reason - why it failed
+     * @param destination_address - who to send the dirty email to.
+     */
+    private static void SubmissionFailure (File submission, EmailTypes reason, String destination_address)
+    {
+        if (destination_address == null || destination_address.equals(""))
+        {
+            destination_address = "u5809912@anu.edu.au";
+            reason = EmailTypes.NO_VALID_EMAIL;
+        }
+
+        Emailer.SendEmail(reason, destination_address);
+
+        try
+        {
+            submission.delete();
+            SystemState.Log("PlayerMarshall.ProcessNewSubmissions - delete successful.");
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis
+     * 9/9/2015
+     *
+     * One of the least interesting PSVM methods I've come across.
+     *
+     * @param args - unused
+     */
+    public static void main(String[] args)
+    {
         launch(args);
     }
 

@@ -44,7 +44,6 @@ public class Tournament {
     private GameType game;
     private int num_players;
     private String player_interface_class;
-    private boolean uses_verification;
     private String verification_class;
 
 
@@ -183,7 +182,6 @@ public class Tournament {
     {
         this.id = input.getInt("id");
         this.name = input.getString("name");
-        this.uses_verification = (input.getInt("uses_verification") == 1);
         this.allow_resubmit = (input.getInt("allow_resubmit") == 1);
         this.allow_resubmit_on = (input.getInt("allow_resubmit_on") == 1);
         this.game_on = (input.getInt("game_on") == 1);
@@ -195,7 +193,36 @@ public class Tournament {
     }
 
 
-    private void save_state ()
+    /**
+     * Nick Sifniotis u5809912
+     * 8/9/2015
+     *
+     * Construct an empty tournament object.
+     *
+     */
+    private void load_state ()
+    {
+        this.id = -1;
+        this.name = "";
+        this.allow_resubmit = false;
+        this.allow_resubmit_on = false;
+        this.game_on = false;
+        this.verification_class = "";
+        this.player_interface_class = "";
+        this.num_players = 0;
+        this.timeout = 0;
+        this.game = null;           // anywhere in which game is used, check for null.
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Saves the current state of the object into the database.
+     *
+     */
+    public void SaveState ()
     {
         SystemState.Log("Saving state for tournament " + this.id);
 
@@ -225,7 +252,6 @@ public class Tournament {
                     + "', game_id = '" + this.game.PrimaryKey()
                     + ", player_interface_class = '" + this.player_interface_class
                     + "', verification_class = '" + this.verification_class
-                    + "', uses_verification = " + DBManager.BoolValue(this.uses_verification)
                     + ", allow_resubmit = " + DBManager.BoolValue(this.allow_resubmit)
                     + ", allow_resubmit_on = " + DBManager.BoolValue(this.allow_resubmit_on)
                     + ", game_on = " + DBManager.BoolValue(this.game_on)
@@ -239,14 +265,18 @@ public class Tournament {
         }
         else
         {
-            query = "INSERT INTO game_type (name, min_players, max_players, engine_class, viewer_class, uses_viewer)"
+            query = "INSERT INTO tournament (name, game_id, player_interface_class, verification_class,"
+                    + " allow_resubmit, allow_resubmit_on, game_on, num_players, timeout)"
                     + " VALUES ("
                     + "'" + this.name + "'"
-                    + ", " + this.min_players
-                    + ", " + this.max_players
-                    + ", '" + this.engine_class + "'"
-                    + ", '" + this.viewer_class + "'"
-                    + ", " + DBManager.BoolValue(this.uses_viewer)
+                    + ", " + this.game.PrimaryKey()
+                    + "'" + this.player_interface_class + "'"
+                    + "'" + this.verification_class + "'"
+                    + ", " + DBManager.BoolValue(this.allow_resubmit)
+                    + ", " + DBManager.BoolValue(this.allow_resubmit_on)
+                    + ", " + DBManager.BoolValue(this.game_on)
+                    + ", " + this.num_players
+                    + ", " + this.timeout
                     + ")";
 
             if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
@@ -254,29 +284,6 @@ public class Tournament {
             // we do want to know what the primary key of this new record is.
             this.id = DBManager.ExecuteReturnKey(query);
         }
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 8/9/2015
-     *
-     * Construct an empty tournament object.
-     *
-     */
-    private void load_state ()
-    {
-        this.id = -1;
-        this.name = "";
-        this.uses_verification = false;
-        this.allow_resubmit = false;
-        this.allow_resubmit_on = false;
-        this.game_on = false;
-        this.verification_class = "";
-        this.player_interface_class = "";
-        this.num_players = 0;
-        this.timeout = 0;
-        this.game = null;           // anywhere in which game is used, check for null.
     }
 
 
@@ -299,7 +306,6 @@ public class Tournament {
     public boolean AllowResubmitOff () { return this.allow_resubmit; }
     public boolean AllowResubmitOn () { return this.allow_resubmit_on; }
     public boolean GameOn () { return this.game_on; }
-    public boolean UsesVerification () { return this.uses_verification; }
 
 
     /**
@@ -441,4 +447,19 @@ public class Tournament {
         return this.submission_class;
     }
     public String SubmissionMethod () { return this.submission_method; }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Returns a number that represents an available position in the tournament fixture.
+     * Throws a bitchy exception if there is no room left in the tournament.
+     *
+     * @return a number from 0 to num_spots - 1, or throws an exception
+     */
+    public int GetNextAvailableSlot () throws Exception
+    {
+        return 1;
+    }
 }
