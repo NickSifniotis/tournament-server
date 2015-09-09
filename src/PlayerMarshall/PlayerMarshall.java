@@ -1,5 +1,6 @@
 package PlayerMarshall;
 
+import AcademicsInterface.IVerification;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
@@ -80,31 +81,65 @@ public class PlayerMarshall extends Application {
      */
     private static void ProcessSingleSubmission (File submission, Tournament tournament)
     {
-
+        IVerification verifier = tournament.Verification();
+        File extracted_submission = verifier.ExtractSubmission(submission);
+        SubmissionMetadata metadata = verifier.ExtractMetaData(submission);
 
         boolean can_be_added = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
         boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(submission.getName(), tournament) == null);
 
+
+        // the first barrier - are we accepting submissions?
         if (!can_be_added)
         {
             if (is_new && tournament.GameOn())
             {
-                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, "");
+                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email);
                 return;
             }
             else
             {
                 if (tournament.GameOn())
                 {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, "");
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, metadata.team_email);
                     return;
                 }
                 else
                 {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, "");
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, metadata.team_email);
                     return;
                 }
             }
+        }
+
+
+        // the second barrier - is this submission a valid one?
+        if (!verifier.VerifySubmission(extracted_submission))
+        {
+            SubmissionFailure(submission, EmailTypes.FAILED_VALIDATION, metadata.team_email);
+            return;
+        }
+
+
+        int submission_slot = 0;
+        // If this is a new player, make sure that there is room in the tournament for them.
+        if (is_new)
+        {
+            try
+            {
+                submission_slot = tournament.GetNextAvailableSlot();
+            }
+            catch (Exception e)
+            {
+                SubmissionFailure(submission, EmailTypes.NO_SLOTS_AVAILABLE, metadata.team_email);
+                return;
+            }
+        }
+
+        // If this is an existing player, and we have made it this far, retire the old player.
+        if (!is_new)
+        {
+
         }
     }
 
