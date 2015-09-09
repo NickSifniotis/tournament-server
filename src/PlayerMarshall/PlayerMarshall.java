@@ -85,19 +85,31 @@ public class PlayerMarshall extends Application {
         File extracted_submission = verifier.ExtractSubmission(submission);
         SubmissionMetadata metadata = verifier.ExtractMetaData(submission);
 
-        boolean can_be_added = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
-        boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(submission.getName(), tournament) == null);
+        boolean can_resubmit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
+        boolean can_submit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : true;
+        boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(metadata.team_name, tournament) == null);
+
+        
+        // the zeroth barrier - no metadata, no proceeding.
+        if (metadata.team_name.equals(""))
+        {
+            SubmissionFailure(submission, EmailTypes.NO_METADATA, "");
+            return;
+        }
 
 
         // the first barrier - are we accepting submissions?
-        if (!can_be_added)
+        if (is_new)
         {
-            if (is_new && tournament.GameOn())
+            if (!can_submit)
             {
                 SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email);
                 return;
             }
-            else
+        }
+        else
+        {
+            if (!can_resubmit)
             {
                 if (tournament.GameOn())
                 {
@@ -141,7 +153,7 @@ public class PlayerMarshall extends Application {
         if (!is_new)
         {
             // @TODO: More retirement code here. The games and the logs!
-            PlayerSubmission.GetActiveWithOriginalFilename(submission.getName(), tournament).Retire();
+            PlayerSubmission.GetActiveWithOriginalFilename(metadata.team_name, tournament).Retire();
         }
 
 
@@ -172,7 +184,8 @@ public class PlayerMarshall extends Application {
         // add the player to the tournament
         tournament.AddPlayerToFixture(submission_slot, new_submission);
 
-
+        //@TODO: Avatar code goes here
+        new_submission.setAvatar("");
         // last but not least, go ahead and signal that this player is good to go
         new_submission.Ready();
     }

@@ -12,6 +12,7 @@ public class Emailer
     //@TODO: I am certain that more parameters will be needed in that list of arguments
     public static void SendEmail (EmailTypes type, String destination_address)
     {
+        System.out.println ("Failure: " + type.name() + ":" + destination_address);
         return;
     }
 }

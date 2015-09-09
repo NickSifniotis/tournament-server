@@ -20,11 +20,8 @@ public class SystemState {
     // new directory structure
     public static final String engines_folder = "game_engines/";
     public static final String interfaces_folder = "player_interfaces/";
-
-    // old directory structure
-    public static final String marshalling_folder = "src/marshalling/";
-    public static final String input_folder = "src/submissions/inputs/";
-    public static final String sources_folder = "src/sources/";
+    public static final String input_folder = "submissions/";
+    public static final String marshalling_folder = "marshalling/";
 
 
 
