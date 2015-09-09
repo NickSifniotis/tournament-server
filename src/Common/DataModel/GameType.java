@@ -344,8 +344,8 @@ public class GameType
         if (exists)
         {
             query = "UPDATE game_type SET name = '" + this.name
-                    + "', min_players = '" + this.min_players
-                    + ", max_players = '" + this.max_players
+                    + "', min_players = " + this.min_players
+                    + ", max_players = " + this.max_players
                     + ", engine_class = '" + this.engine_class
                     + "', viewer_class = '" + this.viewer_class
                     + "', uses_viewer = " + DBManager.BoolValue(this.uses_viewer)

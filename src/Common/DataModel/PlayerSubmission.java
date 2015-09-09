@@ -2,7 +2,7 @@ package Common.DataModel;
 
 import Common.DBManager;
 import Common.SystemState;
-import PlayerMarshall.SubmissionMetadata;
+import AcademicsInterface.SubmissionMetadata;
 
 import java.io.File;
 import java.sql.Connection;

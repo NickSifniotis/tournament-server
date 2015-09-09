@@ -1,4 +1,4 @@
-package PlayerMarshall;
+package AcademicsInterface;
 
 /**
  * Created by nsifniotis on 9/09/15.

@@ -1,6 +1,7 @@
 package PlayerMarshall;
 
 import AcademicsInterface.IVerification;
+import AcademicsInterface.SubmissionMetadata;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
@@ -36,7 +37,7 @@ public class PlayerMarshall extends Application {
     private static Label log_label;
     private static Label tourney_label;
     private static Label player_label;
-    
+
 
     /**
      * Nick Sifniotis u5809912
