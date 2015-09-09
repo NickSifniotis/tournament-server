@@ -456,10 +456,47 @@ public class Tournament {
      * Returns a number that represents an available position in the tournament fixture.
      * Throws a bitchy exception if there is no room left in the tournament.
      *
-     * @return a number from 0 to num_spots - 1, or throws an exception
+     * @return the prikey of the available slot, or throws an exception if none exist..
      */
     public int GetNextAvailableSlot () throws Exception
     {
-        return 1;
+        String query = "SELECT * FROM fixture_slot WHERE tournament_id = " + this.id + " AND submission_id = 0";
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        int slot_key = 0;
+
+        if (res != null)
+        {
+            res.next();
+            slot_key = res.getInt("id");
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+            throw new Exception ("No room left in tournament.");
+        }
+
+        if (slot_key == 0)
+            throw new Exception ("No room left in tournament.");
+
+        return slot_key;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Adds this submission to the tournament.
+     * slot_key is the value returned by GetNextAvailableSlot() above.
+     *
+     * @param slot_key
+     * @param player
+     */
+    public void AddPlayerToFixture (int slot_key, PlayerSubmission player)
+    {
+        String query = "UPDATE fixture_slot SET submission_id = " + player.PrimaryKey() + " WHERE id = " + slot_key;
+        DBManager.Execute(query);
     }
 }

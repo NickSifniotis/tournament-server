@@ -36,8 +36,7 @@ public class PlayerMarshall extends Application {
     private static Label log_label;
     private static Label tourney_label;
     private static Label player_label;
-
-
+    
 
     /**
      * Nick Sifniotis u5809912
@@ -169,6 +168,10 @@ public class PlayerMarshall extends Application {
         }
 
 
+        // add the player to the tournament
+        tournament.AddPlayerToFixture(submission_slot, new_submission);
+
+
         // last but not least, go ahead and signal that this player is good to go
         new_submission.Ready();
     }
@@ -193,78 +196,26 @@ public class PlayerMarshall extends Application {
         for (Tournament tournament: tourneys)
         {
             File [] files = GetNewSubmissions(tournament);
-            for (File f: files)
+            for (File submission: files)
             {
-                LogMessage("Processing " + f.getName() + " for tournament " + tournament.Name());
-                if (tournament.Verification().VerifySubmission(f))
-                {
-                    // this submission is good, so lets move it to marshalling and get ready to rumble
-                    // has this player been submitted before? We will know because submissions are identified
-                    // by filenames.
-
-                    String original = f.getName();
-                    PlayerSubmission oldie = PlayerSubmission.GetActiveWithOriginalFilename(original, tournament);
-
-                    if (oldie != null)
-                    {
-                        if (tournament.GameOn())
-                        {
-                            if (!tournament.AllowResubmitOn())
-                            {
-                                //@TODO: Email. And again below
-                                SubmissionFailure(f, EmailTypes.NO_RESUBMIT_ON, "");
-                                return;
-                            }
-                        }
-                        else
-                        {
-                            if (!tournament.AllowResubmitOff())
-                            {
-                                SubmissionFailure(f, EmailTypes.NO_RESUBMIT_OFF, "");
-                                return;
-                            }
-                        }
-
-                    }
-
-                    PlayerSubmission new_submission = new PlayerSubmission(true);
-                    new_submission.setName("Default Name");
-                    new_submission.setEmail("Default Email");
-                    new_submission.setTournament(1);
-
-
-                    // copy the submission over to the marshalling folder.
-                    try
-                    {
-                        Files.copy(f.toPath(), Paths.get(new_submission.MarshalledSource()));
-                        f.delete();
-                    }
-                    catch (Exception e)
-                    {
-                        String error = "PlayerMarshall.ProcessNewSubmissions - Error copying player file to marshalling: " + e;
-                        SystemState.Log(error);
-
-                        if (SystemState.DEBUG)
-                            System.out.println (error);
-                    }
-
-                    // last but not least, go ahead and signal that this player is good to go
-                    new_submission.Ready();
-
-                    // @TODO: Add the player to the games fixture
-                }
-                else
-                {
-                    // failed the verification test. Fuck. Now I have to send a dirty email
-                    //@TODO: Email address again
-                    SubmissionFailure(f, EmailTypes.FAILED_VALIDATION, "");
-                }
+                LogMessage("Processing " + submission.getName() + " for tournament " + tournament.Name());
+                ProcessSingleSubmission(submission, tournament);
             }
         }
 
         tourney_label.setText(String.valueOf(tourneys.length));
     }
 
+
+    /**
+     * Nick Sifniotis
+     * 9/9/2015
+     *
+     * Sets up the PlayerMarshall GUI.
+     *
+     * @param primaryStage
+     * @throws Exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception
     {
