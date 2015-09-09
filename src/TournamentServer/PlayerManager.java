@@ -42,7 +42,7 @@ public class PlayerManager
         try
         {
             this.my_player = tournament.PlayerInterface();
-            this.my_player.InitialisePlayer(player.MarshalledSource(), tournament.SubmissionClassName(), tournament.SubmissionMethod());
+            this.my_player.InitialisePlayer(player.MarshalledSource());
         }
         catch (Exception e)
         {

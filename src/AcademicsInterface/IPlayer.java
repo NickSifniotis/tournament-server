@@ -31,7 +31,7 @@ public interface IPlayer {
      * @return  true if the player has loaded successfully, false if there was a problem connecting
      * to the submission
      */
-    boolean InitialisePlayer (String path_name, String class_name, String method_name);
+    boolean InitialisePlayer (String path_name);
 
 
     /**

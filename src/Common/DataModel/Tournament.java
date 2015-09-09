@@ -25,16 +25,6 @@ import java.util.List;
  */
 public class Tournament {
 
-    private String submission_folder;
-
-;
-    private String sources_jarfile;
-    private String game_engine_class;
-
-    private String submission_class;
-    private String submission_method;
-
-    // the new data model. Wean the system off every entry above this line.
     private int id;
     private String name;
     private boolean game_on;
@@ -295,11 +285,6 @@ public class Tournament {
      *
      * @return
      */
-    public String SubmissionsPath()
-    {
-        return this.submission_folder;
-    }
-
     public String Name() { return this.name; }
     public int PrimaryKey () { return this.id; }
     public int Timeout () { return this.timeout; }
@@ -432,21 +417,6 @@ public class Tournament {
 
         return res;
     }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 6/9/2015
-     *
-     * Accessor functions.
-     *
-     * @return various values
-     */
-    public String SubmissionClassName ()
-    {
-        return this.submission_class;
-    }
-    public String SubmissionMethod () { return this.submission_method; }
 
 
     /**

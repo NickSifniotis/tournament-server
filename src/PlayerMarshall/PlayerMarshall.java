@@ -51,7 +51,7 @@ public class PlayerMarshall extends Application {
      */
     public static File [] GetNewSubmissions (Tournament t)
     {
-        String full_path = SystemState.input_folder + t.SubmissionsPath() + "/";
+        String full_path = SystemState.input_folder + t.PrimaryKey() + "/";
         SystemState.Log("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
 
         File folder = new File (full_path);
