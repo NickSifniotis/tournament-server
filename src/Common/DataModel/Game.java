@@ -1,0 +1,241 @@
+package Common.DataModel;
+
+import Common.DBManager;
+import Common.SystemState;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+/**
+ * Created by nsifniotis on 9/09/15.
+ *
+ * Data model object for the Game database table.
+ *
+ * DB schema is as follows
+ *
+ * id               int prikey
+ * round_number     integer
+ * game_number      integer
+ * tournament_id    integer fk
+ * played           boolean
+ *
+ */
+public class Game
+{
+    private int id;
+    private int round_number;
+    private int game_number;
+    private Tournament tournament;
+    private boolean played;
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Empty constructor for an empty state.
+     */
+    public Game ()
+    {
+        this.loadState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * An empty constructor, but one that saves itself to the database.
+     * Used when we need to get a prikey for a new game.
+     *
+     * @param create
+     */
+    public Game (boolean create)
+    {
+        this.loadState();
+
+        if (create)
+            this.SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Create this object from the given resultset inputs.
+     * Just like the other four datamodel objects...
+     *
+     * @param input - resultset from the database.
+     *
+     */
+    public Game (ResultSet input)
+    {
+        try
+        {
+            this.loadState(input);
+        }
+        catch (Exception e)
+        {
+            String error = "Game.constructor (resultset): Error creating from resultset input: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Last one I swear. Construct by primary key. Create a blank new object if it fails.
+     *
+     * @param id - the prikey to find.
+     */
+    public Game (int id)
+    {
+        String query;
+
+        if (id > 0)
+        {
+            query =  "SELECT * FROM game WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                try
+                {
+                    res.next();
+                    this.loadState(res);
+                    DBManager.disconnect(res);          // disconnect by result
+                }
+                catch (Exception e)
+                {
+                    String error = "Game constructor (game_id) - SQL error retrieving player data. " + e;
+                    SystemState.Log(error);
+
+                    if (SystemState.DEBUG)
+                        System.out.println (error);
+
+                    this.loadState();
+                }
+            }
+            else
+            {
+                this.loadState();
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+    }
+
+    
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Default object creation. Set all things to nothing.
+     * Note that any method that uses the tournament property will
+     * need to check for nulls.
+     *
+     */
+    private void loadState ()
+    {
+        this.id = 0;
+        this.round_number = 0;
+        this.game_number = 0;
+        this.played = false;
+        this.tournament = null;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * This is like the fifth time I have had to implement this method.
+     * My head is screaming 'inheritance!'
+     *
+     * But how do I make the method work with database schemas and
+     * method names of indeterminate nature?
+     *
+     * That's probably a problem to tackle *after* the Blokus tournament.
+     *
+     * @param input - the ResultSet holding the data blah blah blah. Look at my other four comment
+     *              sets in my other four implementations of this ffs.
+     */
+    private void loadState (ResultSet input) throws SQLException
+    {
+        this.id = input.getInt("id");
+        this.round_number = input.getInt ("round_number");
+        this.game_number = input.getInt ("game_number");
+        this.played = (input.getInt("played") == 1);
+        this.tournament = new Tournament(input.getInt("tournament_id"));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Inheritance!!! The lack of it is hurting me. Althogh I can see no reason why I should use it,
+     * it's not like I'll be creating collections of random DataModel objects ...
+     *
+     */
+    public void SaveState ()
+    {
+        SystemState.Log("Saving state for game " + this.id);
+
+
+        // is this submission already in the database?
+        boolean exists = false;
+        String query;
+
+        if (this.id <= 0) {
+            query = "SELECT * FROM game WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                exists = true;
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        if (exists)
+        {
+            query = "UPDATE game SET round_number = " + this.round_number
+                    + ", game_number = " + this.game_number
+                    + ", tournament_id = " + this.tournament.PrimaryKey()
+                    + ", played = " + DBManager.BoolValue(this.played)
+                    + " WHERE id = " + this.id;
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            DBManager.Execute(query);
+        }
+        else
+        {
+            query = "INSERT INTO game (tournament_id, round_number, game_number, played)"
+                    + " VALUES ("
+                    + this.tournament.PrimaryKey()
+                    + ", " + this.round_number
+                    + ", " + this.game_number
+                    + ", " + DBManager.BoolValue(this.played)
+                    + ")";
+
+            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
+
+            // we do want to know what the primary key of this new record is.
+            this.id = DBManager.ExecuteReturnKey(query);
+        }
+    }
+}
