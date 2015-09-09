@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -159,7 +160,7 @@ public class Game
 
         String tournament_clause = (tournament == null) ? "" : " AND g.tournament_id = " + tournament.PrimaryKey();
         String exclusion_clause = "";
-        String query = "";
+        String query;
 
         if (playable_only)
         {
@@ -176,7 +177,7 @@ public class Game
 
             if (shitty != null)
             {
-                List<Integer> bad_games = new ArrayList<>();
+                List<Integer> bad_games = new LinkedList<>();
                 try
                 {
                     while (shitty.next())
@@ -235,7 +236,7 @@ public class Game
         {
             DBManager.disconnect(connection);   // disconnect by connection
         }
-        
+
         Game [] temp = new Game[res.size()];
         return res.toArray(temp);
     }

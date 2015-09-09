@@ -6,9 +6,6 @@ import AcademicsInterface.IViewer;
 import Common.DBManager;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
-
-import java.io.File;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -17,14 +14,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Created by nsifniotis on 31/08/15.
  *
  * Data model for the tournaments themselves
  *
  */
-public class Tournament {
-
+public class Tournament
+{
     private int id;
     private String name;
     private boolean game_on;
@@ -94,7 +92,7 @@ public class Tournament {
      *
      * Construct this tournament object using the provided dataset.
      *
-     * @param input
+     * @param input - the record set from the database
      */
     public Tournament (ResultSet input)
     {
@@ -121,13 +119,32 @@ public class Tournament {
      * Reads all the tournaments from the database, and returns an array
      * of Tournament objects initialised to these values.
      *
-     * @return
+     * @return all of the tournaments!
      */
-    public static Tournament[] LoadAll () {
+    public static Tournament[] LoadAll ()
+    {
+        return LoadAll(false);
+    }
+
+
+    /**
+     * Nick Sifniotis 5809912
+     * 9/9/2015
+     *
+     * Returns all of the tournaments, or possibly a subset of the tournaments.
+     *
+     * @param active_only - whether or not to return only those tourneys that are GameOn()
+     * @return all of the tournaments! Or only some
+     */
+    public static Tournament[] LoadAll (boolean active_only)
+    {
         SystemState.Log("Tournament.LoadAll - attempting to load all");
         List<Tournament> temp = new ArrayList<>();
 
         String query = "SELECT * FROM tournament";
+        if (active_only)
+            query += " WHERE game_on = 1";
+
         Connection con = DBManager.connect();
         ResultSet results = DBManager.ExecuteQuery(query, con);
         try
@@ -283,7 +300,7 @@ public class Tournament {
      *
      * Accessor functions
      *
-     * @return
+     * @return a whole bunch of different things
      */
     public String Name() { return this.name; }
     public int PrimaryKey () { return this.id; }
@@ -383,7 +400,7 @@ public class Tournament {
      *
      * But dont worry, provided that you haven't fucked anything up it probably won't.
      *
-     * @return
+     * @return an instance of the IVerification implementation
      */
     public IVerification Verification ()
     {
@@ -433,7 +450,7 @@ public class Tournament {
         String query = "SELECT * FROM fixture_slot WHERE tournament_id = " + this.id + " AND submission_id = 0";
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
-        int slot_key = 0;
+        int slot_key;
 
         if (res != null)
         {
@@ -461,8 +478,8 @@ public class Tournament {
      * Adds this submission to the tournament.
      * slot_key is the value returned by GetNextAvailableSlot() above.
      *
-     * @param slot_key
-     * @param player
+     * @param slot_key - the slot key to assign the player to
+     * @param player - the player to assign to that slot
      */
     public void AddPlayerToFixture (int slot_key, PlayerSubmission player)
     {
