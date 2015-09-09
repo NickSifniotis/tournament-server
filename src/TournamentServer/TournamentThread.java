@@ -77,6 +77,15 @@ public class TournamentThread extends Thread
 
         while (!finished)
         {
+            // clear out any games from the pool that have finished.
+            for (int i = 0; i < thread_pool.length; i ++)
+                if (thread_pool[i] != null)
+                    if (thread_pool[i].finished)
+                    {
+                        thread_pool[i].game.
+                    }
+
+
             // there's no point in trying to find new games if the thread pool is all full
             int running_games = 0;
             int available_spot = -1;
@@ -158,7 +167,10 @@ public class TournamentThread extends Thread
      */
     private void launch_game (Game game, int thread)
     {
-        PlayerManager[] players = null;
+        PlayerSubmission[] players = game.GetPlayers();
+        //@TODO Both the playersubmission and game datamodel classes need functions
+        // to switch them on and off - ready for players, played for games. Both on and off, for both, trust me
+        
         thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), players);
     }
 }

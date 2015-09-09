@@ -2,6 +2,7 @@ package Common.DataModel;
 
 import Common.DBManager;
 import Common.SystemState;
+import TournamentServer.PlayerManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -371,4 +372,59 @@ public class Game
     public int PrimaryKey () { return this.id; }
     public Tournament Tournament () { return this.tournament; }
     public int RoundNumber () { return this.round_number; }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Gets the players that are fixtured to play this game.
+     *
+     * @return the players' submissions.
+     */
+    public PlayerSubmission[] GetPlayers()
+    {
+        List<PlayerSubmission> results = new LinkedList<>();
+
+        String query = "SELECT s.* FROM game g, game_player gp, fixture_slot f, submission s"
+                + " WHERE gp.game_id = g.id"
+                + " AND f.id = gp.fixture_slot_id"
+                + " AND s.id = f.submission_id"
+                + " AND g.id = " + this.id;
+
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        boolean error = false;
+
+        if (res != null)
+        {
+            try
+            {
+                while (res.next())
+                {
+                    if (res.getInt("retired") != 0 || res.getInt("ready") != 1)
+                        error = true;
+                    else
+                        results.add(new PlayerSubmission(res));
+                }
+            }
+            catch (Exception e)
+            {
+                error = true;
+            }
+
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            error = true;
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        if (error)
+            return null;
+
+        PlayerSubmission[] res_array = new PlayerSubmission[results.size()];
+        return results.toArray(res_array);
+    }
 }

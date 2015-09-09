@@ -18,7 +18,7 @@ public class GameManagerChild extends Thread
 {
     public boolean finished;
 
-    private Game game;
+    public Game game; //@TODO this is a quick fix, make an accessor for it
     private IGameEngine engine;
     private PlayerManager[] players;
 
