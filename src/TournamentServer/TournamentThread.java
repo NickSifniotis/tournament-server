@@ -1,5 +1,8 @@
 package TournamentServer;
 
+import Common.DataModel.Game;
+import Common.DataModel.Tournament;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -31,9 +34,15 @@ public class TournamentThread extends Thread
         boolean finished = false;
         while (!finished)
         {
-            // load the current state of the tournaments.
+            // load the current state of the tournaments, and all playable games connected to them.
+            Tournament[] tournaments = Tournament.LoadAll(true);
+            Game[] games = Game.LoadAll(tournaments, true);
+
 
             // those that are going - play some games.
+            for (Game g: games)
+                    System.out.println (g.PrimaryKey());
+
 
             // have we received any messages from the gods?
             Hermes message = winged_messenger.peek();

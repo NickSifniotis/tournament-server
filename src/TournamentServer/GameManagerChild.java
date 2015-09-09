@@ -1,24 +1,25 @@
 package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
+import Common.DataModel.Game;
 import Common.DataModel.Scores;
 import TournamentServer.Exceptions.PlayerMoveException;
 
 /**
  * Created by nsifniotis on 2/09/15.
  *
- * Child thread for executing one instance of a game.
+ * Child thread for executing one instance of a engine.
  *
  * Requires one IGameEngine implementation and an array of
- * PlayerManager objects that correspond to the players of this game.
+ * PlayerManager objects that correspond to the players of this engine.
  *
  */
-public class GameManagerChild extends Thread {
-
+public class GameManagerChild extends Thread
+{
     public boolean finished;
 
-    private int game_id;
-    private IGameEngine game;
+    private Game game;
+    private IGameEngine engine;
     private PlayerManager[] players;
 
 
@@ -28,16 +29,14 @@ public class GameManagerChild extends Thread {
      *
      * The constructor.
      *
-     * The parameters being fed through are not correct. We should be receiving some sort
-     * of Game object record from the data model, not an already instantiated IGameEngine class
-     * @TODO fix that
-     * @param game
-     * @param players
+     * @param game - the game that is being played
+     * @param engine - the game engine that will be used to drive it
+     * @param players - the players who will be competing in this game.
      */
-    public GameManagerChild (int game_id, IGameEngine game, PlayerManager[] players)
+    public GameManagerChild (Game game, IGameEngine engine, PlayerManager[] players)
     {
-        this.game_id = game_id;
         this.game = game;
+        this.engine = engine;
         this.players = players;
     }
 
@@ -71,15 +70,15 @@ public class GameManagerChild extends Thread {
     {
         // fuck yeah, let's RUN THIS GAME
 
-        Object game_state = game.InitialiseGame(players.length);
-        Scores game_scores = new Scores (game_id, this.players);
+        Object game_state = engine.InitialiseGame(players.length);
+        Scores game_scores = new Scores (game.PrimaryKey(), this.players);
 
-        while (game.AreYouStillAlive(game_state) && game_scores.GameOn())
+        while (engine.AreYouStillAlive(game_state) && game_scores.GameOn())
         {
-            Object move = null;
+            Object move;
             try
             {
-                move = players[game.GetCurrentPlayer(game_state)].nextMove(game_state);
+                move = players[engine.GetCurrentPlayer(game_state)].nextMove(game_state);
             }
             catch (PlayerMoveException e)
             {
@@ -87,7 +86,7 @@ public class GameManagerChild extends Thread {
                 // they have nothing to say about the validity of the move that was returned. That
                 // is a separate test...
 
-                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
+                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -97,7 +96,7 @@ public class GameManagerChild extends Thread {
             // who knows. If there's a way to screw up, you can be sure Java will find it
             if (move == null)
             {
-                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
+                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -105,9 +104,9 @@ public class GameManagerChild extends Thread {
 
             // this is more like it
             // fuck you cheats
-            if (!game.IsLegitimateMove(game_state, move))
+            if (!engine.IsLegitimateMove(game_state, move))
             {
-                game_scores.Disqualify(game.GetCurrentPlayer(game_state));
+                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
                 return;
@@ -115,11 +114,9 @@ public class GameManagerChild extends Thread {
 
 
             // the move passed the threefold barriers
-            // progress the game.
-            game_state = game.MakeMove(game_state, move);
-            game_scores.Update (game.ScoreGame(game_state));
-
-            System.out.println (game_scores);
+            // progress the engine.
+            game_state = engine.MakeMove(game_state, move);
+            game_scores.Update (engine.ScoreGame(game_state));
         }
 
     }

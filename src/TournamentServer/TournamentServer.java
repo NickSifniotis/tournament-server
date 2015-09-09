@@ -1,5 +1,7 @@
 package TournamentServer;
 
+
+import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -15,11 +17,25 @@ public class TournamentServer
         // begin by firing up the child process that manages all the game work.
         TournamentThread child = new TournamentThread();
         BlockingQueue <Hermes> messenger = child.GetHermes();
+        Scanner in = new Scanner (System.in);
 
-        child.run();
+        child.start();
 
 
+        boolean finished = false;
+        while (!finished)
+        {
+            System.out.println ("Command:");
+            String command = in.nextLine();
 
+            Hermes message = new Hermes ();
+            message.message = command;
+
+            messenger.add (message);
+
+            if (command.equals("Q"))
+                finished = true;
+        }
     }
 
     public static void main(String[] args)

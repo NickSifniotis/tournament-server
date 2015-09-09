@@ -1,13 +1,10 @@
 package PlayerMarshall;
 
 
-import AcademicsInterface.IVerification;
 import Common.DataModel.Game;
 import Common.DataModel.Tournament;
 import Common.SystemState;
 
-import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -22,6 +19,6 @@ public class tester {
 
         Tournament[] tournaments = Tournament.LoadAll();
 
-        Game.LoadAll(tournaments[0], true);
+        Game.LoadAll(tournaments, true);
     }
 }

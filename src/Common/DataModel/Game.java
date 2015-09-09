@@ -149,18 +149,29 @@ public class Game
      * If playable_only is true, return only those games that can be played now.
      * That test is simply Game.played == false && all players for that game are Ready().
      *
-     * @param tournament - the tournament to query, or null for all tournaments.
+     * @param tournaments - the tournaments to query, or null for all tournaments.
      * @param playable_only - true if we are only interested in playable games.
      *
      * @return an array of Game objects that match the criteria
      */
-    public static Game [] LoadAll (Tournament tournament, boolean playable_only)
+    public static Game [] LoadAll (Tournament[] tournaments, boolean playable_only)
     {
         List<Game> res = new ArrayList<>();
 
-        String tournament_clause = (tournament == null) ? "" : " AND g.tournament_id = " + tournament.PrimaryKey();
+        String tournament_clause = "";
         String exclusion_clause = "";
         String query;
+
+        // if we have been given a set of tournaments to poll from, build the appropriate SQL.
+        if (tournaments != null)
+        {
+            tournament_clause = " AND g.tournament_id IN (0";
+            for (Tournament tournament: tournaments)
+                tournament_clause += ", " + tournament.PrimaryKey();
+
+            tournament_clause += ")";
+        }
+
 
         if (playable_only)
         {
@@ -347,4 +358,16 @@ public class Game
             this.id = DBManager.ExecuteReturnKey(query);
         }
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Various accessor functions.
+     *
+     * @return - whatever it is that is being asked for.
+     */
+    public int PrimaryKey () { return this.id; }
+    public int RoundNumber () { return this.round_number; }
 }
