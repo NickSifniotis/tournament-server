@@ -369,5 +369,6 @@ public class Game
      * @return - whatever it is that is being asked for.
      */
     public int PrimaryKey () { return this.id; }
+    public Tournament Tournament () { return this.tournament; }
     public int RoundNumber () { return this.round_number; }
 }
