@@ -6,6 +6,8 @@ import Common.SystemState;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nsifniotis on 9/09/15.
@@ -49,7 +51,7 @@ public class Game
      * An empty constructor, but one that saves itself to the database.
      * Used when we need to get a prikey for a new game.
      *
-     * @param create
+     * @param create - true if we want to save this new record in the database.
      */
     public Game (boolean create)
     {
@@ -132,7 +134,113 @@ public class Game
         }
     }
 
-    
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Returns an array of Game objects.
+     *
+     * If tournament is provided, it returns every game in the database for that
+     * particular tournament. If tournament is null, it returns every game
+     * in the database.
+     *
+     * If playable_only is true, return only those games that can be played now.
+     * That test is simply Game.played == false && all players for that game are Ready().
+     *
+     * @param tournament - the tournament to query, or null for all tournaments.
+     * @param playable_only - true if we are only interested in playable games.
+     *
+     * @return an array of Game objects that match the criteria
+     */
+    public static Game [] LoadAll (Tournament tournament, boolean playable_only)
+    {
+        List<Game> res = new ArrayList<>();
+
+        String tournament_clause = (tournament == null) ? "" : " AND g.tournament_id = " + tournament.PrimaryKey();
+        String exclusion_clause = "";
+        String query = "";
+
+        if (playable_only)
+        {
+            // execute this sik little query to establish which games we should exclude from the final set.
+            query = "SELECT DISTINCT g.id FROM game g, fixture_slot f, game_player gp, submission s"
+                    + " WHERE g.played = 1 OR (g.id = gp.game_id"
+                    + " AND gp.fixture_slot_id = f.id"
+                    + " AND ((f.submission_id = s.id"
+                        + " AND (s.ready = 0 OR s.retired = 1)"
+                        + " ) OR (f.submission_id = 0)))";
+
+            Connection connection = DBManager.connect();
+            ResultSet shitty = DBManager.ExecuteQuery(query, connection);
+
+            if (shitty != null)
+            {
+                List<Integer> bad_games = new ArrayList<>();
+                try
+                {
+                    while (shitty.next())
+                    {
+                        bad_games.add(shitty.getInt("id"));
+                    }
+
+                    DBManager.disconnect(shitty);          // disconnect by result
+                }
+                catch (Exception e)
+                {
+                    String error = "Game.LoadAll (game_id) - SQL error retrieving game data. " + e;
+                    SystemState.Log(error);
+
+                    if (SystemState.DEBUG)
+                        System.out.println (error);
+                }
+
+                exclusion_clause = " AND g.id NOT IN (0";
+                for (int i: bad_games)
+                    exclusion_clause += ", " + i;
+
+                exclusion_clause += ")";
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause;
+        Connection connection = DBManager.connect();
+        ResultSet records = DBManager.ExecuteQuery(query, connection);
+
+        if (records != null)
+        {
+            try
+            {
+                while (records.next())
+                {
+                    res.add(new Game(records));
+                }
+
+                DBManager.disconnect(records);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "Game.LoadAll (game_id) - SQL error retrieving game data. " + e;
+                SystemState.Log(error);
+
+                if (SystemState.DEBUG)
+                    System.out.println (error);
+            }
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+        
+        Game [] temp = new Game[res.size()];
+        return res.toArray(temp);
+    }
+
+
     /**
      * Nick Sifniotis u5809912
      * 9/9/2015
