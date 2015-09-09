@@ -136,11 +136,41 @@ public class PlayerMarshall extends Application {
             }
         }
 
+
         // If this is an existing player, and we have made it this far, retire the old player.
         if (!is_new)
         {
-
+            // @TODO: More retirement code here. The games and the logs!
+            PlayerSubmission.GetActiveWithOriginalFilename(submission.getName(), tournament).Retire();
         }
+
+
+        // create the new submission
+        PlayerSubmission new_submission = new PlayerSubmission(true);
+        new_submission.SetMetaData(metadata);
+        new_submission.setTournament(tournament.PrimaryKey());
+
+
+        // move the extracted source to the marshalling folder.
+        // copy the submission over to the marshalling folder.
+        try
+        {
+            Files.copy(extracted_submission.toPath(), Paths.get(new_submission.MarshalledSource()));
+            Files.deleteIfExists(extracted_submission.toPath());
+            Files.deleteIfExists(submission.toPath());
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+
+
+        // last but not least, go ahead and signal that this player is good to go
+        new_submission.Ready();
     }
 
 
@@ -194,8 +224,7 @@ public class PlayerMarshall extends Application {
                                 return;
                             }
                         }
-                        // @TODO: More retirement code here. The games and the logs!
-                        oldie.Retire();
+
                     }
 
                     PlayerSubmission new_submission = new PlayerSubmission(true);

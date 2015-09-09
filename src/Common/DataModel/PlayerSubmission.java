@@ -2,6 +2,7 @@ package Common.DataModel;
 
 import Common.DBManager;
 import Common.SystemState;
+import PlayerMarshall.SubmissionMetadata;
 
 import java.io.File;
 import java.sql.Connection;
@@ -14,8 +15,22 @@ import java.sql.SQLException;
  * This class represents one player submission for a tournament.
  * As well as holding the data, this class interfaces with the database layer
  * to load and save its own state (as directed ..)
+ *
+ * Database schema
+ * id                   prikey int
+ * tournament_id        int
+ * team_name            varchar
+ * team_email           varchar
+ * team_motto           varchar
+ * team_avatar          varchar
+ * ready                boolean
+ * disqualified         int
+ * retired              boolean
+ * original_filename    varchar
+ *
  */
-public class PlayerSubmission {
+public class PlayerSubmission
+{
     private int id;
     private int tournament_id;
 
@@ -170,6 +185,25 @@ public class PlayerSubmission {
         disqualified_count = 0;
         ready = false;
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 9/9/2015
+     *
+     * Sets the metadata of this submission.
+     *
+     * @param data - the data extracted using IVerification.ExtractMetaData
+     */
+    public void SetMetaData (SubmissionMetadata data)
+    {
+        this.setName(data.team_name);
+        this.setAvatar(data.team_picture);
+        this.setEmail(data.team_email);
+        this.setMotto(data.team_motto);
+        this.setSubmissionKey(data.team_name);      //@TODO: Is this really necessary?
+    }
+
 
     /**
      * Nick Sifniotis u5809912

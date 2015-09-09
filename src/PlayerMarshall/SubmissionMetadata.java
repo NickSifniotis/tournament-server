@@ -8,8 +8,8 @@ package PlayerMarshall;
  */
 public class SubmissionMetadata
 {
-    public String team_name;
-    public String team_email;
-    public String team_picture;
-    public String team_motto;
+    public String team_name = "";
+    public String team_email = "";
+    public String team_picture = "";
+    public String team_motto = "";
 }
