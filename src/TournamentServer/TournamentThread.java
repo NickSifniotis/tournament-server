@@ -15,6 +15,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  *
  * This thread basically runs the tournaments.
  *
+ * It's trickier than it seems to write this code. Games are spawned off as child
+ * threads, so this thread cannot terminate (in the event of a user shutdown) until
+ * all child threads have terminated - until all games have finished, in other words.
+ *
  */
 public class TournamentThread extends Thread
 {
@@ -22,6 +26,9 @@ public class TournamentThread extends Thread
     private BlockingQueue<Hermes> winged_messenger;
     private GameManagerChild[] thread_pool;
     private int thread_pool_target;
+    private int running_threads;
+    private boolean user_signalled_shutdown;
+    private boolean finished;
 
 
     /**
@@ -54,6 +61,9 @@ public class TournamentThread extends Thread
         this.winged_messenger = new LinkedBlockingQueue<>();
         this.thread_pool_target = thread_pool_target;
         this.thread_pool = new GameManagerChild[thread_pool_target];
+        this.user_signalled_shutdown = false;
+        this.running_threads = 0;
+        this.finished = false;
     }
 
 
@@ -73,12 +83,19 @@ public class TournamentThread extends Thread
     }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Concurrency is a major pain in my arse.
+     *
+     */
     @Override
     public void run ()
     {
-        boolean finished = false;
+        finished = false;
 
-        while (!finished)
+        while (!this.user_signalled_shutdown || this.running_threads > 0)
         {
             // clear out any games from the pool that have finished.
             this.clear_dead_threads();
@@ -100,7 +117,7 @@ public class TournamentThread extends Thread
 
                 // deal with the message
                 if (message.message.equals("Q"))
-                    finished = true;
+                    user_signalled_shutdown = true;
 
                 if (message.message.equals("THREAD_POOL"))
                 {
@@ -127,6 +144,8 @@ public class TournamentThread extends Thread
             catch (InterruptedException e)
             { /* Ignore as we will try sleep again */}
         }
+
+        finished = true;
     }
 
 
@@ -157,18 +176,23 @@ public class TournamentThread extends Thread
      */
     private void launch_new_threads ()
     {
-        // there's no point in trying to find new games if the thread pool is all full
-        int running_games = 0;
+        // count how many child threads are still running.
+        this.running_threads = 0;
         int available_spot = -1;
 
         for (int i = 0; i < thread_pool.length; i ++)
         {
-            running_games += (thread_pool[i] == null) ? 0 : 1;
+            this.running_threads += (thread_pool[i] == null) ? 0 : 1;
             if (thread_pool[i] == null)
                 available_spot = i;
         }
 
-        if (running_games < thread_pool_target && available_spot != -1)
+        // do not spawn any new games if the user has indicated that they want a shutdown
+        if (this.user_signalled_shutdown)
+            return;
+
+        // there's no point in trying to find new games if the thread pool is all full
+        if (this.running_threads < thread_pool_target && available_spot != -1)
         {
             // load the current state of the tournaments, and all playable games connected to them.
             Tournament[] tournaments = Tournament.LoadAll(true);
@@ -280,4 +304,13 @@ public class TournamentThread extends Thread
 
         SystemState.Log ("Termination successful.");
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * @return
+     */
+    public boolean Finished () { return this.finished; }
 }
