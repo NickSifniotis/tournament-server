@@ -2,6 +2,7 @@ package TournamentServer;
 
 import Common.DataModel.Game;
 import Common.DataModel.PlayerSubmission;
+import Common.DataModel.Scores;
 import Common.DataModel.Tournament;
 import Common.SystemState;
 
@@ -83,7 +84,7 @@ public class TournamentThread extends Thread
                 if (thread_pool[i] != null)
                     if (thread_pool[i].finished)
                     {
-                        thread_pool[i].game.
+                        this.end_game(i);
                     }
 
 
@@ -202,5 +203,47 @@ public class TournamentThread extends Thread
         }
 
         thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), player_managers);
+        thread_pool[thread].start();
+
+        SystemState.Log("Game started!");
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * The game has ended, so release the player submission and game records.
+     * If a player has been disqualified, make sure that the playersub record reflects that.
+     *
+     * @param thread - which thread in the thread pool has terminated.
+     */
+    private void end_game (int thread)
+    {
+        GameManagerChild game_thread = thread_pool[thread];
+        PlayerManager[] game_players = game_thread.Players();
+        Scores game_scores = game_thread.Scores();
+
+        SystemState.Log ("Attempting to end game " + game_thread.game.PrimaryKey());
+
+        try
+        {
+            for (int i = 0; i < game_players.length; i++)
+                game_players[i].GetDatalink().EndingGame(game_scores.Disqualified(i));
+
+            game_thread.game.EndGame();
+        }
+        catch (Exception e)
+        {
+            String error = "Error terminating game + " + game_thread.game.PrimaryKey() + ". " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+
+        thread_pool[thread] = null;
+
+        SystemState.Log ("Termination successful.");
     }
 }

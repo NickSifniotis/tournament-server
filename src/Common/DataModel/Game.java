@@ -396,7 +396,8 @@ public class Game
                 + " WHERE gp.game_id = g.id"
                 + " AND f.id = gp.fixture_slot_id"
                 + " AND s.id = f.submission_id"
-                + " AND g.id = " + this.id;
+                + " AND g.id = " + this.id
+                + " ORDER BY gp.position";
 
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
@@ -408,14 +409,17 @@ public class Game
             {
                 while (res.next())
                 {
-                    if (res.getInt("retired") != 0 || res.getInt("ready") != 1)
-                        error = true;
-                    else
-                        results.add(new PlayerSubmission(res));
+                    results.add(new PlayerSubmission(res));
                 }
             }
             catch (Exception e)
             {
+                String er = "Game.GetPlayers - SQL error retrieving player data. " + e;
+                SystemState.Log(er);
+
+                if (SystemState.DEBUG)
+                    System.out.println (er);
+
                 error = true;
             }
 
@@ -423,6 +427,12 @@ public class Game
         }
         else
         {
+            String er = "Game.GetPlayers - No data error retrieving player data.";
+            SystemState.Log(er);
+
+            if (SystemState.DEBUG)
+                System.out.println (er);
+
             error = true;
             DBManager.disconnect(connection);   // disconnect by connection
         }

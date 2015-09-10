@@ -18,6 +18,7 @@ public class GameManagerChild extends Thread
 {
     public boolean finished;
 
+    private Scores game_scores;
     public Game game; //@TODO this is a quick fix, make an accessor for it
     private IGameEngine engine;
     private PlayerManager[] players;
@@ -38,6 +39,8 @@ public class GameManagerChild extends Thread
         this.game = game;
         this.engine = engine;
         this.players = players;
+
+        this.game_scores = new Scores(game, players);
     }
 
 
@@ -71,7 +74,6 @@ public class GameManagerChild extends Thread
         // fuck yeah, let's RUN THIS GAME
 
         Object game_state = engine.InitialiseGame(players.length);
-        Scores game_scores = new Scores (game.PrimaryKey(), this.players);
 
         while (engine.AreYouStillAlive(game_state) && game_scores.GameOn())
         {
@@ -118,6 +120,17 @@ public class GameManagerChild extends Thread
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }
-
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Various accessor functions.
+     *
+     * @return whatever data was requested.
+     */
+    public Scores Scores() { return this.game_scores; }
+    public PlayerManager[] Players () { return this.players; }
 }

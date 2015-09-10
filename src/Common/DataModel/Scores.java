@@ -123,6 +123,16 @@ public class Scores
 
     /**
      * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Various accessor functions
+     * @return - requested data
+     */
+    public boolean Disqualified (int player_position) { return this.disqualified[player_position]; }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 7/9/2015
      *
      * Simple toString function to allow for game and player testing
