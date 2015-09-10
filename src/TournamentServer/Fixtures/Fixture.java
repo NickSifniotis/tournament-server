@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Fixture
 {
-    private List<short[]> rounds;
+    public List<short[]> rounds;
     private short[][] met_before;
     private static final int NUM_PLAYERS = 10;
 
@@ -44,11 +44,13 @@ public class Fixture
         for (int i = 0; i < NUM_PLAYERS; i++)
             for (int j = 0; j < NUM_PLAYERS; j++)
             {
-                if (min > met_before[i][j])
-                    min = met_before[i][j];
+                if (i != j) {
+                    if (min > met_before[i][j])
+                        min = met_before[i][j];
 
-                if (max < met_before[i][j])
-                    max = met_before[i][j];
+                    if (max < met_before[i][j])
+                        max = met_before[i][j];
+                }
             }
 
         return max - min;

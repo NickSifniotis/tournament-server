@@ -6,6 +6,7 @@ import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import TournamentServer.Fixtures.Fixture;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -162,10 +163,11 @@ public class tester {
         temp = start.AddRound(unique_games.get("01234567"));
         fixtures.putIfAbsent(temp.hash(), temp);
 
-        for (int zzz = 0; zzz < 10; zzz ++)
+
+        for (int zzz = 0; zzz < 20; zzz ++)
         {
             count = 0;
-            best_range = 20; // impossible
+            best_range = 50; // impossible
             new_fixtures = new HashMap<>();
 
             for (short[] r : unique_games.values())
@@ -186,7 +188,7 @@ public class tester {
                         // filters out a lot of fat before it's even inserted into the hashmap
                         if (new_fixtures.putIfAbsent(temp.hash(), temp) == null)
                         {
-                            System.out.println("Adding hash " + temp.hash() + " range " + temp.range());
+                           // System.out.println("Adding hash " + temp.hash() + " range " + temp.range());
                             count++;
                             best_range = temp.range();
                         }
@@ -208,6 +210,18 @@ public class tester {
 
             System.out.println ("Total fails: " + count);
             fixtures = new_fixtures;
+        }
+
+
+        System.out.println("Results!!\n");
+
+        for (Fixture f: fixtures.values())
+        {
+            System.out.print(f.hash() + ": ");
+            for (short [] s: f.rounds)
+                System.out.print (Arrays.toString(s) + ", ");
+
+            System.out.println();
         }
     }
 }
