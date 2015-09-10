@@ -22,7 +22,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TournamentThread extends Thread
 {
-    private Random randomiser;
     private BlockingQueue<Hermes> winged_messenger;
     private GameManagerChild[] thread_pool;
     private int thread_pool_target;
@@ -57,7 +56,6 @@ public class TournamentThread extends Thread
      */
     public TournamentThread (int thread_pool_target)
     {
-        this.randomiser = new Random();
         this.winged_messenger = new LinkedBlockingQueue<>();
         this.thread_pool_target = thread_pool_target;
         this.thread_pool = new GameManagerChild[thread_pool_target];
@@ -310,7 +308,9 @@ public class TournamentThread extends Thread
      * Nick Sifniotis u5809912
      * 10/9/2015
      *
-     * @return
+     * Accessor functions
+     *
+     * @return the data that the user wants.
      */
     public boolean Finished () { return this.finished; }
 }
