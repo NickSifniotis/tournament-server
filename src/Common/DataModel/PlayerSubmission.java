@@ -154,6 +154,7 @@ public class PlayerSubmission
         this.id = input.getInt ("id");
         this.name = input.getString("team_name");
         this.email = input.getString("team_email");
+        this.motto = input.getString("team_motto");
         this.avatar_file = input.getString("team_avatar");
         this.orig_file = input.getString("original_filename");
         this.retired = (input.getInt("retired") == 1);

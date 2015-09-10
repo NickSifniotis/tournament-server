@@ -46,7 +46,7 @@ public class Scores
 
 
         // remove any old scores that may be attached to this game.
-        String query = "DELETE FROM scores WHERE game_id = " + game.PrimaryKey();
+        String query = "DELETE FROM score WHERE game_id = " + game.PrimaryKey();
         DBManager.Execute(query);
 
 
