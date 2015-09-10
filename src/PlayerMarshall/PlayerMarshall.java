@@ -187,7 +187,7 @@ public class PlayerMarshall extends Application {
         //@TODO: Avatar code goes here
         new_submission.setAvatar("");
         // last but not least, go ahead and signal that this player is good to go
-        new_submission.Ready();
+        new_submission.GetReady();
     }
 
 

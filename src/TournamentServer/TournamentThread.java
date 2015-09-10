@@ -3,6 +3,7 @@ package TournamentServer;
 import Common.DataModel.Game;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
+import Common.SystemState;
 
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -167,10 +168,39 @@ public class TournamentThread extends Thread
      */
     private void launch_game (Game game, int thread)
     {
+        SystemState.Log("Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
+
         PlayerSubmission[] players = game.GetPlayers();
-        //@TODO Both the playersubmission and game datamodel classes need functions
-        // to switch them on and off - ready for players, played for games. Both on and off, for both, trust me
-        
-        thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), players);
+
+        // games only launch one at a time. So it's fair to assume that all players that are ready
+        // to play now will still be ready to play in a couple of milliseconds.
+        boolean lets_play = true;
+        for (PlayerSubmission player: players)
+                lets_play &= player.ReadyToPlay();
+
+        if (!lets_play)
+            return;
+
+
+        PlayerManager[] player_managers = new PlayerManager[players.length];
+        try
+        {
+            game.StartGame();
+            for (int i = 0; i < players.length; i++)
+            {
+                players[i].StartingGame();
+                player_managers[i] = new PlayerManager(game.Tournament(), players[i]);
+            }
+        }
+        catch (Exception e)
+        {
+            String error = "Error launching game + " + game.PrimaryKey() + ". " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+        }
+
+        thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), player_managers);
     }
 }

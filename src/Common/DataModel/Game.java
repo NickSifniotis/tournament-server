@@ -23,6 +23,7 @@ import java.util.List;
  * game_number      integer
  * tournament_id    integer fk
  * played           boolean
+ * in_progress      boolean
  *
  */
 public class Game
@@ -32,6 +33,7 @@ public class Game
     private int game_number;
     private Tournament tournament;
     private boolean played;
+    private boolean in_progress;
 
 
     /**
@@ -148,7 +150,7 @@ public class Game
      * in the database.
      *
      * If playable_only is true, return only those games that can be played now.
-     * That test is simply Game.played == false && all players for that game are Ready().
+     * That test is simply Game.played == false && all players for that game are GetReady().
      *
      * @param tournaments - the tournaments to query, or null for all tournaments.
      * @param playable_only - true if we are only interested in playable games.
@@ -269,6 +271,7 @@ public class Game
         this.round_number = 0;
         this.game_number = 0;
         this.played = false;
+        this.in_progress = false;
         this.tournament = null;
     }
 
@@ -294,6 +297,7 @@ public class Game
         this.round_number = input.getInt ("round_number");
         this.game_number = input.getInt ("game_number");
         this.played = (input.getInt("played") == 1);
+        this.in_progress = (input.getInt("in_progress") == 1);
         this.tournament = new Tournament(input.getInt("tournament_id"));
     }
 
@@ -337,6 +341,7 @@ public class Game
                     + ", game_number = " + this.game_number
                     + ", tournament_id = " + this.tournament.PrimaryKey()
                     + ", played = " + DBManager.BoolValue(this.played)
+                    + ", in_progress = " + DBManager.BoolValue(this.in_progress)
                     + " WHERE id = " + this.id;
 
             if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
@@ -345,12 +350,13 @@ public class Game
         }
         else
         {
-            query = "INSERT INTO game (tournament_id, round_number, game_number, played)"
+            query = "INSERT INTO game (tournament_id, round_number, game_number, played, in_progress)"
                     + " VALUES ("
                     + this.tournament.PrimaryKey()
                     + ", " + this.round_number
                     + ", " + this.game_number
                     + ", " + DBManager.BoolValue(this.played)
+                    + ", " + DBManager.BoolValue(this.in_progress)
                     + ")";
 
             if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
@@ -426,5 +432,44 @@ public class Game
 
         PlayerSubmission[] res_array = new PlayerSubmission[results.size()];
         return results.toArray(res_array);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Records in the database the fact that this game has been started.
+     *
+     * @throws Exception - has a sook if the game is not in the correct state.
+     */
+    public void StartGame() throws Exception
+    {
+        if (this.in_progress || this.played)
+            throw new Exception ("Unable to start a game that has already been started.");
+
+        this.in_progress = true;
+        this.SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Signals that the game has finished being played.
+     * Chucks an exception if the method has been called at an inappropriate time.
+     *
+     * @throws Exception - has a sook if the game is not in the correct state.
+     */
+    public void EndGame() throws Exception
+    {
+        if (!this.in_progress)
+            throw new Exception ("Unable to end a game that is not in progress.");
+
+        this.in_progress = false;
+        this.played = true;
+
+        this.SaveState();
     }
 }

@@ -375,8 +375,17 @@ public class PlayerSubmission
     public void setMotto (String s) { this.motto = s; }
     public void setSubmissionKey (String s) { this.orig_file = s; }
     public void setTournament (int fk) { this.tournament_id = fk; }
+    public boolean IsReady () { return this.ready && !this.retired && (this.disqualified_count == 0); }
 
-    public void Ready ()
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Resets the player submission so that it can play games again.
+     *
+     */
+    public void GetReady()
     {
         this.ready = true;
         this.retired = false;
@@ -435,6 +444,46 @@ public class PlayerSubmission
         }
 
         return res;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Records the fact that this player is currently playing a game.
+     *
+     * @throws Exception - if the player is not in the correct state to be starting games.
+     */
+    public void StartingGame() throws Exception
+    {
+        if (!this.ready || this.retired || this.disqualified_count > 0)
+            throw new Exception ("This player is not able to play.");
+
+        this.ready = false;
+        this.saveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Signals that a player has finished playing a game.
+     *
+     * @param disqualified - true if this player was disqualified
+     * @throws Exception - chucks a hissy fit if the player doesnt seem to be playing any games to end.
+     */
+    public void EndingGame (boolean disqualified) throws Exception
+    {
+        if (this.ready)
+            throw new Exception ("This player does not seem to be playing any game.");
+
+        if (disqualified)
+            this.disqualified_count++;
+        this.ready = true;
+
+        this.saveState();
     }
 }
 
