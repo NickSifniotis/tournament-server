@@ -124,8 +124,8 @@ public class Scores
         {
             String query = "UPDATE score SET"
                     + " score = " + this.raw_scores[i]
-                    + ", no_score = " + no_score
-                    + ", disqualified = " + this.disqualified[i]
+                    + ", no_score = " + DBManager.BoolValue(no_score)
+                    + ", disqualified = " + DBManager.BoolValue(this.disqualified[i])
                     + " WHERE id = " + this.score_prikeys[i];
             DBManager.Execute(query);
         }
