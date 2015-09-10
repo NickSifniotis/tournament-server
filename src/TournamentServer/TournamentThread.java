@@ -18,6 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TournamentThread extends Thread
 {
+    private Random randomiser;
     private BlockingQueue<Hermes> winged_messenger;
     private GameManagerChild[] thread_pool;
     private int thread_pool_target;
@@ -49,6 +50,7 @@ public class TournamentThread extends Thread
      */
     public TournamentThread (int thread_pool_target)
     {
+        this.randomiser = new Random();
         this.winged_messenger = new LinkedBlockingQueue<>();
         this.thread_pool_target = thread_pool_target;
         this.thread_pool = new GameManagerChild[thread_pool_target];
@@ -74,43 +76,15 @@ public class TournamentThread extends Thread
     @Override
     public void run ()
     {
-        Random randomiser = new Random();
         boolean finished = false;
 
         while (!finished)
         {
             // clear out any games from the pool that have finished.
-            for (int i = 0; i < thread_pool.length; i ++)
-                if (thread_pool[i] != null)
-                    if (thread_pool[i].finished)
-                    {
-                        this.end_game(i);
-                    }
+            this.clear_dead_threads();
 
-
-            // there's no point in trying to find new games if the thread pool is all full
-            int running_games = 0;
-            int available_spot = -1;
-
-            for (int i = 0; i < thread_pool.length; i ++)
-            {
-                running_games += (thread_pool[i] == null) ? 0 : 1;
-                if (thread_pool[i] == null)
-                    available_spot = i;
-            }
-
-            if (running_games < thread_pool_target && available_spot != -1)
-            {
-                // load the current state of the tournaments, and all playable games connected to them.
-                Tournament[] tournaments = Tournament.LoadAll(true);
-                Game[] games = Game.LoadAll(tournaments, true);
-
-                // those that are going - play some games.
-                int game_to_play = randomiser.nextInt(games.length);
-
-                launch_game(games[game_to_play], available_spot);
-            }
-
+            // start a new game, if there is room in the thread pool.
+            this.launch_new_threads();
 
             // have we received any messages from the gods?
             Hermes message = winged_messenger.peek();
@@ -137,9 +111,7 @@ public class TournamentThread extends Thread
                         if (new_target > thread_pool_target)
                         {
                             GameManagerChild [] new_array = new GameManagerChild[new_target];
-                            for (int i = 0; i < thread_pool.length; i ++)
-                                new_array[i] = thread_pool[i];
-
+                            System.arraycopy(thread_pool, 0, new_array, 0, thread_pool.length);
                             thread_pool = new_array;
                         }
                         thread_pool_target = new_target;
@@ -160,14 +132,71 @@ public class TournamentThread extends Thread
 
     /**
      * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * Searches through the pool of game manager threads, and clears out the dead ones.
+     *
+     */
+    private void clear_dead_threads()
+    {
+        for (int i = 0; i < thread_pool.length; i ++)
+            if (thread_pool[i] != null)
+                if (thread_pool[i].finished)
+                {
+                    this.end_game(i);
+                }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 10/9/2015
+     *
+     * If there is room in the thread pool, attempt to launch another game.
+     *
+     */
+    private void launch_new_threads ()
+    {
+        // there's no point in trying to find new games if the thread pool is all full
+        int running_games = 0;
+        int available_spot = -1;
+
+        for (int i = 0; i < thread_pool.length; i ++)
+        {
+            running_games += (thread_pool[i] == null) ? 0 : 1;
+            if (thread_pool[i] == null)
+                available_spot = i;
+        }
+
+        if (running_games < thread_pool_target && available_spot != -1)
+        {
+            // load the current state of the tournaments, and all playable games connected to them.
+            Tournament[] tournaments = Tournament.LoadAll(true);
+            Game[] games = Game.LoadAll(tournaments, true);
+            int game_counter = 0;
+
+            boolean success = false;
+            while (!success && game_counter < games.length)
+            {
+                // let's play a game
+                success = launch_game(games[game_counter], available_spot);
+                game_counter ++;
+            }
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 9/9/2015
      *
      * Spawns a new game manager child thread and adds it to the thread pool.
      *
      * @param game - the game object to launch.
      * @param thread - which spot in the pool the new thread is to occupy.
+     * @return - returns true if the launch was successful, false otherwise
      */
-    private void launch_game (Game game, int thread)
+    private boolean launch_game (Game game, int thread)
     {
         SystemState.Log("Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
 
@@ -179,9 +208,11 @@ public class TournamentThread extends Thread
         for (PlayerSubmission player: players)
                 lets_play &= player.ReadyToPlay();
 
-        if (!lets_play)
-            return;
-
+        if (!lets_play || players.length != game.Tournament().NumPlayers())
+        {
+            SystemState.Log ("Failed to launch game - not enough players reporting ready.");
+            return false;
+        }
 
         PlayerManager[] player_managers = new PlayerManager[players.length];
         try
@@ -200,12 +231,17 @@ public class TournamentThread extends Thread
 
             if (SystemState.DEBUG)
                 System.out.println (error);
+
+            return false;
         }
 
         thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), player_managers);
         thread_pool[thread].start();
 
         SystemState.Log("Game started!");
+        if (SystemState.DEBUG) System.out.println("Started game " + game.PrimaryKey());
+
+        return true;
     }
 
 
@@ -245,5 +281,6 @@ public class TournamentThread extends Thread
         thread_pool[thread] = null;
 
         SystemState.Log ("Termination successful.");
+        if (SystemState.DEBUG) System.out.println("Ended game " + game_thread.game.PrimaryKey());
     }
 }

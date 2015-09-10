@@ -29,6 +29,11 @@ public class Scores
      * As well as creating the score object, this constructor also
      * creates the score records for this game in the database.
      *
+     * It also removes from the database any score records that may already exist
+     * for this game. That sort of thing happens when you have multiple submissions
+     * during tournament play, or shitty testing routines that keep creating
+     * new score records over and over for the same game.
+     *
      * @param game - the Game object for which these scores are being recorded.
      * @param players - the players of this game.
      */
@@ -39,12 +44,18 @@ public class Scores
         this.disqualified = new boolean [num_players];
         this.game_on = true;
 
+
+        // remove any old scores that may be attached to this game.
+        String query = "DELETE FROM scores WHERE game_id = " + game.PrimaryKey();
+        DBManager.Execute(query);
+
+
         // Create and execute SQL to INSERT new score data into the table
         // save the prikeys in the private int array.
         this.score_prikeys = new int [num_players];
         for (int i = 0; i < num_players; i ++)
         {
-            String query = "INSERT INTO score (submission_id, game_id, score, no_score, disqualified)"
+            query = "INSERT INTO score (submission_id, game_id, score, no_score, disqualified)"
                     + " VALUES (" + players[i].GetDatalink().PrimaryKey() + ", " + game.PrimaryKey() + ", 0, false, false)";
             this.score_prikeys[i] = DBManager.ExecuteReturnKey(query);
         }

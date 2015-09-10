@@ -1,6 +1,7 @@
 package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
+import Common.DataModel.Game;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 
@@ -34,7 +35,7 @@ public class tester {
         for (int i = 0; i < 4; i ++)
             game_players[i] = new PlayerManager(tourneys[0], player);
 
-        GameManagerChild child = new GameManagerChild(1, engine, game_players);
+        GameManagerChild child = new GameManagerChild(new Game(1), engine, game_players);
 
         child.run();
     }

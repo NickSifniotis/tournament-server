@@ -308,6 +308,7 @@ public class Tournament
     public boolean AllowResubmitOff () { return this.allow_resubmit; }
     public boolean AllowResubmitOn () { return this.allow_resubmit_on; }
     public boolean GameOn () { return this.game_on; }
+    public int NumPlayers () { return this.num_players; }
 
 
     /**

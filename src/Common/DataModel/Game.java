@@ -150,19 +150,20 @@ public class Game
      * in the database.
      *
      * If playable_only is true, return only those games that can be played now.
-     * That test is simply Game.played == false && all players for that game are GetReady().
+     * That test is simply Game.played == false && Game.in_progress == false.
      *
      * @param tournaments - the tournaments to query, or null for all tournaments.
      * @param playable_only - true if we are only interested in playable games.
      *
-     * @return an array of Game objects that match the criteria
+     * @return an array of Game objects that match the criteria. They are ordered
+     *          by round_number so that earlier games are always played before later ones.
      */
     public static Game [] LoadAll (Tournament[] tournaments, boolean playable_only)
     {
         List<Game> res = new ArrayList<>();
 
         String tournament_clause = "";
-        String exclusion_clause = "";
+        String exclusion_clause = (playable_only) ? " AND g.played = 0 AND g.in_progress = 0" : "";
         String query;
 
         // if we have been given a set of tournaments to poll from, build the appropriate SQL.
@@ -175,54 +176,7 @@ public class Game
             tournament_clause += ")";
         }
 
-
-        if (playable_only)
-        {
-            // execute this sik little query to establish which games we should exclude from the final set.
-            query = "SELECT DISTINCT g.id FROM game g, fixture_slot f, game_player gp, submission s"
-                    + " WHERE g.played = 1 OR (g.id = gp.game_id"
-                    + " AND gp.fixture_slot_id = f.id"
-                    + " AND ((f.submission_id = s.id"
-                        + " AND (s.ready = 0 OR s.retired = 1)"
-                        + " ) OR (f.submission_id = 0)))";
-
-            Connection connection = DBManager.connect();
-            ResultSet shitty = DBManager.ExecuteQuery(query, connection);
-
-            if (shitty != null)
-            {
-                List<Integer> bad_games = new LinkedList<>();
-                try
-                {
-                    while (shitty.next())
-                    {
-                        bad_games.add(shitty.getInt("id"));
-                    }
-
-                    DBManager.disconnect(shitty);          // disconnect by result
-                }
-                catch (Exception e)
-                {
-                    String error = "Game.LoadAll (game_id) - SQL error retrieving game data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
-                }
-
-                exclusion_clause = " AND g.id NOT IN (0";
-                for (int i: bad_games)
-                    exclusion_clause += ", " + i;
-
-                exclusion_clause += ")";
-            }
-            else
-            {
-                DBManager.disconnect(connection);   // disconnect by connection
-            }
-        }
-
-        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause;
+        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
         Connection connection = DBManager.connect();
         ResultSet records = DBManager.ExecuteQuery(query, connection);
 
