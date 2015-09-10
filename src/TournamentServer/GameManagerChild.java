@@ -19,7 +19,7 @@ public class GameManagerChild extends Thread
     public boolean finished;
 
     private Scores game_scores;
-    public Game game; //@TODO this is a quick fix, make an accessor for it
+    private Game game;
     private IGameEngine engine;
     private PlayerManager[] players;
 
@@ -131,6 +131,7 @@ public class GameManagerChild extends Thread
      *
      * @return whatever data was requested.
      */
+    public Game Game() { return this.game; }
     public Scores Scores() { return this.game_scores; }
     public PlayerManager[] Players () { return this.players; }
 }

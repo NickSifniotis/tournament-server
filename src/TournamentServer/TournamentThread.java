@@ -258,18 +258,18 @@ public class TournamentThread extends Thread
         PlayerManager[] game_players = game_thread.Players();
         Scores game_scores = game_thread.Scores();
 
-        SystemState.Log ("Attempting to end game " + game_thread.game.PrimaryKey());
+        SystemState.Log ("Attempting to end game " + game_thread.Game().PrimaryKey());
 
         try
         {
             for (int i = 0; i < game_players.length; i++)
                 game_players[i].GetDatalink().EndingGame(game_scores.Disqualified(i));
 
-            game_thread.game.EndGame();
+            game_thread.Game().EndGame();
         }
         catch (Exception e)
         {
-            String error = "Error terminating game + " + game_thread.game.PrimaryKey() + ". " + e;
+            String error = "Error terminating game + " + game_thread.Game().PrimaryKey() + ". " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
