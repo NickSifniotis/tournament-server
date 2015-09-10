@@ -239,8 +239,6 @@ public class TournamentThread extends Thread
         thread_pool[thread].start();
 
         SystemState.Log("Game started!");
-        if (SystemState.DEBUG) System.out.println("Started game " + game.PrimaryKey());
-
         return true;
     }
 
@@ -281,6 +279,5 @@ public class TournamentThread extends Thread
         thread_pool[thread] = null;
 
         SystemState.Log ("Termination successful.");
-        if (SystemState.DEBUG) System.out.println("Ended game " + game_thread.game.PrimaryKey());
     }
 }

@@ -56,7 +56,9 @@ public class GameType
      * 8/9/2015
      *
      * Constructor - load by primary key.
-     * @param id
+     *
+     * @param id - the primary key of the record to load.
+     *
      */
     public GameType (int id)
     {
@@ -128,7 +130,7 @@ public class GameType
      *
      * Returns an array of game_type objects corresponding to every entry in the database.
      *
-     * @return
+     * @return an arary of game_type objects
      */
     public static GameType[] LoadAll()
     {
@@ -227,7 +229,7 @@ public class GameType
      *
      * Accessor functions, including two interesting functions that return instances of interfaces.
      *
-     * @return
+     * @return lots of interesting data
      */
     public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
@@ -325,7 +327,8 @@ public class GameType
         boolean exists = false;
         String query;
 
-        if (this.id != 0) {
+        if (this.id > 0)
+        {
             query = "SELECT * FROM submission WHERE id = " + id;
             Connection connection = DBManager.connect();
             ResultSet res = DBManager.ExecuteQuery(query, connection);

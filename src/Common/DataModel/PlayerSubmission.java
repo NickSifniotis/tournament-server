@@ -146,8 +146,8 @@ public class PlayerSubmission
      *
      * Load this players details from the database recordset provided.
      *
-     * @param input
-     * @throws SQLException
+     * @param input - the recordset from the database.
+     * @throws SQLException if something goes wrong with the query.
      */
     private void loadState (ResultSet input) throws SQLException
     {
@@ -223,7 +223,8 @@ public class PlayerSubmission
         boolean exists = false;
         String query;
 
-        if (this.id != 0) {
+        if (this.id > 0)
+        {
             query = "SELECT * FROM submission WHERE id = " + id;
             Connection connection = DBManager.connect();
             ResultSet res = DBManager.ExecuteQuery(query, connection);
@@ -309,7 +310,7 @@ public class PlayerSubmission
      * @param t - the tournament in question. Clearly it is desirable to support multiple
      *          tournaments and submissions with common filenames thereof
      *          What a shocker of a sentence that was.
-     * @return
+     * @return a player submission object
      */
     public static PlayerSubmission GetActiveWithOriginalFilename (String original, Tournament t)
     {
@@ -348,7 +349,7 @@ public class PlayerSubmission
      *
      * Accessor / getter functions.
      *
-     * @return
+     * @return various interesting bits of data.
      */
     public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
@@ -368,7 +369,7 @@ public class PlayerSubmission
      *
      * Setter functions.
      *
-     * @param s
+     * @param s - the data to set.
      */
     public void setName (String s) { this.name = s; }
     public void setEmail (String s) { this.email = s; }
@@ -408,7 +409,7 @@ public class PlayerSubmission
      */
     public static int CountRegisteredPlayers (Tournament tourney)
     {
-        String query = "";
+        String query;
 
         if (tourney == null)
             query = "SELECT COUNT(*) AS count FROM fixture_slot"

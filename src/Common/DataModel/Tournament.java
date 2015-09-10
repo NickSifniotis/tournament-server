@@ -237,7 +237,8 @@ public class Tournament
         boolean exists = false;
         String query;
 
-        if (this.id != 0) {
+        if (this.id > 0)
+        {
             query = "SELECT * FROM tournament WHERE id = " + id;
             Connection connection = DBManager.connect();
             ResultSet res = DBManager.ExecuteQuery(query, connection);
