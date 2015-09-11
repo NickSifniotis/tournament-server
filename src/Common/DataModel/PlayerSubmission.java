@@ -8,6 +8,8 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -278,6 +280,55 @@ public class PlayerSubmission
 
     /**
      * Nick Sifniotis u5809912
+     * 11/09/2015
+     *
+     * Returns an array of PlayerSubmission objects
+     *
+     * @param t - the tournament to return submissions for. Will return all submissions if t is null
+     * @return - the playersubmission set
+     */
+    public static PlayerSubmission [] LoadAll (Tournament t)
+    {
+        String query;
+        if (t == null)
+            query = "SELECT * FROM PlayerSubmission";
+        else
+            query = "SELECT * FROM PlayerSubmission WHERE tournament_id = " + t.PrimaryKey();
+
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        List<PlayerSubmission> temp_list = new LinkedList<>();
+
+        if (res != null)
+        {
+            try
+            {
+                while (res.next())
+                    temp_list.add(new PlayerSubmission(res));
+            }
+            catch (Exception e)
+            {
+                String error = "PlayerSubmission.LoadAll - Error executing SQL query: "
+                        + query + ": " + e;
+                SystemState.Log(error);
+
+                if (SystemState.DEBUG)
+                    System.out.println (error);
+            }
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        PlayerSubmission[] res_array = new PlayerSubmission[temp_list.size()];
+        return temp_list.toArray(res_array);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 31/08/2015
      *
      * Retires this player submission.
@@ -357,7 +408,7 @@ public class PlayerSubmission
     public String Motto () { return this.motto; }
     public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
     public String SubmissionKey () { return this.orig_file; }
-    public int Tournament () { return this.tournament_id; }
+    public int TournamentKey() { return this.tournament_id; }
     public boolean ReadyToPlay () { return this.ready & !this.retired & (this.disqualified_count == 0); }
     public boolean Active () { return !this.retired; }
     public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
@@ -376,7 +427,7 @@ public class PlayerSubmission
     public void setAvatar (String s) { this.avatar_file = s; }
     public void setMotto (String s) { this.motto = s; }
     public void setSubmissionKey (String s) { this.orig_file = s; }
-    public void setTournament (int fk) { this.tournament_id = fk; }
+    public void setTournamentKey(int fk) { this.tournament_id = fk; }
     public boolean IsReady () { return this.ready && !this.retired && (this.disqualified_count == 0); }
 
 

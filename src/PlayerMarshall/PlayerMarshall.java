@@ -160,7 +160,7 @@ public class PlayerMarshall extends Application {
         // create the new submission
         PlayerSubmission new_submission = new PlayerSubmission(true);
         new_submission.SetMetaData(metadata);
-        new_submission.setTournament(tournament.PrimaryKey());
+        new_submission.setTournamentKey(tournament.PrimaryKey());
 
 
         // move the extracted source to the marshalling folder.
@@ -260,7 +260,7 @@ public class PlayerMarshall extends Application {
         componentLayout.setBottom(statusBar);
         componentLayout.setTop(centrePane);
 
-        primaryStage.setTitle("Player Marshall - Tournament Server");
+        primaryStage.setTitle("Player Marshall - TournamentKey Server");
         primaryStage.setScene(new Scene(componentLayout, 400, 575));
         primaryStage.show();
 

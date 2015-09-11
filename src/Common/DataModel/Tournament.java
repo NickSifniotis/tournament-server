@@ -66,7 +66,7 @@ public class Tournament
                 }
                 catch (Exception e)
                 {
-                    String error = "Tournament constructor (id) - SQL error retrieving tournament data. " + e;
+                    String error = "TournamentKey constructor (id) - SQL error retrieving tournament data. " + e;
                     SystemState.Log(error);
 
                     if (SystemState.DEBUG)
@@ -102,7 +102,7 @@ public class Tournament
         }
         catch (Exception e)
         {
-            String error = "Tournament constructor (resultset) - SQL error: " + e;
+            String error = "TournamentKey constructor (resultset) - SQL error: " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
@@ -117,7 +117,7 @@ public class Tournament
      * 31/08/2015
      *
      * Reads all the tournaments from the database, and returns an array
-     * of Tournament objects initialised to these values.
+     * of TournamentKey objects initialised to these values.
      *
      * @return all of the tournaments!
      */
@@ -138,7 +138,7 @@ public class Tournament
      */
     public static Tournament[] LoadAll (boolean active_only)
     {
-        SystemState.Log("Tournament.LoadAll - attempting to load all");
+        SystemState.Log("TournamentKey.LoadAll - attempting to load all");
         List<Tournament> temp = new ArrayList<>();
 
         String query = "SELECT * FROM tournament";
@@ -159,7 +159,7 @@ public class Tournament
         }
         catch (Exception e)
         {
-            String error = "Tournament.LoadAll - Error executing SQL query: " + query + ": " + e;
+            String error = "TournamentKey.LoadAll - Error executing SQL query: " + query + ": " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
@@ -168,7 +168,7 @@ public class Tournament
 
         int size = temp.size();
         Tournament [] res = new Tournament[size];
-        SystemState.Log("Tournament.LoadAll - returning " + size + " tournaments.");
+        SystemState.Log("TournamentKey.LoadAll - returning " + size + " tournaments.");
 
         return temp.toArray(res);
     }
@@ -380,7 +380,7 @@ public class Tournament
         }
         catch (Exception e)
         {
-            String error = "Tournament.PlayerInterfaceClass - error creating class: " + e;
+            String error = "TournamentKey.PlayerInterfaceClass - error creating class: " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
@@ -425,7 +425,7 @@ public class Tournament
         }
         catch (Exception e)
         {
-            String error = "Tournament.Verification - error creating class: " + e;
+            String error = "TournamentKey.Verification - error creating class: " + e;
             SystemState.Log(error);
 
             if (SystemState.DEBUG)
