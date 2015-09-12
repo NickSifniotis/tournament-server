@@ -289,12 +289,11 @@ public class PlayerSubmission
      */
     public static PlayerSubmission [] LoadAll (Tournament t)
     {
-        //@TODO WRONG TABLE NAME
         String query;
         if (t == null)
-            query = "SELECT * FROM PlayerSubmission";
+            query = "SELECT * FROM submission";
         else
-            query = "SELECT * FROM PlayerSubmission WHERE tournament_id = " + t.PrimaryKey();
+            query = "SELECT * FROM submission WHERE tournament_id = " + t.PrimaryKey();
 
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);

@@ -332,6 +332,8 @@ public class Game
     public int PrimaryKey () { return this.id; }
     public Tournament Tournament () { return this.tournament; }
     public int RoundNumber () { return this.round_number; }
+    public int GameNumber() { return this.game_number; }
+    public boolean Started() { return this.played | this.in_progress; }
 
 
     /**
