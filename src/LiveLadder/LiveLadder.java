@@ -126,7 +126,7 @@ public class LiveLadder extends Application {
         // players start from zero
         for (TeamDetails t: teams)
                 t.Reset();
-        
+
 
         // get the games for this tournament.
         Tournament [] tournaments = { this.tournament };
