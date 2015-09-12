@@ -1,0 +1,34 @@
+.player_row1
+{
+    -fx-font: 12px "Sans Serif";
+    -fx-padding: 10;
+    -fx-background-color: #CCFF99;
+}
+
+.player_row2
+{
+    -fx-font: 12px "Sans Serif";
+    -fx-padding: 10;
+    -fx-background-color: #BBEE99;
+}
+
+.grid
+{
+    -fx-padding: 10;
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+}
+
+.tournament_header_row
+{
+    -fx-background-color: #FF0000;
+    -fx-alignment: center;
+    -fx-spacing: 15;
+}
+
+.tournament_header_text
+{
+    -fx-font: 16px "Serif";
+    -fx-text-alignment: center;
+    -fx-background-color: #FFFD00;
+}

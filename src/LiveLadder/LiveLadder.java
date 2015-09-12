@@ -18,12 +18,12 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -34,6 +34,7 @@ public class LiveLadder extends Application {
     private TournamentSelector selector_widget;
     private Tournament tournament;
     private BorderPane main_layout;
+    private Label tournament_name;
 
 
     public static void main(String[] args) {
@@ -44,14 +45,30 @@ public class LiveLadder extends Application {
     @Override
     public void start(Stage primaryStage)
     {
-        main_layout = new BorderPane();
-        HBox top_row = new HBox ();
-        selector_widget = new TournamentSelector(this, top_row);
+        LadderColumnStructure.Initialise();
 
-        main_layout.setBottom(top_row);             // @TODO: This would work better as a solo button that opens popup
+        main_layout = new BorderPane();
+        HBox bottom_row = new HBox ();
+        selector_widget = new TournamentSelector(this, bottom_row);
+
+        HBox top_row = new HBox();
+        top_row.getStyleClass().add("tournament_header_row");
+        top_row.setPrefWidth(800);
+        this.tournament_name = new Label ("No tournament selected");
+        this.tournament_name.setPrefWidth(800);
+        this.tournament_name.getStyleClass().add("tournament_header_text");
+        top_row.getChildren().add(tournament_name);
+
+        main_layout.setTop(tournament_name);
+        main_layout.setBottom(bottom_row);             // @TODO: This would work better as a solo button that opens popup
         main_layout.setPadding(new Insets(10, 10, 10, 10));
 
-        Scene scene = new Scene (main_layout, 600, 550);
+        Scene scene = new Scene (main_layout, 800, 600);
+
+        File f = new File("src/LiveLadder/liveladder.css");
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+
         primaryStage.setScene(scene);
         primaryStage.setTitle("LIVE LADDER");
         primaryStage.show();
@@ -77,6 +94,18 @@ public class LiveLadder extends Application {
     private void refresh_main_grid ()
     {
         GridPane new_grid = new GridPane();
+        new_grid.getStyleClass().add("grid");
+
+        ColumnConstraints columnConstraints = new ColumnConstraints();
+        new_grid.getColumnConstraints().add(columnConstraints);
+        columnConstraints = new ColumnConstraints();
+        new_grid.getColumnConstraints().add(columnConstraints);
+
+        columnConstraints = new ColumnConstraints();
+        columnConstraints.setFillWidth(true);
+        columnConstraints.setHgrow(Priority.ALWAYS);
+        new_grid.getColumnConstraints().add(columnConstraints);
+
         LadderColumnStructure.SetupHeaders(new_grid);
 
         this.refresh_scores(new_grid);
@@ -105,6 +134,7 @@ public class LiveLadder extends Application {
             this.teams_indexed.putIfAbsent(players[i].PrimaryKey(), teams[i]);
         }
 
+        this.tournament_name.setText(this.tournament.Name());
         this.refresh_main_grid();
     }
 

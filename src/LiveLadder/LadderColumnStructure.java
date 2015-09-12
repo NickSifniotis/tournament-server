@@ -32,16 +32,24 @@ public enum LadderColumnStructure
     }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Add the column names to the GridPane.
+     *
+     * @param grid - the construct that the LiveLadder is being built on.
+     */
     public static void SetupHeaders (GridPane grid)
     {
-        int position = 0;
-        for (LadderColumnStructure l: LadderColumnStructure.values())
+        for (int i = 0; i < values().length; i ++)
         {
-            Label label = new Label(l.name());
-            grid.add (label, position, 0);
-            position ++;
+            if (enabled[i])
+            {
+                Label label = new Label(names[i]);
+                grid.add(label, i, 0);
+            }
         }
-
     }
 
 
@@ -72,4 +80,5 @@ public enum LadderColumnStructure
      */
     public String Name() { return names[this.ordinal()]; }
     public boolean Enabled () { return enabled[this.ordinal()]; }
+    public static boolean Enabled (int index) { return enabled[index]; }
 }

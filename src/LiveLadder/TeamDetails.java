@@ -30,8 +30,6 @@ public class TeamDetails implements Comparable<TeamDetails>
             this.my_labels[i] = new Label();
 
         this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(this.team_deets.Name());
-        this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
-        this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
     //    this.my_labels[LadderColumnStructure.PIC.ordinal()].setText(this.team_deets.Avatar().getName());
         // @TODO: Gracefully handle nulls
     }
@@ -54,6 +52,7 @@ public class TeamDetails implements Comparable<TeamDetails>
 
         return (double) score_for / score_against;
     }
+    public int Differential () {return this.score_for - this.score_against; }
 
 
     /**
@@ -75,7 +74,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         if (this.points < o.points)
             return 1;
 
-        return Double.compare(o.Percentage(), this.Percentage());   // craftily swapping them around to maintain reverse ordering.
+        return Integer.compare(o.Differential(), this.Differential());   // craftily swapping them around to maintain reverse ordering.
     }
 
 
@@ -95,8 +94,14 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.my_labels[LadderColumnStructure.POSITION.ordinal()].setText(String.valueOf(position));
         for (int i = 0; i < LadderColumnStructure.values().length; i ++)
         {
-            grid.getChildren().remove (this.my_labels[i]);
-            grid.add (this.my_labels[i], i, position);
+            this.my_labels[i].getStyleClass().clear();
+            if (position % 2 == 0)
+                this.my_labels[i].getStyleClass().add ("player_row2");
+            else
+                this.my_labels[i].getStyleClass().add ("player_row1");
+
+            if (LadderColumnStructure.Enabled(i))
+                grid.add (this.my_labels[i], i, position);
         }
     }
 
@@ -118,6 +123,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
         this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.valueOf(this.Percentage()));
+        this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.Differential()));
     }
 
 
