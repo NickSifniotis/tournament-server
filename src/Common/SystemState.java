@@ -22,6 +22,7 @@ public class SystemState {
     public static final String interfaces_folder = "player_interfaces/";
     public static final String input_folder = "submissions/";
     public static final String marshalling_folder = "marshalling/";
+    public static final String pictures_folder = "marshalling/pictures/";
 
 
 

@@ -1,7 +1,11 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.SystemState;
 import TournamentServer.PlayerManager;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 
 /**
@@ -12,12 +16,25 @@ import TournamentServer.PlayerManager;
  * Database updates occur whenever the scores themselves are updated, so that there is always
  * a sort of 'live stream' of scores into the database happening.
  *
+ * Database schema for Score objects
+ * id                   prikey
+ * submission_id        int
+ * game_id              int
+ * score                int
+ * no_score             boolean         Used to indicate that a game terminated abnormally
+ * disqualified         boolean         Abnormal termination has been caused by this player.
+ *
+ * // @TODO: This entire model needs to be refactored. Right now the code is asymmetrical and there are
+ * // @TODO: two completely separate strands of logic at work
  */
 public class Scores
 {
+    // @TODO: Refactor this code so that there is just one array of Score DMobjects that look after themselves.
     private int [] raw_scores;
     private int [] score_prikeys;
     private boolean [] disqualified;
+    private int [] submission_keys;
+    private boolean[] no_scores;
     private boolean game_on;
 
 
@@ -42,6 +59,8 @@ public class Scores
         int num_players = players.length;
         this.raw_scores = new int [num_players];
         this.disqualified = new boolean [num_players];
+        this.no_scores = new boolean[num_players];
+        this.submission_keys = new int[num_players];
         this.game_on = true;
 
 
@@ -58,6 +77,71 @@ public class Scores
             query = "INSERT INTO score (submission_id, game_id, score, no_score, disqualified)"
                     + " VALUES (" + players[i].GetDatalink().PrimaryKey() + ", " + game.PrimaryKey() + ", 0, false, false)";
             this.score_prikeys[i] = DBManager.ExecuteReturnKey(query);
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 12/09/2015
+     *
+     * Attempt to load the scores for a game (in progress or complete)
+     * If no records are found in the database for this game, have a whinge.
+     *
+     * This constructor is highly specialised (far too specialised for my taste)
+     * and should only ever be called when it is known that there are scores
+     * in the database for game_id.
+     *
+     * @param game_id - the game to search for
+     */
+    public Scores (int game_id, int num_players) throws Exception
+    {
+        // I am not even going to assert that game_id != 0 here
+        // don't get me started on num_players
+        this.disqualified = new boolean[num_players];
+        this.raw_scores = new int[num_players];
+        this.score_prikeys = new int[num_players];
+        this.no_scores = new boolean[num_players];
+        this.submission_keys = new int[num_players];
+
+
+        String query = "SELECT * FROM score WHERE game_id = " + game_id;
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+        if (res != null)
+        {
+            try
+            {
+                int counter = 0;
+                while (res.next())
+                {
+                    this.score_prikeys[counter] = res.getInt("id");
+                    this.raw_scores[counter] = res.getInt("score");
+                    this.disqualified[counter] = (res.getInt("disqualified") == 1);
+                    this.no_scores[counter] = (res.getInt("no_score") == 1);
+                    this.submission_keys[counter] = (res.getInt("submission_key"));
+
+                    counter++;
+                }
+
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "Score constructor (game_id) - SQL error retrieving score data. " + e;
+                SystemState.Log(error);
+
+                if (SystemState.DEBUG)
+                    System.out.println (error);
+
+                throw new Exception ("Scores for game " + game_id + " not found. Incorrect scores constructor called at this location.");
+            }
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+            throw new Exception ("Scores for game " + game_id + " not found. Incorrect scores constructor called at this location.");
         }
     }
 
@@ -175,5 +259,27 @@ public class Scores
         }
 
         return res;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 12/09/2015
+     *
+     * Accessor functions for the LiveLadder class
+     * Throws an exception if the player that is being searched for doesn't exist.
+     *
+     * @param player_id @TODO: these things
+     * @return
+     * @throws Exception
+     */
+    public int ScoreFor (int player_id) throws Exception
+    {
+        return 0;
+    }
+
+    public int ScoreAgainst (int player_id) throws Exception
+    {
+        return 0;
     }
 }

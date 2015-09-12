@@ -289,6 +289,7 @@ public class PlayerSubmission
      */
     public static PlayerSubmission [] LoadAll (Tournament t)
     {
+        //@TODO WRONG TABLE NAME
         String query;
         if (t == null)
             query = "SELECT * FROM PlayerSubmission";

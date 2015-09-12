@@ -70,6 +70,6 @@ public class TournamentSelector
 
         Tournament new_tourney = (Tournament) this.selector.getSelectionModel().getSelectedItem();
 
-
+        this.parent.set_tournament(new_tourney);
     }
 }
