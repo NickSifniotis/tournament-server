@@ -6,6 +6,8 @@ import AcademicsInterface.IViewer;
 import Common.DBManager;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
+
+import java.awt.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;
@@ -33,6 +35,7 @@ public class Tournament
     private int num_players;
     private String player_interface_class;
     private String verification_class;
+    private PointStructure points;
 
 
     /**
@@ -197,6 +200,8 @@ public class Tournament
         this.timeout = input.getInt("timeout");
         this.num_players = input.getInt("num_players");
         this.game = new GameType(input.getInt ("game_id"));
+
+        this.points = null;
     }
 
 
@@ -219,6 +224,8 @@ public class Tournament
         this.num_players = 0;
         this.timeout = 0;
         this.game = null;           // anywhere in which game is used, check for null.
+
+        this.points = null;
     }
 
 
@@ -310,6 +317,13 @@ public class Tournament
     public boolean AllowResubmitOn () { return this.allow_resubmit_on; }
     public boolean GameOn () { return this.game_on; }
     public int NumPlayers () { return this.num_players; }
+    public PointStructure PointStructure ()
+    {
+        if (this.points == null)
+            this.points = new PointStructure(this);
+
+        return this.points;
+    }
 
 
     /**

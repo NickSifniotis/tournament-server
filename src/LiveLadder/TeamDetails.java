@@ -30,6 +30,8 @@ public class TeamDetails implements Comparable<TeamDetails>
             this.my_labels[i] = new Label();
 
         this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(this.team_deets.Name());
+        this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
+        this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
     //    this.my_labels[LadderColumnStructure.PIC.ordinal()].setText(this.team_deets.Avatar().getName());
         // @TODO: Gracefully handle nulls
     }
@@ -112,5 +114,9 @@ public class TeamDetails implements Comparable<TeamDetails>
     {
         this.score_against += score_against;
         this.score_for += score_for;
+
+        this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
+        this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
+        this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.valueOf(this.Percentage()));
     }
 }

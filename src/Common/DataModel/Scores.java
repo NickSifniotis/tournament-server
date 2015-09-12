@@ -120,7 +120,7 @@ public class Scores
                     this.raw_scores[counter] = res.getInt("score");
                     this.disqualified[counter] = (res.getInt("disqualified") == 1);
                     this.no_scores[counter] = (res.getInt("no_score") == 1);
-                    this.submission_keys[counter] = (res.getInt("submission_key"));
+                    this.submission_keys[counter] = res.getInt("submission_id");
 
                     counter++;
                 }

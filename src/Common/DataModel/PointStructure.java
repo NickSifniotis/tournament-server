@@ -21,13 +21,15 @@ public class PointStructure
      * Create the ladder's point scoring system per the database records.
      * If no tournament ID is given, have a sook.
      *
-     * @param tournament_id - the tournament who's point scoring structure to load.
+     * @param tournament - the tournament who's point scoring structure to load.
      */
-    public PointStructure (int tournament_id)
+    public PointStructure (Tournament tournament)
     {
-        if (tournament_id > 0)
+        this.num_players = tournament.NumPlayers();
+
+        if (tournament.PrimaryKey() > 0)
         {
-            String query = "SELECT * FROM point_structure WHERE tournament_id = " + tournament_id;
+            String query = "SELECT * FROM point_structure WHERE tournament_id = " + tournament.PrimaryKey();
 
 
         }
@@ -90,6 +92,6 @@ public class PointStructure
             return;
         }
 
-        
+        // use the points system to calculate points and things.
     }
 }
