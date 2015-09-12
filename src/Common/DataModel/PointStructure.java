@@ -66,6 +66,30 @@ public class PointStructure
             return;
         }
 
+        PlayerSubmission[] players = g.GetPlayers();
 
+        try
+        {
+            for (PlayerSubmission p : players)
+            {
+                TeamDetails deets = teams.get(p.PrimaryKey());
+                deets.AddScores(game_scores.ScoreFor(p.PrimaryKey()), game_scores.ScoreAgainst(p.PrimaryKey()));
+            }
+        }
+        catch (Exception e)
+        {
+            // a lot of these try/catch blocks are being used to catch impossible situations.
+            // this is one of those.
+
+            String error = "PointStructure.ScoreGame - Error trying to scorefor/against game " + g.PrimaryKey() + ": " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+
+            return;
+        }
+
+        
     }
 }

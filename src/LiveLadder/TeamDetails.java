@@ -97,4 +97,20 @@ public class TeamDetails implements Comparable<TeamDetails>
             grid.add (this.my_labels[i], i, position);
         }
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 12/09/2015
+     *
+     * Adds the given scores (for a game) to this team's tally
+     *
+     * @param score_for - self evident to anyone who watches sports
+     * @param score_against - ditto
+     */
+    public void AddScores (int score_for, int score_against)
+    {
+        this.score_against += score_against;
+        this.score_for += score_for;
+    }
 }
