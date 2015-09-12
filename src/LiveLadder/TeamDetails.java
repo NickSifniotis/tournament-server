@@ -18,6 +18,7 @@ public class TeamDetails implements Comparable<TeamDetails>
     private int points;
     private int score_for;
     private int score_against;
+    private boolean playing_now;
 
     private Label [] my_labels;
 
@@ -27,7 +28,10 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.team_deets = p;
         this.my_labels = new Label[LadderColumnStructure.values().length];
         for (int i = 0; i < this.my_labels.length; i ++)
+        {
             this.my_labels[i] = new Label();
+            this.my_labels[i].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        }
 
         this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(this.team_deets.Name());
     //    this.my_labels[LadderColumnStructure.PIC.ordinal()].setText(this.team_deets.Avatar().getName());
@@ -124,7 +128,15 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
         this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.valueOf(this.Percentage()));
         this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.Differential()));
+
+        if (this.playing_now)
+            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setText("Playing");
+        else
+            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setText("");
     }
+
+
+    public void SetPlayingNow() { this.playing_now = true; }
 
 
     /**
@@ -138,5 +150,6 @@ public class TeamDetails implements Comparable<TeamDetails>
     {
         this.score_for = 0;
         this.score_against = 0;
+        this.playing_now = false;
     }
 }

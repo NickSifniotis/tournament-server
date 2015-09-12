@@ -325,6 +325,9 @@ public class Tournament
         return this.points;
     }
 
+    @Override
+    public String toString () { return this.Name(); }
+
 
     /**
      * Nick Sifniotis u5809912

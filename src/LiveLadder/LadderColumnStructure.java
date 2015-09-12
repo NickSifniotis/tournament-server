@@ -3,6 +3,8 @@ package LiveLadder;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 
+import java.util.DoubleSummaryStatistics;
+
 /**
  * Created by nsifniotis on 12/09/15.
  *
@@ -10,7 +12,7 @@ import javafx.scene.layout.GridPane;
  */
 public enum LadderColumnStructure
 {
-    POSITION, PIC, NAME, POINTS, SCORE_FOR, SCORE_AGAINST, PERCENTAGE, DIFFERENTIAL;
+    POSITION, PIC, NAME, POINTS, SCORE_FOR, SCORE_AGAINST, PERCENTAGE, DIFFERENTIAL, STATUS;
 
     private static boolean [] enabled;
     private static String [] names;
@@ -28,7 +30,7 @@ public enum LadderColumnStructure
         for (int i = 0; i < enabled.length; i ++)
             enabled[i] = true;
 
-        names = new String [] { "#", "", "Team", "Points", "Score For", "Score Against", "Percentage", "Differential" };
+        names = new String [] { "#", "", "Team", "Points", "Score For", "Score Against", "Percentage", "Differential", "Status" };
     }
 
 
@@ -47,6 +49,8 @@ public enum LadderColumnStructure
             if (enabled[i])
             {
                 Label label = new Label(names[i]);
+                label.getStyleClass().add("header_row");
+                label.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
                 grid.add(label, i, 0);
             }
         }

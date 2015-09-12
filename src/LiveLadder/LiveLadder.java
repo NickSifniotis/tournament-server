@@ -53,15 +53,13 @@ public class LiveLadder extends Application {
 
         HBox top_row = new HBox();
         top_row.getStyleClass().add("tournament_header_row");
-        top_row.setPrefWidth(800);
         this.tournament_name = new Label ("No tournament selected");
-        this.tournament_name.setPrefWidth(800);
+        this.tournament_name.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         this.tournament_name.getStyleClass().add("tournament_header_text");
         top_row.getChildren().add(tournament_name);
 
         main_layout.setTop(tournament_name);
         main_layout.setBottom(bottom_row);             // @TODO: This would work better as a solo button that opens popup
-        main_layout.setPadding(new Insets(10, 10, 10, 10));
 
         Scene scene = new Scene (main_layout, 800, 600);
 

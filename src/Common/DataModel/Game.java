@@ -334,6 +334,7 @@ public class Game
     public int RoundNumber () { return this.round_number; }
     public int GameNumber() { return this.game_number; }
     public boolean Started() { return this.played | this.in_progress; }
+    public boolean InProgress() { return this.in_progress; }
 
 
     /**

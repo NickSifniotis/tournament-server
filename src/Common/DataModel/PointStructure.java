@@ -76,6 +76,9 @@ public class PointStructure
             {
                 TeamDetails deets = teams.get(p.PrimaryKey());
                 deets.AddScores(game_scores.ScoreFor(p.PrimaryKey()), game_scores.ScoreAgainst(p.PrimaryKey()));
+
+                if (g.InProgress())
+                    deets.SetPlayingNow();
             }
         }
         catch (Exception e)

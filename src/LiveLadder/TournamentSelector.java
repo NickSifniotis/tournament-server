@@ -30,10 +30,10 @@ public class TournamentSelector
      */
     public TournamentSelector (LiveLadder parent, Pane layout_thing)
     {
-        Button select_button = new Button ("Select TournamentKey");
+        Button select_button = new Button ("Select ..");
         select_button.setOnAction(e -> handleTournamentSelection());
 
-        Button refresh_list = new Button ("Refresh TournamentKey List");
+        Button refresh_list = new Button ("Refresh List");
         refresh_list.setOnAction(e -> refresh_list());
 
         this.selector = new ChoiceBox();
