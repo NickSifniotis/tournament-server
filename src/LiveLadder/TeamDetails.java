@@ -119,4 +119,18 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
         this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.valueOf(this.Percentage()));
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 12/9/2015
+     *
+     * Resets the scores so the refresh isn't cumulative.
+     *
+     */
+    public void Reset()
+    {
+        this.score_for = 0;
+        this.score_against = 0;
+    }
 }

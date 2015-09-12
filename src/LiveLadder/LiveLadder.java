@@ -123,6 +123,11 @@ public class LiveLadder extends Application {
             return;
 
 
+        // players start from zero
+        for (TeamDetails t: teams)
+                t.Reset();
+        
+
         // get the games for this tournament.
         Tournament [] tournaments = { this.tournament };
         Game[] games = Game.LoadAll(tournaments, false);
