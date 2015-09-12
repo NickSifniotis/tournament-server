@@ -269,17 +269,46 @@ public class Scores
      * Accessor functions for the LiveLadder class
      * Throws an exception if the player that is being searched for doesn't exist.
      *
-     * @param player_id @TODO: these things
-     * @return
-     * @throws Exception
+     * @param player_id - the player whos scores we are after
+     * @return - the requested scores
+     * @throws Exception - if the provided player did not play in this game.
      */
     public int ScoreFor (int player_id) throws Exception
     {
-        return 0;
+        boolean found = false;
+        int score = 0;
+
+        for (int i = 0; i < this.submission_keys.length; i ++)
+            if (submission_keys[i] == player_id)
+            {
+                found = true;
+                score += (no_scores[i]) ? 0 : raw_scores[i];
+            }
+
+        if (!found)
+            throw new Exception ("Player " + player_id + " did not play in this game.");
+
+        return score;
     }
 
     public int ScoreAgainst (int player_id) throws Exception
     {
-        return 0;
+        boolean found = false;
+        int score = 0;
+
+        for (int i = 0; i < this.submission_keys.length; i ++)
+            if (submission_keys[i] == player_id)
+            {
+                found = true;
+            }
+            else
+            {
+                score += (no_scores[i]) ? 0 : raw_scores[i];
+            }
+
+        if (!found)
+            throw new Exception ("Player " + player_id + " did not play in this game.");
+
+        return score;
     }
 }

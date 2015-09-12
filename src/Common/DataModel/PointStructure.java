@@ -1,5 +1,6 @@
 package Common.DataModel;
 
+import Common.SystemState;
 import LiveLadder.TeamDetails;
 
 import java.util.HashMap;
@@ -49,6 +50,22 @@ public class PointStructure
      */
     public void ScoreGame (Game g, HashMap<Integer, TeamDetails> teams)
     {
+        Scores game_scores;
+        try
+        {
+            game_scores = new Scores(g.PrimaryKey(), num_players);
+        }
+        catch(Exception e)
+        {
+            String error = "PointStructure.ScoreGame - Error trying to score game " + g.PrimaryKey() + ": " + e;
+            SystemState.Log(error);
+
+            if (SystemState.DEBUG)
+                System.out.println (error);
+
+            return;
+        }
+
 
     }
 }
