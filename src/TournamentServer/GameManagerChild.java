@@ -3,6 +3,8 @@ package TournamentServer;
 import AcademicsInterface.IGameEngine;
 import Common.DataModel.Game;
 import Common.DataModel.Scores;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import TournamentServer.Exceptions.PlayerMoveException;
 
 /**
@@ -41,6 +43,16 @@ public class GameManagerChild extends Thread
         this.players = players;
 
         this.game_scores = new Scores(game, players);
+
+        try
+        {
+            this.game.StartGame();
+        }
+        catch (Exception e)
+        {
+            String error = "GameManagerChild.constructor - unable to start game " + this.game.PrimaryKey();
+            LogManager.Log(LogType.ERROR, error);
+        }
     }
 
 

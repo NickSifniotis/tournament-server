@@ -26,7 +26,7 @@ public class Scores
     private boolean game_on;
     private Score[] scores;
 
-    
+
     /**
      * Nick Sifniotis u5809912
      * 6/9/2015

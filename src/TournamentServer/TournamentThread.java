@@ -238,10 +238,10 @@ public class TournamentThread extends Thread
             return false;
         }
 
+
         PlayerManager[] player_managers = new PlayerManager[players.length];
         try
         {
-            game.StartGame();
             for (int i = 0; i < players.length; i++)
             {
                 players[i].StartingGame();
