@@ -9,30 +9,45 @@ import java.util.concurrent.BlockingQueue;
  *
  * The main application in this suite - at long last, it's written! And look,
  * it only needed twenty odd lines of code!
- * 
+ *
  */
 public class TournamentServer
 {
 
-    private static void main_loop ()
-    {
+    private static void main_loop () {
         // begin by firing up the child process that manages all the game work.
         TournamentThread child = new TournamentThread();
-        BlockingQueue <Hermes> messenger = child.GetHermes();
-        Scanner in = new Scanner (System.in);
+        BlockingQueue<Hermes> messenger = child.GetHermes();
+        Scanner in = new Scanner(System.in);
 
         child.start();
 
-        while (!child.Finished())
-        {
-            System.out.println ("Command:");
+        boolean finished = false;
+        while (!finished) {
+            System.out.println("Command:");
             String command = in.nextLine();
 
-            Hermes message = new Hermes ();
+            Hermes message = new Hermes();
             message.message = command;
 
-            messenger.add (message);
+            messenger.add(message);
+
+            if (command.equals("Q"))
+                finished = true;
         }
+
+        // yeah, but you gotta wait for the child process to terminate too.
+        while (!child.Finished())
+            try
+            {
+                Thread.sleep(500);
+            }
+            catch (Exception e)
+            {
+                // haha, do nothing
+            }
+
+        System.out.println ("Child thread terminated ..");
     }
 
     public static void main(String[] args)

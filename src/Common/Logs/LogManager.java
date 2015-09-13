@@ -40,7 +40,7 @@ public class LogManager
 
 
         // if there's no log file for this session, create one.
-        if (logfiles[type.ordinal()].equals(""))
+        if (logfiles[type.ordinal()] == null)
             logfiles[type.ordinal()] = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
 
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(type.LogPath() + logfiles[type.ordinal()], true))))
