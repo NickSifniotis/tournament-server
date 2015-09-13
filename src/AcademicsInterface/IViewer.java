@@ -21,20 +21,21 @@ public interface IViewer
      *
      * Accepts and stores a javafx stage. This stage is where the game will be displayed as it is played out.
      *
-     * @param window
+     * @param stage - "This stage is where the game will be displayed as it is played out"
      */
-    void InitialiseViewer (javafx.stage.Stage window);
+    void InitialiseViewer (javafx.stage.Stage stage);
 
 
     /**
      * Nick Sifniotis u5809912
      * 8/9/2015
      *
-     * Sets up a new game on the GUI. By 'new' I simply mean 'not the game that has been displayed so far'
-     * It may well be halfway through a game. The important thing is that the list of players has changed.
+     * Sets up a new game on the GUI. 'New' means 'different to the game that is currently being displayed'
+     * The 'new' game may well be halfway through. The important thing is that the list of players has changed.
+     * Because you might have a scoreboard or something to the side that needs to be updated when the set
+     * of players changes.
      *
-     * Generally you would use this method to change the player information display panel - assuming you
-     * implement something like that - and then call update with the game state.
+     * Generally you would use this method to change the player information and then call update with the game state.
      *
      * @param game_state - the current state of the new game to display
      * @param players - the players playing this new game.

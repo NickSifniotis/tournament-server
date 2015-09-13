@@ -1,5 +1,7 @@
 package AcademicsInterface;
 
+import java.io.File;
+
 /**
  * Created by nsifniotis on 8/09/15.
  *
@@ -10,6 +12,6 @@ package AcademicsInterface;
 public class ViewedPlayers
 {
     public String PlayerName;
-    public String PlayerAvatar;
+    public File PlayerPicture;
     public String PlayerMotto;
 }
