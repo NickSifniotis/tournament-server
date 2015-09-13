@@ -141,7 +141,6 @@ public class Tournament
      */
     public static Tournament[] LoadAll (boolean active_only)
     {
-        SystemState.Log("TournamentKey.LoadAll - attempting to load all");
         List<Tournament> temp = new ArrayList<>();
 
         String query = "SELECT * FROM tournament";
@@ -171,7 +170,6 @@ public class Tournament
 
         int size = temp.size();
         Tournament [] res = new Tournament[size];
-        SystemState.Log("TournamentKey.LoadAll - returning " + size + " tournaments.");
 
         return temp.toArray(res);
     }
@@ -238,8 +236,6 @@ public class Tournament
      */
     public void SaveState ()
     {
-        SystemState.Log("Saving state for tournament " + this.id);
-
         // Is this already in the database?
         boolean exists = false;
         String query;
@@ -293,8 +289,6 @@ public class Tournament
                     + ", " + this.num_players
                     + ", " + this.timeout
                     + ")";
-
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
 
             // we do want to know what the primary key of this new record is.
             this.id = DBManager.ExecuteReturnKey(query);

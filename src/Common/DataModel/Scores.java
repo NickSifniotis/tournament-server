@@ -16,27 +16,11 @@ import java.sql.ResultSet;
  * Database updates occur whenever the scores themselves are updated, so that there is always
  * a sort of 'live stream' of scores into the database happening.
  *
- * Database schema for Score objects
- * id                   prikey
- * submission_id        int
- * game_id              int
- * score                int
- * no_score             boolean         Used to indicate that a game terminated abnormally
- * disqualified         boolean         Abnormal termination has been caused by this player.
- *
- * // @TODO: This entire model needs to be refactored. Right now the code is asymmetrical and there are
- * // @TODO: two completely separate strands of logic at work
  */
 public class Scores
 {
-    // @TODO: Refactor this code so that there is just one array of Score DMobjects that look after themselves.
-    private int [] raw_scores;
-    private int [] score_prikeys;
-    private boolean [] disqualified;
-    private int [] submission_keys;
-    private boolean[] no_scores;
     private boolean game_on;
-
+    private Score[] scores;
 
     /**
      * Nick Sifniotis u5809912
@@ -52,32 +36,19 @@ public class Scores
      * new score records over and over for the same game.
      *
      * @param game - the Game object for which these scores are being recorded.
-     * @param players - the players of this game.
+     * @param num_players - the number of players of this game.
      */
-    public Scores (Game game, PlayerManager[] players)
+    public Scores (Game game, int num_players)
     {
-        int num_players = players.length;
-        this.raw_scores = new int [num_players];
-        this.disqualified = new boolean [num_players];
-        this.no_scores = new boolean[num_players];
-        this.submission_keys = new int[num_players];
+        this.scores = new Score[num_players];
         this.game_on = true;
-
 
         // remove any old scores that may be attached to this game.
         String query = "DELETE FROM score WHERE game_id = " + game.PrimaryKey();
         DBManager.Execute(query);
 
-
-        // Create and execute SQL to INSERT new score data into the table
-        // save the prikeys in the private int array.
-        this.score_prikeys = new int [num_players];
         for (int i = 0; i < num_players; i ++)
-        {
-            query = "INSERT INTO score (submission_id, game_id, score, no_score, disqualified)"
-                    + " VALUES (" + players[i].GetDatalink().PrimaryKey() + ", " + game.PrimaryKey() + ", 0, false, false)";
-            this.score_prikeys[i] = DBManager.ExecuteReturnKey(query);
-        }
+            this.scores[i] = new Score();
     }
 
 
@@ -98,12 +69,7 @@ public class Scores
     {
         // I am not even going to assert that game_id != 0 here
         // don't get me started on num_players
-        this.disqualified = new boolean[num_players];
-        this.raw_scores = new int[num_players];
-        this.score_prikeys = new int[num_players];
-        this.no_scores = new boolean[num_players];
-        this.submission_keys = new int[num_players];
-
+        this.scores = new Score[num_players];
 
         String query = "SELECT * FROM score WHERE game_id = " + game_id;
         Connection connection = DBManager.connect();
@@ -116,12 +82,7 @@ public class Scores
                 int counter = 0;
                 while (res.next())
                 {
-                    this.score_prikeys[counter] = res.getInt("id");
-                    this.raw_scores[counter] = res.getInt("score");
-                    this.disqualified[counter] = (res.getInt("disqualified") == 1);
-                    this.no_scores[counter] = (res.getInt("no_score") == 1);
-                    this.submission_keys[counter] = res.getInt("submission_id");
-
+                    this.scores[counter] = new Score(res);
                     counter++;
                 }
 
@@ -156,8 +117,8 @@ public class Scores
      */
     public void Update (int [] new_scores)
     {
-        System.arraycopy(new_scores, 0, this.raw_scores, 0, new_scores.length);
-        this.SaveState();
+        for (int i = 0; i < new_scores.length; i ++)
+            this.scores[i].Update(new_scores[i]);
     }
 
 
@@ -171,9 +132,10 @@ public class Scores
      */
     public void Disqualify (int player_id)
     {
-        this.disqualified[player_id] = true;
+        for (int i = 0; i < this.scores.length; i ++)
+            this.scores[i].AbnormalTermination(i == player_id);
+
         this.game_on = false;
-        this.SaveState();
     }
 
 
@@ -194,36 +156,12 @@ public class Scores
 
     /**
      * Nick Sifniotis u5809912
-     * 6/9/2015
-     *
-     * This method saves the current score state into the database.
-     * It assumes that the constructor has done its job and created the records
-     *
-     */
-    public void SaveState()
-    {
-        boolean no_score = !this.game_on;
-
-        for (int i = 0; i < this.raw_scores.length; i ++)
-        {
-            String query = "UPDATE score SET"
-                    + " score = " + this.raw_scores[i]
-                    + ", no_score = " + DBManager.BoolValue(no_score)
-                    + ", disqualified = " + DBManager.BoolValue(this.disqualified[i])
-                    + " WHERE id = " + this.score_prikeys[i];
-            DBManager.Execute(query);
-        }
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
      * 10/9/2015
      *
      * Various accessor functions
      * @return - requested data
      */
-    public boolean Disqualified (int player_position) { return this.disqualified[player_position]; }
+    public boolean Disqualified (int player_position) { return this.scores[player_position].Disqualified(); }
 
 
     /**
@@ -243,9 +181,9 @@ public class Scores
         if (!this.game_on)
         {
             res += "Game Status: Disqualification\n";
-            for (int i = 0; i < this.raw_scores.length; i ++)
+            for (int i = 0; i < this.scores.length; i ++)
             {
-                if (this.disqualified[i])
+                if (this.scores[i].Disqualified())
                     res += "Player " + (i + 1) + ": DISQUALIFIED\n";
                 else
                     res += "Player " + (i + 1) + ": No score recorded\n";
@@ -254,8 +192,8 @@ public class Scores
         else
         {
             res += "Game Status: Legal\n";
-            for (int i = 0; i < this.raw_scores.length; i ++)
-                    res += "Player " + (i + 1) + ": " + this.raw_scores[i] + "\n";
+            for (int i = 0; i < this.scores.length; i ++)
+                    res += "Player " + (i + 1) + ": " + this.scores[i].Score() + "\n";
         }
 
         return res;
@@ -278,11 +216,11 @@ public class Scores
         boolean found = false;
         int score = 0;
 
-        for (int i = 0; i < this.submission_keys.length; i ++)
-            if (submission_keys[i] == player_id)
+        for (Score s: this.scores)
+            if (s.SubmissionKey() == player_id)
             {
                 found = true;
-                score += (no_scores[i]) ? 0 : raw_scores[i];
+                score += (s.NoScore()) ? 0 : s.Score();
             }
 
         if (!found)
@@ -296,15 +234,11 @@ public class Scores
         boolean found = false;
         int score = 0;
 
-        for (int i = 0; i < this.submission_keys.length; i ++)
-            if (submission_keys[i] == player_id)
-            {
+        for (Score s: this.scores)
+            if (s.SubmissionKey() == player_id)
                 found = true;
-            }
             else
-            {
-                score += (no_scores[i]) ? 0 : raw_scores[i];
-            }
+                score += (s.NoScore()) ? 0 : s.Score();
 
         if (!found)
             throw new Exception ("Player " + player_id + " did not play in this game.");

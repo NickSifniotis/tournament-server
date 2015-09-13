@@ -1,7 +1,9 @@
 package Common.DataModel;
 
+import Common.DBManager;
 import Common.SystemState;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -40,6 +42,7 @@ public class Score
     public Score ()
     {
         load_state();
+        SaveState();
     }
 
 
@@ -58,6 +61,44 @@ public class Score
                 System.out.println (error);
 
             load_state();
+        }
+    }
+
+
+    public Score (int id)
+    {
+        String query;
+
+        if (id > 0)
+        {
+            query =  "SELECT * FROM game WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                try
+                {
+                    res.next();
+                    this.load_state(res);
+                    DBManager.disconnect(res);          // disconnect by result
+                }
+                catch (Exception e)
+                {
+                    String error = "Score constructor (score_id) - SQL error retrieving player data. " + e;
+                    SystemState.Log(error);
+
+                    if (SystemState.DEBUG)
+                        System.out.println (error);
+
+                    this.load_state();
+                }
+            }
+            else
+            {
+                this.load_state();
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
         }
     }
 
@@ -98,4 +139,106 @@ public class Score
         this.no_score = (input.getInt("no_score") == 1);
         this.disqualified = (input.getInt("disqualified") == 1);
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Save the current state of the scores.
+     */
+    public void SaveState ()
+    {
+        // is this score already in the database?
+        boolean exists = false;
+        String query;
+
+        if (this.id > 0)
+        {
+            query = "SELECT * FROM score WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                exists = true;
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        if (exists)
+        {
+            query = "UPDATE score SET score = " + this.score
+                    + ", game_id = " + this.game_id
+                    + ", submission_id = " + this.submission_id
+                    + ", no_score = " + DBManager.BoolValue(this.no_score)
+                    + ", disqualified = " + DBManager.BoolValue(this.disqualified)
+                    + " WHERE id = " + this.id;
+
+            DBManager.Execute(query);
+        }
+        else
+        {
+            query = "INSERT INTO game (score, game_id, submission_id, no_score, disqualified)"
+                    + " VALUES (" + this.score
+                    + ", " + this.game_id
+                    + ", " + this.submission_id
+                    + ", " + DBManager.BoolValue(this.no_score)
+                    + ", " + DBManager.BoolValue(this.disqualified)
+                    + ")";
+
+            // we do want to know what the primary key of this new record is.
+            this.id = DBManager.ExecuteReturnKey(query);
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Updates this record with a new score.
+     *
+     * @param new_score - the new score.
+     */
+    public void Update (int new_score)
+    {
+        this.score = new_score;
+        SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Indicates that the game terminated abnormally.
+     *
+     * @param my_fault - True if it was this record's player that caused it.
+     */
+    public void AbnormalTermination (boolean my_fault)
+    {
+        this.no_score = true;
+        this.disqualified = my_fault;
+        SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Various accessor functions.
+     *
+     * @return nice data.
+     */
+    public boolean Disqualified() { return this.disqualified; }
+    public boolean NoScore() { return this.no_score; }
+    public int Score() { return this.score; }
+    public int SubmissionKey () { return this.submission_id; }
+
 }
