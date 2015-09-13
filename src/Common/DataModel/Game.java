@@ -1,6 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import TournamentServer.PlayerManager;
 
@@ -85,10 +87,7 @@ public class Game
         catch (Exception e)
         {
             String error = "Game.constructor (resultset): Error creating from resultset input: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -122,12 +121,10 @@ public class Game
                 catch (Exception e)
                 {
                     String error = "Game constructor (game_id) - SQL error retrieving player data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
+                    LogManager.Log(LogType.ERROR, error);
 
                     this.loadState();
+                    DBManager.disconnect(connection);
                 }
             }
             else
@@ -194,10 +191,8 @@ public class Game
             catch (Exception e)
             {
                 String error = "Game.LoadAll (game_id) - SQL error retrieving game data. " + e;
-                SystemState.Log(error);
-
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                LogManager.Log(LogType.ERROR, error);
+                DBManager.disconnect(connection);
             }
         }
         else
@@ -266,9 +261,6 @@ public class Game
      */
     public void SaveState ()
     {
-        SystemState.Log("Saving state for game " + this.id);
-
-
         // is this submission already in the database?
         boolean exists = false;
         String query;
@@ -298,8 +290,6 @@ public class Game
                     + ", in_progress = " + DBManager.BoolValue(this.in_progress)
                     + " WHERE id = " + this.id;
 
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
-
             DBManager.Execute(query);
         }
         else
@@ -312,8 +302,6 @@ public class Game
                     + ", " + DBManager.BoolValue(this.played)
                     + ", " + DBManager.BoolValue(this.in_progress)
                     + ")";
-
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
 
             // we do want to know what the primary key of this new record is.
             this.id = DBManager.ExecuteReturnKey(query);
@@ -372,12 +360,9 @@ public class Game
             catch (Exception e)
             {
                 String er = "Game.GetPlayers - SQL error retrieving player data. " + e;
-                SystemState.Log(er);
-
-                if (SystemState.DEBUG)
-                    System.out.println (er);
-
+                LogManager.Log(LogType.ERROR, er);
                 error = true;
+                DBManager.disconnect(connection);
             }
 
             DBManager.disconnect(res);          // disconnect by result
@@ -385,10 +370,7 @@ public class Game
         else
         {
             String er = "Game.GetPlayers - No data error retrieving player data.";
-            SystemState.Log(er);
-
-            if (SystemState.DEBUG)
-                System.out.println (er);
+            LogManager.Log(LogType.ERROR, er);
 
             error = true;
             DBManager.disconnect(connection);   // disconnect by connection

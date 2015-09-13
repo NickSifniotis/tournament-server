@@ -61,6 +61,21 @@ public class LogManager
     }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 13/09/2015
+     *
+     * Records an entry in a game's log files.
+     *
+     * The reason why this gets its own special method is because the system could well be running multiple
+     * games at once, and it's much easier to just pass the game_id as a parameter than it is to create
+     * some sort of dynamic filename remembering storage system.
+     *
+     * Also, concurrency issues blow.
+     *
+     * @param game_id - which game for to record the log entry.
+     * @param entry - the entry to record.
+     */
     public static void GameLog (int game_id, String entry)
     {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(LogType.GAME.LogPath() + game_id + ".txt", true))))

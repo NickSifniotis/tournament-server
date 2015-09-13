@@ -1,8 +1,5 @@
 package Common;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -13,14 +10,11 @@ import java.util.Date;
 public class SystemState {
 
     public static final boolean DEBUG = true;
-    public static final boolean LOGGING = true;
 
     public static final boolean SQL_LOGS = true;
     public static final boolean THREAD_LOGS = true;
     public static final boolean ERROR_LOGS = true;
 
-
-    private static final String log_file = "log.txt";
 
     // new directory structure
     public static final String engines_folder = "game_engines/";
@@ -29,47 +23,4 @@ public class SystemState {
     public static final String marshalling_folder = "marshalling/";
     public static final String pictures_folder = "marshalling/pictures/";
 
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 31/08/2015
-     *
-     * Adds an entry to the program's log file.
-     *
-     * @param text - the entry to add.
-     */
-    public static void Log (String text)
-    {
-        if (!LOGGING)
-            return;
-
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(log_file, true))))
-        {
-            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            Date now = new Date();
-            String strDate = sdfDate.format(now);
-
-            out.println (strDate + ": " + text);
-        }
-        catch (IOException e)
-        {
-            System.out.println ("ERROR APPENDING TO LOG FILE.\nTHE ENTIRE PROGRAM IS FUCKED RUN FOR THE HILLS.");
-        }
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 31/08/2015
-     *
-     * Initialises the system.
-     * Which means, deletes the log file.
-     *
-     */
-    public static void initialise()
-    {
-        File logFile = new File (log_file);
-        logFile.delete();
-    }
 }
