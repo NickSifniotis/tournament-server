@@ -1,5 +1,8 @@
 package Common;
 
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
+
 import java.sql.*;
 
 /**
@@ -40,14 +43,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "Within DBManager.Execute, error executing SQL query: " + query + ": " + e;
-                if (SystemState.DEBUG)
-                    System.out.println(error);
-
-                SystemState.Log("Within DBManager.Execute, error executing SQL query: " + query + ": " + e);
+                LogManager.Log(LogType.ERROR, error);
             }
         }
 
-        SystemState.Log ("Successfully executed query within DBManager.Execute. " + query);
+        LogManager.Log(LogType.SQL, "Executed query " + query);
     }
 
 
@@ -76,10 +76,7 @@ public class DBManager {
                 if (affected_rows != 1)
                 {
                     String error = "DBManager.ExecuteReturnKey - Insert into database failed. Affected rows: " + affected_rows + ": " + query;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
+                    LogManager.Log(LogType.ERROR, error);
                 }
                 else
                 {
@@ -101,14 +98,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteReturnKey - Error executing SQL query: " + query + ": " + e;
-                SystemState.Log(error);
-
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                LogManager.Log(LogType.ERROR, error);
             }
         }
 
-        SystemState.Log ("DBManager.ExecuteReturnKey - Insert query a success, returning new prikey " + res);
+        LogManager.Log(LogType.SQL, "Insert a success, returning new prikey " + res + " on query " + query);
         return res;
     }
 
@@ -134,21 +128,19 @@ public class DBManager {
             {
                 Statement statement = connection.createStatement();
                 results = statement.executeQuery(query);
-
-                SystemState.Log ("DBManager.ExecuteQuery - Execution of query successful, results obtained for " + query);
             }
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteQuery - Error executing SQL query. Query: " + query + " Exception: " + e;
-                SystemState.Log(error);
-
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                LogManager.Log(LogType.ERROR, error);
             }
         }
 
+        LogManager.Log (LogType.SQL, "Executed query " + query);
+
         return results;
     }
+
 
     /**
      * Nick Sifniotis u5809912
@@ -167,16 +159,11 @@ public class DBManager {
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/"
                     + db_database + "?user=" + db_username + "&password=" + db_password);
-
-            SystemState.Log ("DBManager.Connect - Connection to database established.");
         }
         catch (Exception e)
         {
             String error = "DBManager.Connect - Exception connecting to tournament database: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
 
         return connection;
@@ -196,16 +183,11 @@ public class DBManager {
         try
         {
             connection.close();
-
-            SystemState.Log("DBManager.disconnect - Disconnected from database!");
         }
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -218,16 +200,11 @@ public class DBManager {
             results.close();
             statement.close();
             connection.close();
-
-            SystemState.Log ("DBManager.disconnect - Disconnected from database!");
         }
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -239,7 +216,7 @@ public class DBManager {
      * A quick and dirty function for converting between java booleans and SQL tinyints
      *
      * @param r the bool to convert
-     * @return
+     * @return an int that the database can understand
      */
     public static int BoolValue(boolean r)
     {

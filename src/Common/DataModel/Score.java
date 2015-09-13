@@ -1,6 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 
 import java.sql.Connection;
@@ -55,10 +57,7 @@ public class Score
         catch (Exception e)
         {
             String error = "Score constructor (resultset) - SQL error retrieving score data. " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             load_state();
         }
@@ -86,12 +85,10 @@ public class Score
                 catch (Exception e)
                 {
                     String error = "Score constructor (score_id) - SQL error retrieving player data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
+                    LogManager.Log(LogType.ERROR, error);
 
                     this.load_state();
+                    DBManager.disconnect(connection);
                 }
             }
             else
