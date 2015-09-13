@@ -1,6 +1,7 @@
 package Common.DataModel;
 
-import Common.SystemState;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import LiveLadder.TeamDetails;
 
 import java.util.HashMap;
@@ -60,10 +61,7 @@ public class PointStructure
         catch(Exception e)
         {
             String error = "PointStructure.ScoreGame - Error trying to score game " + g.PrimaryKey() + ": " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             return;
         }
@@ -87,10 +85,7 @@ public class PointStructure
             // this is one of those.
 
             String error = "PointStructure.ScoreGame - Error trying to scorefor/against game " + g.PrimaryKey() + ": " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             return;
         }

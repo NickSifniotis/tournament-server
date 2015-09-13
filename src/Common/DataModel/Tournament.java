@@ -4,6 +4,8 @@ import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IPlayer;
 import AcademicsInterface.IViewer;
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
 
@@ -70,12 +72,9 @@ public class Tournament
                 catch (Exception e)
                 {
                     String error = "TournamentKey constructor (id) - SQL error retrieving tournament data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
-
+                    LogManager.Log(LogType.ERROR, error);
                     this.load_state();
+                    DBManager.disconnect(connection);
                 }
             }
             else
@@ -106,10 +105,7 @@ public class Tournament
         catch (Exception e)
         {
             String error = "TournamentKey constructor (resultset) - SQL error: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             load_state();
         }
@@ -162,11 +158,10 @@ public class Tournament
         catch (Exception e)
         {
             String error = "TournamentKey.LoadAll - Error executing SQL query: " + query + ": " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
+
+        DBManager.disconnect(con);
 
         int size = temp.size();
         Tournament [] res = new Tournament[size];
@@ -269,8 +264,6 @@ public class Tournament
                     + ", num_players = " + this.num_players
                     + ", timeout = '" + this.timeout
                     + " WHERE id = " + this.id;
-
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
 
             DBManager.Execute(query);
         }
@@ -392,10 +385,7 @@ public class Tournament
         catch (Exception e)
         {
             String error = "TournamentKey.PlayerInterfaceClass - error creating class: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             return null;
         }
@@ -437,10 +427,7 @@ public class Tournament
         catch (Exception e)
         {
             String error = "TournamentKey.Verification - error creating class: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             return null;
         }

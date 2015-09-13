@@ -3,9 +3,6 @@ package Common.DataModel;
 import Common.DBManager;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
-import TournamentServer.PlayerManager;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

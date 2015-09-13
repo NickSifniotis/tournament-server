@@ -1,6 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import AcademicsInterface.SubmissionMetadata;
 
@@ -105,7 +107,6 @@ public class PlayerSubmission
      */
     public PlayerSubmission (int player_id)
     {
-        SystemState.Log("PlayerSubmission constructor (player_id) - attempting to load player " + player_id);
         String query;
 
         if (player_id != 0) {
@@ -124,12 +125,10 @@ public class PlayerSubmission
                 catch (Exception e)
                 {
                     String error = "PlayerSubmission constructor (player_id) - SQL error retrieving player data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
+                    LogManager.Log(LogType.ERROR, error);
 
                     this.loadState();
+                    DBManager.disconnect(connection);
                 }
             }
             else
@@ -218,9 +217,6 @@ public class PlayerSubmission
      */
     public void saveState ()
     {
-        SystemState.Log("Saving state for player submission " + this.id);
-
-
         // is this submission already in the database?
         boolean exists = false;
         String query;
@@ -252,8 +248,6 @@ public class PlayerSubmission
                     + ", tournament_id = " + this.tournament_id
                     + " WHERE id = " + this.id;
 
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
-
             DBManager.Execute(query);
         }
         else
@@ -269,8 +263,6 @@ public class PlayerSubmission
                     + ", " + this.disqualified_count
                     + ", " + DBManager.BoolValue(this.ready)
                     + ", " + this.tournament_id + ")";
-
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
 
             // we do want to know what the primary key of this new record is.
             this.id = DBManager.ExecuteReturnKey(query);
@@ -310,10 +302,7 @@ public class PlayerSubmission
             {
                 String error = "PlayerSubmission.LoadAll - Error executing SQL query: "
                         + query + ": " + e;
-                SystemState.Log(error);
-
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                LogManager.Log(LogType.ERROR, error);
             }
             DBManager.disconnect(res);          // disconnect by result
         }
@@ -341,7 +330,6 @@ public class PlayerSubmission
      */
     public void Retire()
     {
-        SystemState.Log("PlayerSubmission.Retire - attempting to retire player with PK " + this.id);
         this.retired = true;
         saveState();
     }
@@ -369,7 +357,6 @@ public class PlayerSubmission
 
         String query = "SELECT * FROM submission WHERE original_filename = '"
                 + original + "' AND retired = 0 AND tournament_id = " + t.PrimaryKey();
-        SystemState.Log("PlayerSubmission.GetActiveWithOriginalFilename - attempting to query database: " + query);
 
         try
         {
@@ -384,10 +371,7 @@ public class PlayerSubmission
         {
             String error = "PlayerSubmission.GetActiveWithOriginalFilename - Error executing SQL query: "
                     + query + ": " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
 
         return res;
@@ -485,10 +469,8 @@ public class PlayerSubmission
             catch (Exception e)
             {
                 String error = "PlayerSubmission.CountRegisteredPlayers - SQL error retrieving player data. " + e;
-                SystemState.Log(error);
-
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                LogManager.Log(LogType.ERROR, error);
+                DBManager.disconnect(connection);
             }
         }
         else
