@@ -46,6 +46,15 @@ public class Score
     }
 
 
+    public Score (int game_id, int submission_id)
+    {
+        this.load_state();
+        this.game_id = game_id;
+        this.submission_id = submission_id;
+        this.SaveState();
+    }
+
+
     public Score (ResultSet input)
     {
         try

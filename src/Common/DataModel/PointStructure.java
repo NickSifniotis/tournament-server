@@ -8,6 +8,14 @@ import java.util.HashMap;
 
 /**
  * Created by nsifniotis on 12/09/15.
+ *
+ * This class holds the points model used by the tournament scoring system.
+ * That is to say, how many points you get for coming first, or second, or third
+ * or whatever. Also what to do in the event of a draw.
+ *
+ * It contains methods that will score a game and add the data directly into the TeamDetails
+ * objects. This allows the LiveLadder to palm off the scoring task to this object.
+ *
  */
 public class PointStructure
 {
@@ -67,37 +75,33 @@ public class PointStructure
         }
 
         PlayerSubmission[] players = g.GetPlayers();
-System.out.println (game_scores.GameOn() + " : " + players.length);
-        try
+        for (PlayerSubmission p : players)
         {
-            for (PlayerSubmission p : players)
+            int pri_key = p.PrimaryKey();
+            TeamDetails deets = teams.get(pri_key);
+
+            // by shifting the try/catch block inside this loop,
+            // one missing score will not be enough to take down the entire game record.
+            try
             {
-                int pri_key = p.PrimaryKey();
-                TeamDetails deets = teams.get(pri_key);
-                System.out.println(pri_key);
-                if (deets == null)
-                    System.out.println ("crap");
-            System.out.println (deets.Differential());
-                int sf = game_scores.ScoreFor(pri_key);
-            System.out.println ("Score for: " + sf);
-                int sa = game_scores.ScoreAgainst(pri_key);
-            System.out.println ("Score against: " + sa);
-                deets.AddScores(sf, sa);
-System.out.println("2");
+                deets.AddScores(game_scores.ScoreFor(pri_key), game_scores.ScoreAgainst(pri_key));
+
                 if (g.InProgress())
                     deets.SetPlayingNow();
             }
-        }
-        catch (Exception e)
-        {
-            // a lot of these try/catch blocks are being used to catch impossible situations.
-            // this is one of those.
+            catch (Exception e)
+            {
+                // a lot of these try/catch blocks are being used to catch impossible situations.
+                // this is one of those.
 
-            String error = "PointStructure.ScoreGame - Error trying to scorefor/against game " + g.PrimaryKey() + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
+                // 14/09/2015 - this 'impossible situation' was triggered a number of times last night
+                // and I wasted two hours trying to debug it
 
-            return;
+                String error = "PointStructure.ScoreGame - Error trying to scorefor/against game " + g.PrimaryKey() + ": " + e;
+                LogManager.Log(LogType.ERROR, error);
+            }
         }
+
 
         // use the points system to calculate points and things.
     }

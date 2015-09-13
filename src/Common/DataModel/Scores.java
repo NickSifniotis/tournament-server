@@ -8,6 +8,8 @@ import TournamentServer.PlayerManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -24,6 +26,7 @@ public class Scores
     private boolean game_on;
     private Score[] scores;
 
+    
     /**
      * Nick Sifniotis u5809912
      * 6/9/2015
@@ -38,19 +41,19 @@ public class Scores
      * new score records over and over for the same game.
      *
      * @param game - the Game object for which these scores are being recorded.
-     * @param num_players - the number of players of this game.
+     * @param players - the players of this game.
      */
-    public Scores (Game game, int num_players)
+    public Scores (Game game, PlayerManager[] players)
     {
-        this.scores = new Score[num_players];
+        this.scores = new Score[players.length];
         this.game_on = true;
 
         // remove any old scores that may be attached to this game.
         String query = "DELETE FROM score WHERE game_id = " + game.PrimaryKey();
         DBManager.Execute(query);
 
-        for (int i = 0; i < num_players; i ++)
-            this.scores[i] = new Score();
+        for (int i = 0; i < players.length; i ++)
+            this.scores[i] = new Score(game.PrimaryKey(), players[i].GetDatalink().PrimaryKey());
     }
 
 
@@ -65,14 +68,15 @@ public class Scores
      * and should only ever be called when it is known that there are scores
      * in the database for game_id.
      *
+     * [I spent two hours searching for a bug that doesn't exist because I forgot that]
+     *
      * @param game_id - the game to search for
      */
     public Scores (int game_id, int num_players) throws Exception
     {
         // I am not even going to assert that game_id != 0 here
         // don't get me started on num_players
-        this.scores = new Score[num_players];
-
+        List<Score> list_of_holding = new LinkedList<>();
         String query = "SELECT * FROM score WHERE game_id = " + game_id;
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
@@ -81,13 +85,8 @@ System.out.println ("In constructor with data " + game_id + ":" + num_players);
         {
             try
             {
-                int counter = 0;
                 while (res.next())
-                {
-                    this.scores[counter] = new Score(res);
-                System.out.print ("counter " + counter + ": ");
-                    counter++;
-                }
+                    list_of_holding.add(new Score(res));
 
                 DBManager.disconnect(res);          // disconnect by result
             }
@@ -109,7 +108,9 @@ System.out.println ("In constructor with data " + game_id + ":" + num_players);
 //@TODO massif todo - first, the live ladder is unable to elegantly handle situations
         // in which no scores are found in the database, where they 'should' be there.
         //@TODO second, the game score save state is OSING game_id and submission_id data, find out why.
-        System.out.println ("\nEndofconstructor");
+
+        this.scores = new Score[list_of_holding.size()];
+        list_of_holding.toArray(this.scores);
     }
 
 
@@ -221,17 +222,14 @@ System.out.println ("In constructor with data " + game_id + ":" + num_players);
     {
         boolean found = false;
         int score = 0;
-System.out.println ("len " + this.scores.length);
-        for (Score s: this.scores) {
-            if (s == null)
-                System.out.println ("s is nill");
 
-            System.out.println("target sub key: " + s.SubmissionKey());
-            if (s.SubmissionKey() == player_id) {
+        for (Score s: this.scores)
+            if (s.SubmissionKey() == player_id)
+            {
                 found = true;
                 score += (s.NoScore()) ? 0 : s.Score();
             }
-        }
+
         if (!found)
             throw new Exception ("Player " + player_id + " did not play in this game.");
 

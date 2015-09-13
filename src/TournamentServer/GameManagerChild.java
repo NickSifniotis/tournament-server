@@ -40,7 +40,7 @@ public class GameManagerChild extends Thread
         this.engine = engine;
         this.players = players;
 
-        this.game_scores = new Scores(game, game.Tournament().NumPlayers());
+        this.game_scores = new Scores(game, players);
     }
 
 
