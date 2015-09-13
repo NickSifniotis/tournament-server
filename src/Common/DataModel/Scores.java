@@ -76,7 +76,7 @@ public class Scores
         String query = "SELECT * FROM score WHERE game_id = " + game_id;
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
-
+System.out.println ("In constructor with data " + game_id + ":" + num_players);
         if (res != null)
         {
             try
@@ -85,6 +85,7 @@ public class Scores
                 while (res.next())
                 {
                     this.scores[counter] = new Score(res);
+                System.out.print ("counter " + counter + ": ");
                     counter++;
                 }
 
@@ -105,6 +106,10 @@ public class Scores
             DBManager.disconnect(connection);   // disconnect by connection
             throw new Exception ("Scores for game " + game_id + " not found. Incorrect scores constructor called at this location.");
         }
+//@TODO massif todo - first, the live ladder is unable to elegantly handle situations
+        // in which no scores are found in the database, where they 'should' be there.
+        //@TODO second, the game score save state is OSING game_id and submission_id data, find out why.
+        System.out.println ("\nEndofconstructor");
     }
 
 
@@ -216,14 +221,17 @@ public class Scores
     {
         boolean found = false;
         int score = 0;
+System.out.println ("len " + this.scores.length);
+        for (Score s: this.scores) {
+            if (s == null)
+                System.out.println ("s is nill");
 
-        for (Score s: this.scores)
-            if (s.SubmissionKey() == player_id)
-            {
+            System.out.println("target sub key: " + s.SubmissionKey());
+            if (s.SubmissionKey() == player_id) {
                 found = true;
                 score += (s.NoScore()) ? 0 : s.Score();
             }
-
+        }
         if (!found)
             throw new Exception ("Player " + player_id + " did not play in this game.");
 

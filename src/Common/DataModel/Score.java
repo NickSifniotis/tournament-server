@@ -3,8 +3,6 @@ package Common.DataModel;
 import Common.DBManager;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -180,7 +178,7 @@ public class Score
         }
         else
         {
-            query = "INSERT INTO game (score, game_id, submission_id, no_score, disqualified)"
+            query = "INSERT INTO score (score, game_id, submission_id, no_score, disqualified)"
                     + " VALUES (" + this.score
                     + ", " + this.game_id
                     + ", " + this.submission_id

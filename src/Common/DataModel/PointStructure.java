@@ -67,14 +67,23 @@ public class PointStructure
         }
 
         PlayerSubmission[] players = g.GetPlayers();
-
+System.out.println (game_scores.GameOn() + " : " + players.length);
         try
         {
             for (PlayerSubmission p : players)
             {
-                TeamDetails deets = teams.get(p.PrimaryKey());
-                deets.AddScores(game_scores.ScoreFor(p.PrimaryKey()), game_scores.ScoreAgainst(p.PrimaryKey()));
-
+                int pri_key = p.PrimaryKey();
+                TeamDetails deets = teams.get(pri_key);
+                System.out.println(pri_key);
+                if (deets == null)
+                    System.out.println ("crap");
+            System.out.println (deets.Differential());
+                int sf = game_scores.ScoreFor(pri_key);
+            System.out.println ("Score for: " + sf);
+                int sa = game_scores.ScoreAgainst(pri_key);
+            System.out.println ("Score against: " + sa);
+                deets.AddScores(sf, sa);
+System.out.println("2");
                 if (g.InProgress())
                     deets.SetPlayingNow();
             }
