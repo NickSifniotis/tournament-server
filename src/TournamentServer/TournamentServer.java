@@ -7,7 +7,9 @@ import java.util.concurrent.BlockingQueue;
 /**
  * Created by nsifniotis on 9/09/15.
  *
- * The main application in this suite - at long last, it's written!
+ * The main application in this suite - at long last, it's written! And look,
+ * it only needed twenty odd lines of code!
+ * 
  */
 public class TournamentServer
 {
@@ -21,9 +23,7 @@ public class TournamentServer
 
         child.start();
 
-
-        boolean finished = false;
-        while (!finished)
+        while (!child.Finished())
         {
             System.out.println ("Command:");
             String command = in.nextLine();
@@ -32,9 +32,6 @@ public class TournamentServer
             message.message = command;
 
             messenger.add (message);
-
-            if (command.equals("Q"))
-                finished = true;
         }
     }
 

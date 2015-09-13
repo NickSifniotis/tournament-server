@@ -1,6 +1,8 @@
 package TournamentServer;
 
 import AcademicsInterface.IPlayer;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 
 
@@ -45,7 +47,7 @@ public class PlayerChildThread extends Thread
         finished = false;
         move_obtained = false;
 
-        SystemState.Log("PlayerChildThread.Run - executing.");
+        LogManager.Log(LogType.TOURNAMENT, "PlayerChildThread.Run - executing.");
 
         try
         {
@@ -54,16 +56,13 @@ public class PlayerChildThread extends Thread
         catch (Exception e)
         {
             String error = "PlayerChildThread.Run - Error obtaining player move: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
 
             finished = true;
             return;
         }
 
-        SystemState.Log("PlayerChildThread.Run - move acquired.");
+        LogManager.Log(LogType.TOURNAMENT, "PlayerChildThread.Run - move acquired.");
 
         finished = true;
         move_obtained = true;

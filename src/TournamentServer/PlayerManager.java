@@ -4,6 +4,8 @@ package TournamentServer;
 import AcademicsInterface.IPlayer;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import TournamentServer.Exceptions.NoMoveMadeException;
 import TournamentServer.Exceptions.PlayerMoveException;
@@ -47,10 +49,7 @@ public class PlayerManager
         catch (Exception e)
         {
             String error = "PlayerManager.constructor - error creating IPlayer object: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 

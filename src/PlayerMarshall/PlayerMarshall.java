@@ -6,6 +6,8 @@ import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -52,15 +54,12 @@ public class PlayerMarshall extends Application {
     public static File [] GetNewSubmissions (Tournament t)
     {
         String full_path = SystemState.input_folder + t.PrimaryKey() + "/";
-        SystemState.Log("PlayerMarshall.GetNewSubmissions - checking directory " + full_path + " for tourney " + t.Name());
 
         File folder = new File (full_path);
         File[] listOfFiles = folder.listFiles();
 
-        if (listOfFiles != null)
-            SystemState.Log("PlayerMarshall.GetNewSubmissions - returning " + listOfFiles.length + " files found.");
-        else
-            SystemState.Log("PlayerMarshall.GetNewSubmissions - " + full_path + " is not a directory.");
+        if (listOfFiles == null)
+            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + full_path + " is not a directory.");
 
         return listOfFiles;
     }
@@ -76,8 +75,8 @@ public class PlayerMarshall extends Application {
      * If this submission represents a new player, it will try to add it to the tournament fixture.
      * If it is a resubmit for an existing player, it will process that as per the tournament rules.
      *
-     * @param submission
-     * @param tournament
+     * @param submission - the file that was found in the input folder
+     * @param tournament - which tournament the file is assumed to belong to
      */
     private static void ProcessSingleSubmission (File submission, Tournament tournament)
     {
@@ -174,10 +173,7 @@ public class PlayerMarshall extends Application {
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
 
 
@@ -230,7 +226,7 @@ public class PlayerMarshall extends Application {
      *
      * Sets up the PlayerMarshall GUI.
      *
-     * @param primaryStage
+     * @param primaryStage - the default stage (the main window?)
      * @throws Exception
      */
     @Override
@@ -298,16 +294,16 @@ public class PlayerMarshall extends Application {
 
         try
         {
-            submission.delete();
-            SystemState.Log("PlayerMarshall.ProcessNewSubmissions - delete successful.");
+            if (!submission.delete())
+            {
+                String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file.";
+                LogManager.Log(LogType.ERROR, error);
+            }
         }
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -332,7 +328,7 @@ public class PlayerMarshall extends Application {
      *
      * Dump a message to the status log.
      *
-     * @param msg
+     * @param msg - the message to display on the gui console
      */
     public static void LogMessage (String msg)
     {

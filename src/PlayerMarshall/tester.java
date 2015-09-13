@@ -13,10 +13,8 @@ import Common.SystemState;
  */
 public class tester {
 
-    public static void main(String[] args) {
-        SystemState.initialise();
-        SystemState.Log("System restarted!");
-
+    public static void main(String[] args)
+    {
         Tournament[] tournaments = Tournament.LoadAll();
 
         Game.LoadAll(tournaments, true);

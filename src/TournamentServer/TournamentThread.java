@@ -4,6 +4,8 @@ import Common.DataModel.Game;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Scores;
 import Common.DataModel.Tournament;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 
 import java.util.Random;
@@ -220,7 +222,7 @@ public class TournamentThread extends Thread
      */
     private boolean launch_game (Game game, int thread)
     {
-        SystemState.Log("Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
+        LogManager.Log (LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
 
         PlayerSubmission[] players = game.GetPlayers();
 
@@ -232,7 +234,7 @@ public class TournamentThread extends Thread
 
         if (!lets_play || players.length != game.Tournament().NumPlayers())
         {
-            SystemState.Log ("Failed to launch game - not enough players reporting ready.");
+            LogManager.Log (LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready.");
             return false;
         }
 
@@ -249,18 +251,14 @@ public class TournamentThread extends Thread
         catch (Exception e)
         {
             String error = "Error launching game + " + game.PrimaryKey() + ". " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
-
+            LogManager.Log(LogType.ERROR, error);
             return false;
         }
 
         thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), player_managers);
         thread_pool[thread].start();
 
-        SystemState.Log("Game started!");
+        LogManager.Log (LogType.TOURNAMENT, "Game started!");
         return true;
     }
 
@@ -280,7 +278,7 @@ public class TournamentThread extends Thread
         PlayerManager[] game_players = game_thread.Players();
         Scores game_scores = game_thread.Scores();
 
-        SystemState.Log ("Attempting to end game " + game_thread.Game().PrimaryKey());
+        LogManager.Log (LogType.TOURNAMENT, "Attempting to end game " + game_thread.Game().PrimaryKey());
 
         try
         {
@@ -292,15 +290,12 @@ public class TournamentThread extends Thread
         catch (Exception e)
         {
             String error = "Error terminating game + " + game_thread.Game().PrimaryKey() + ". " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log (LogType.TOURNAMENT, error);
         }
 
         thread_pool[thread] = null;
 
-        SystemState.Log ("Termination successful.");
+        LogManager.Log (LogType.TOURNAMENT, "Termination successful.");
     }
 
 
