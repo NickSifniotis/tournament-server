@@ -90,6 +90,7 @@ public class Scores
             }
             catch (Exception e)
             {
+                //@TODO: Each and every structure like this is missing a disconnect(connection)
                 String error = "Score constructor (game_id) - SQL error retrieving score data. " + e;
                 SystemState.Log(error);
 
