@@ -3,6 +3,8 @@ package Common.DataModel;
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 
 import java.net.URL;
@@ -81,12 +83,10 @@ public class GameType
                 catch (Exception e)
                 {
                     String error = "GameType constructor (game_id) - SQL error retrieving player data. " + e;
-                    SystemState.Log(error);
-
-                    if (SystemState.DEBUG)
-                        System.out.println (error);
+                    LogManager.Log(LogType.ERROR, error);
 
                     this.loadState();
+                    DBManager.disconnect(connection);
                 }
             }
             else
@@ -115,11 +115,7 @@ public class GameType
         catch (Exception e)
         {
             String error = "GameType constructor (recordset input) - SQL error retrieving player data. " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
-
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -134,7 +130,6 @@ public class GameType
      */
     public static GameType[] LoadAll()
     {
-        SystemState.Log("GameType.LoadAll - attempting to load all");
         List<GameType> temp = new ArrayList<>();
 
         String query = "SELECT * FROM game_type";
@@ -153,16 +148,11 @@ public class GameType
         catch (Exception e)
         {
             String error = "GameType.LoadAll - Error executing SQL query: " + query + ": " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println (error);
+            LogManager.Log(LogType.ERROR, error);
         }
 
         int size = temp.size();
         GameType [] res = new GameType[size];
-        SystemState.Log("GameType.LoadAll - returning " + size + " game types.");
-
         return temp.toArray(res);
     }
 
@@ -258,12 +248,11 @@ public class GameType
 
             res = (IGameEngine) source_class.newInstance();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             String error = "GameType.GameEngine - error creating class: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println(error);
+            LogManager.Log(LogType.ERROR, error);
 
             return null;
         }
@@ -290,12 +279,11 @@ public class GameType
 
             res = (IViewer) source_class.newInstance();
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             String error = "GameType.Viewer - error creating class: " + e;
-            SystemState.Log(error);
-
-            if (SystemState.DEBUG)
-                System.out.println(error);
+            LogManager.Log(LogType.ERROR, error);
 
             return null;
         }
@@ -320,9 +308,6 @@ public class GameType
      */
     public void SaveState ()
     {
-        SystemState.Log("Saving state for game type " + this.id);
-
-
         // is this submission already in the database?
         boolean exists = false;
         String query;
@@ -354,8 +339,6 @@ public class GameType
                     + "', uses_viewer = " + DBManager.BoolValue(this.uses_viewer)
                     + " WHERE id = " + this.id;
 
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
-
             DBManager.Execute(query);
         }
         else
@@ -369,8 +352,6 @@ public class GameType
                     + ", '" + this.viewer_class + "'"
                     + ", " + DBManager.BoolValue(this.uses_viewer)
                     + ")";
-
-            if (SystemState.DEBUG) System.out.println (query); else SystemState.Log(query);
 
             // we do want to know what the primary key of this new record is.
             this.id = DBManager.ExecuteReturnKey(query);

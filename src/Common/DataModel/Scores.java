@@ -1,6 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import Common.SystemState;
 import TournamentServer.PlayerManager;
 
@@ -90,12 +92,10 @@ public class Scores
             }
             catch (Exception e)
             {
-                //@TODO: Each and every structure like this is missing a disconnect(connection)
                 String error = "Score constructor (game_id) - SQL error retrieving score data. " + e;
-                SystemState.Log(error);
+                LogManager.Log(LogType.ERROR, error);
 
-                if (SystemState.DEBUG)
-                    System.out.println (error);
+                DBManager.disconnect(connection);
 
                 throw new Exception ("Scores for game " + game_id + " not found. Incorrect scores constructor called at this location.");
             }
