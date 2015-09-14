@@ -16,22 +16,20 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class LiveLadder extends Application {
-
+public class LiveLadder extends Application
+{
     private TeamDetails [] teams;
     private HashMap<Integer, TeamDetails> teams_indexed;
-    private TournamentSelector selector_widget;
     private Tournament tournament;
     private BorderPane main_layout;
     private Label tournament_name;
@@ -42,6 +40,14 @@ public class LiveLadder extends Application {
     }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Creates the GUI for the LiveLadder.
+     *
+     * @param primaryStage - the place where the liveladder will be drawn.
+     */
     @Override
     public void start(Stage primaryStage)
     {
@@ -49,7 +55,9 @@ public class LiveLadder extends Application {
 
         main_layout = new BorderPane();
         HBox bottom_row = new HBox ();
-        selector_widget = new TournamentSelector(this, bottom_row);
+        Button select_button = new Button ("Select Tournament");
+        select_button.setOnAction(e -> handleSelectButton());
+        bottom_row.getChildren().add(select_button);
 
         HBox top_row = new HBox();
         top_row.getStyleClass().add("tournament_header_row");
@@ -59,7 +67,7 @@ public class LiveLadder extends Application {
         top_row.getChildren().add(tournament_name);
 
         main_layout.setTop(tournament_name);
-        main_layout.setBottom(bottom_row);             // @TODO: This would work better as a solo button that opens popup
+        main_layout.setBottom(bottom_row);
 
         Scene scene = new Scene (main_layout, 800, 600);
 
@@ -77,6 +85,20 @@ public class LiveLadder extends Application {
                 ae -> this.refresh_main_grid()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Handles the 'select tournament' button press by opening up a new window.
+     * Hopefully.
+     *
+     */
+    private void handleSelectButton()
+    {
+        TournamentSelector window = new TournamentSelector(this, this.tournament);
     }
 
 

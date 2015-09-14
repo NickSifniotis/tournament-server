@@ -8,8 +8,6 @@ import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
-
-import java.awt.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Connection;

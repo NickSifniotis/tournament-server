@@ -77,10 +77,11 @@ public class Scores
         // I am not even going to assert that game_id != 0 here
         // don't get me started on num_players
         List<Score> list_of_holding = new LinkedList<>();
+
         String query = "SELECT * FROM score WHERE game_id = " + game_id;
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
-System.out.println ("In constructor with data " + game_id + ":" + num_players);
+
         if (res != null)
         {
             try

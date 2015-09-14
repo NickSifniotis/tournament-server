@@ -2,10 +2,14 @@ package LiveLadder;
 
 
 import Common.DataModel.Tournament;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+import java.io.File;
 
 /**
  * Created by nsifniotis on 11/09/15.
@@ -15,6 +19,7 @@ import javafx.scene.layout.Pane;
  */
 public class TournamentSelector
 {
+    private Scene scene;
     private LiveLadder parent;
     private ChoiceBox selector;
 
@@ -28,41 +33,63 @@ public class TournamentSelector
      * @param parent - the LiveLadder that owns this widget.
      *
      */
-    public TournamentSelector (LiveLadder parent, Pane layout_thing)
+    public TournamentSelector (LiveLadder parent, Tournament current_selection)
     {
-        Button select_button = new Button ("Select ..");
+        Button select_button = new Button ("Select");
+        Button cancel_button = new Button ("Cancel");
         select_button.setOnAction(e -> handleTournamentSelection());
-
-        Button refresh_list = new Button ("Refresh List");
-        refresh_list.setOnAction(e -> refresh_list());
+        cancel_button.setOnAction(e -> handleCancelButton());
 
         this.selector = new ChoiceBox();
 
         HBox row = new HBox();
-        row.setSpacing(10);
-        row.getChildren().addAll(select_button, this.selector, refresh_list);
+        row.getStyleClass().add("selector");
+        row.getChildren().addAll(this.selector, select_button, cancel_button);
 
         this.parent = parent;
+        this.refresh_list(current_selection);
 
-        layout_thing.getChildren().add(row);
+        this.scene = new Scene(row);
+        File f = new File("src/LiveLadder/liveladder.css");
+        this.scene.getStylesheets().clear();
+        this.scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 
-        this.refresh_list();
+        Stage stage = new Stage();
+        stage.setTitle("Choose tournament");
+        stage.setScene(this.scene);
+        stage.show();
     }
 
 
-    private void refresh_list ()
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Populate the choice control with the tournaments in the database.
+     */
+    private void refresh_list (Tournament current_selection)
     {
         Tournament [] tournaments = Tournament.LoadAll();
 
-        if (tournaments != null)
-        {
-            this.selector.getItems().clear();
+        this.selector.getItems().clear();
+        for (Tournament t: tournaments)
+            this.selector.getItems().add(t);
 
-            for (Tournament t: tournaments)
-                this.selector.getItems().add(t);
-        }
+        if (current_selection != null) //@TODO: This selection is not working
+            this.selector.getSelectionModel().select(current_selection);
+
     }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Callback function for the 'select tournament' button.
+     * Set the new tournament in the LiveLadder parent, then try to
+     * close this window.
+     *
+     */
     private void handleTournamentSelection ()
     {
         if (this.selector.getSelectionModel().getSelectedItem() == null)
@@ -71,5 +98,19 @@ public class TournamentSelector
         Tournament new_tourney = (Tournament) this.selector.getSelectionModel().getSelectedItem();
 
         this.parent.set_tournament(new_tourney);
+        this.scene.getWindow().hide();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Handles the 'cancel' button press by closing this window.
+     *
+     */
+    private void handleCancelButton()
+    {
+        this.scene.getWindow().hide();
     }
 }

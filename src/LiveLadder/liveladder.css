@@ -37,3 +37,9 @@
     -fx-background-color: #FFFD00;
     -fx-padding: 10 10 30 10;
 }
+
+.selector
+{
+    -fx-padding: 8;
+    -fx-spacing: 10;
+}
