@@ -66,8 +66,8 @@ public class PlayerManager
      */
     public Object nextMove(Object boardState) throws PlayerMoveException
     {
-        //@TODO also implement 'if zero timeout then keep going' condition
-        int player_timeout = tournament.Timeout() * 1000;        // measured in milliseconds
+        // If no timeout has been specified for this tournament, switch to the default value
+        int player_timeout = ((tournament.Timeout() == 0) ? SystemState.DEFAULT_TIMEOUT : tournament.Timeout()) * 1000;
 
         PlayerChildThread playerThread = new PlayerChildThread(boardState, this.my_player);
         playerThread.start();

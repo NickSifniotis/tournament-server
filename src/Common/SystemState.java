@@ -29,4 +29,5 @@ public class SystemState
     public static final String tournament_log_path = "logs/system/threads/";
     public static final String game_log_path = "logs/games/";
 
+    public static final int DEFAULT_TIMEOUT = 1800;     // half an hour is long enough
 }
