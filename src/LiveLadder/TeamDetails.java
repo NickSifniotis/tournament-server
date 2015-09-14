@@ -13,8 +13,6 @@ import javafx.scene.layout.GridPane;
  */
 public class TeamDetails implements Comparable<TeamDetails>
 {
-    private PlayerSubmission team_deets;
-
     private int points;
     private int score_for;
     private int score_against;
@@ -23,19 +21,38 @@ public class TeamDetails implements Comparable<TeamDetails>
     private Label [] my_labels;
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 14/09/2015
+     *
+     * Constructor for the team details object
+     *
+     * @param p - the PlayerSubmission for whom we are collecting team details.
+     */
     public TeamDetails (PlayerSubmission p)
     {
-        this.team_deets = p;
         this.my_labels = new Label[LadderColumnStructure.values().length];
-        for (int i = 0; i < this.my_labels.length; i ++)
+        for (int i = 0; i < this.my_labels.length; i++)
         {
             this.my_labels[i] = new Label();
             this.my_labels[i].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         }
 
-        this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(this.team_deets.Name());
-    //    this.my_labels[LadderColumnStructure.PIC.ordinal()].setText(this.team_deets.Avatar().getName());
-        // @TODO: Gracefully handle nulls
+        // how's this for gracefully handling a no name situation
+        if (p.Name() != null && !p.Name().equals(""))
+            this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(p.Name());
+        else
+            this.my_labels[LadderColumnStructure.NAME.ordinal()].setText("Unnamed Team #" + p.PrimaryKey());
+
+        if (p.Avatar() != null)
+        {
+            // @TODO: Display the picture
+        }
+        else
+        {
+            //@TODO: Display no picture
+            //this.my_labels[LadderColumnStructure.PIC.ordinal()]
+        }
     }
 
 
