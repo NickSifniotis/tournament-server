@@ -20,7 +20,7 @@ public enum LogType
      * 13/09/2015
      *
      * Returns the paths that logs are stored in.
-     * @TODO: These constants belong in SystemState
+     *
      * @return a path within a string.
      */
     public String LogPath()
@@ -29,16 +29,16 @@ public enum LogType
         switch (this)
         {
             case ERROR:
-                res = "logs/system/errors/";
+                res = SystemState.error_log_path;
                 break;
             case TOURNAMENT:
-                res = "logs/system/threads/";
+                res = SystemState.tournament_log_path;
                 break;
             case SQL:
-                res = "logs/system/sql/";
+                res = SystemState.sql_log_path;
                 break;
             case GAME:
-                res = "logs/games/";
+                res = SystemState.game_log_path;
                 break;
         }
 

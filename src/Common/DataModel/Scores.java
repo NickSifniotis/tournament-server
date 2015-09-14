@@ -105,9 +105,6 @@ System.out.println ("In constructor with data " + game_id + ":" + num_players);
             DBManager.disconnect(connection);   // disconnect by connection
             throw new Exception ("Scores for game " + game_id + " not found. Incorrect scores constructor called at this location.");
         }
-//@TODO massif todo - first, the live ladder is unable to elegantly handle situations
-        // in which no scores are found in the database, where they 'should' be there.
-        //@TODO second, the game score save state is OSING game_id and submission_id data, find out why.
 
         this.scores = new Score[list_of_holding.size()];
         list_of_holding.toArray(this.scores);

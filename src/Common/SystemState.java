@@ -23,4 +23,10 @@ public class SystemState
     public static final String marshalling_folder = "marshalling/";
     public static final String pictures_folder = "marshalling/pictures/";
 
+    // locations of log files
+    public static final String error_log_path = "logs/system/errors/";
+    public static final String sql_log_path = "logs/system/sql/";
+    public static final String tournament_log_path = "logs/system/threads/";
+    public static final String game_log_path = "logs/games/";
+
 }
