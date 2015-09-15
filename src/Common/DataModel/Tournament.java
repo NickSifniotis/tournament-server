@@ -481,6 +481,8 @@ public class Tournament
      */
     public void AddPlayerToFixture (int slot_key, PlayerSubmission player)
     {
+        LogManager.Log (LogType.TOURNAMENT, "Adding player " + player.PrimaryKey() + " to fixture slot " + slot_key);
+
         String query = "UPDATE fixture_slot SET submission_id = " + player.PrimaryKey() + " WHERE id = " + slot_key;
         DBManager.Execute(query);
     }

@@ -137,6 +137,8 @@ public class Scores
      */
     public void Disqualify (int player_id)
     {
+        LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + player_id);
+
         for (int i = 0; i < this.scores.length; i ++)
             this.scores[i].AbnormalTermination(i == player_id);
 
@@ -221,12 +223,21 @@ public class Scores
         boolean found = false;
         int score = 0;
 
-        for (Score s: this.scores)
-            if (s.SubmissionKey() == player_id)
-            {
-                found = true;
-                score += (s.NoScore()) ? 0 : s.Score();
-            }
+        try
+        {
+            for (Score s: this.scores)
+                if (s.SubmissionKey() == player_id)
+                {
+                    found = true;
+                    score += (s.NoScore()) ? 0 : s.Score();
+                }
+        }
+        catch (Exception e)
+        {
+            String error = "Scores.ScoreAgainst - error in code: " + e + e.getStackTrace().toString();
+            LogManager.Log(LogType.ERROR, error);
+        }
+
 
         if (!found)
             throw new Exception ("Player " + player_id + " did not play in this game.");
@@ -239,11 +250,19 @@ public class Scores
         boolean found = false;
         int score = 0;
 
-        for (Score s: this.scores)
-            if (s.SubmissionKey() == player_id)
-                found = true;
-            else
-                score += (s.NoScore()) ? 0 : s.Score();
+        try
+        {
+            for (Score s : this.scores)
+                if (s.SubmissionKey() == player_id)
+                    found = true;
+                else
+                    score += (s.NoScore()) ? 0 : s.Score();
+        }
+        catch (Exception e)
+        {
+            String error = "Scores.ScoreAgainst - error in code: " + e + e.getStackTrace().toString();
+            LogManager.Log(LogType.ERROR, error);
+        }
 
         if (!found)
             throw new Exception ("Player " + player_id + " did not play in this game.");

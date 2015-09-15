@@ -104,6 +104,11 @@ public class GameManagerChild extends Thread
                 // they have nothing to say about the validity of the move that was returned. That
                 // is a separate test...
 //@TODO: Add 'null move' rule option to tournament, implement. The null move function belongs in IPlayer
+
+                // log what the fuck has happened as well.
+                LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with a player move: " + e);
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for throwing a PlayerMoveException.");
+
                 game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
@@ -114,6 +119,7 @@ public class GameManagerChild extends Thread
             // who knows. If there's a way to screw up, you can be sure Java will find it
             if (move == null)
             {
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for returning a move that is null.");
                 game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
@@ -124,6 +130,7 @@ public class GameManagerChild extends Thread
             // fuck you cheats
             if (!engine.IsLegitimateMove(game_state, move))
             {
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for returning a move that is not legit.");
                 game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;

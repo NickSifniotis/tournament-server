@@ -257,7 +257,7 @@ public class TournamentThread extends Thread
         }
         catch (Exception e)
         {
-            String error = "Error launching game + " + game.PrimaryKey() + ". " + e;
+            String error = "Error launching game " + game.PrimaryKey() + ". " + e;
             LogManager.Log(LogType.ERROR, error);
             return false;
         }

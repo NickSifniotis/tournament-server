@@ -250,6 +250,48 @@ public class Game
 
     /**
      * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * The data stored in this object could easily have fallen out of synch with the data
+     * in the database, because other processes and other objects can change this game's
+     * state without notifying it.
+     *
+     * Reload this game's state from the database.
+     */
+    private void reloadState ()
+    {
+        String query =  "SELECT * FROM game WHERE id = " + this.id;
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+        if (res != null)
+        {
+            try
+            {
+                res.next();
+                this.loadState(res);
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "Game reloader - SQL error retrieving game data. " + e;
+                LogManager.Log(LogType.ERROR, error);
+
+                this.loadState();
+                DBManager.disconnect(connection);
+            }
+        }
+        else
+        {
+            this.loadState();
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 9/9/2015
      *
      * Inheritance!!! The lack of it is hurting me. Althogh I can see no reason why I should use it,
@@ -410,6 +452,8 @@ public class Game
      */
     public void EndGame()
     {
+        this.reloadState();
+
         this.played = this.in_progress;
         this.in_progress = false;
 

@@ -3,13 +3,13 @@ package PlayerMarshall;
 import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
 import Common.DataModel.Game;
-import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
+import PlayerMarshall.DataModelInterfaces.PlayerSubmission;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -153,23 +153,27 @@ public class PlayerMarshall extends Application {
         if (!is_new)
         {
             PlayerSubmission old_player = PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament);
-            submission_slot = old_player.FixtureSlotAllocation();
+            LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
 
+            submission_slot = old_player.FixtureSlotAllocation();
+//@TODO: For some reason, this code is missing active games. It could be that the Game object in the
+            // tournament thread is reverting back to play-on because it falls out of synch with the database.
             Game.ResetAll(submission_slot);
             old_player.Retire();
         }
 
 
         // create the new submission
-        PlayerSubmission new_submission = new PlayerSubmission(true);
-        new_submission.SetMetaData(metadata);
-        new_submission.setTournamentKey(tournament.PrimaryKey());
+        PlayerSubmission new_submission = new PlayerSubmission();
+        new_submission.SetData(metadata, tournament.PrimaryKey());
 
 
         // move the extracted source to the marshalling folder.
         // copy the submission over to the marshalling folder.
         try
         {
+            LogManager.Log (LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
+
             Files.copy(extracted_submission.toPath(), Paths.get(new_submission.MarshalledSource()));
             Files.deleteIfExists(extracted_submission.toPath());
             Files.deleteIfExists(submission.toPath());
@@ -185,9 +189,7 @@ public class PlayerMarshall extends Application {
         tournament.AddPlayerToFixture(submission_slot, new_submission);
 
         //@TODO: Avatar code goes here
-        new_submission.setAvatar("");
-        // last but not least, go ahead and signal that this player is good to go
-        new_submission.GetReady();
+        //new_submission.setAvatar("");
     }
 
 

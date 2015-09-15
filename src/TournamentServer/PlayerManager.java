@@ -86,7 +86,8 @@ public class PlayerManager
         if (playerThread.isAlive())
         {
             playerThread.interrupt();
-            throw new TimeoutException();
+            if (System.currentTimeMillis() - turnStartTime >= player_timeout)
+                throw new TimeoutException();
         }
 
         if (!playerThread.GotMove())

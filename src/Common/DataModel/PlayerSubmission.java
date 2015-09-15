@@ -21,16 +21,14 @@ import java.util.List;
  * to load and save its own state (as directed ..)
  *
  * Database schema
- * id                   prikey int
- * tournament_id        int
- * team_name            varchar
- * team_email           varchar
- * team_motto           varchar
- * team_avatar          varchar
- * ready                boolean
- * disqualified         int
- * retired              boolean
- * original_filename    varchar
+ * id                   prikey int                                      auto_inc
+ * tournament_id        int             PM writable, TS LL readable
+ * team_name            varchar         PM writable, TS LL readable
+ * team_email           varchar         PM writable, TS LL readable
+ * team_avatar          varchar         PM writable, TS LL readable
+ * playing              boolean         TS writable, LL readable        def 0
+ * disqualified         boolean         TS writable, LL readable        def 0
+ * retired              boolean         PM writable, TS LL readable     def 0
  *
  */
 public class PlayerSubmission
@@ -40,13 +38,7 @@ public class PlayerSubmission
 
     private String name;
     private String email;
-    private String motto;
-    private String orig_file;
     private String avatar_file;
-
-    private boolean retired;
-    private int disqualified_count;
-    private boolean ready;
 
 
     /**
@@ -155,12 +147,7 @@ public class PlayerSubmission
         this.id = input.getInt ("id");
         this.name = input.getString("team_name");
         this.email = input.getString("team_email");
-        this.motto = input.getString("team_motto");
         this.avatar_file = input.getString("team_avatar");
-        this.orig_file = input.getString("original_filename");
-        this.retired = (input.getInt("retired") == 1);
-        this.ready = (input.getInt("ready") == 1);
-        this.disqualified_count = input.getInt("disqualified");
         this.tournament_id = input.getInt ("tournament_id");
     }
 
@@ -180,12 +167,7 @@ public class PlayerSubmission
         tournament_id = 0;
         name = "";
         email = "";
-        motto = "";
         avatar_file = "";
-        orig_file = "";
-        retired = false;
-        disqualified_count = 0;
-        ready = false;
     }
 
 
@@ -202,8 +184,6 @@ public class PlayerSubmission
         this.setName(data.team_name);
         this.setAvatar(data.team_picture);
         this.setEmail(data.team_email);
-        this.setMotto(data.team_motto);
-        this.setSubmissionKey(data.team_name);      //@TODO: Is this really necessary?
     }
 
 
@@ -239,29 +219,19 @@ public class PlayerSubmission
         {
             query = "UPDATE submission SET team_name = '" + this.name
                     + "', team_email = '" + this.email
-                    + "', team_avatar = '" + this.avatar_file
-                    + "', team_motto = '" + this.motto
-                    + "', original_filename = '" + this.orig_file
-                    + "', retired = " + DBManager.BoolValue(this.retired)
-                    + ", disqualified = " + this.disqualified_count
-                    + ", ready = " + DBManager.BoolValue(this.ready)
-                    + ", tournament_id = " + this.tournament_id
+                    + "', team_avatar = '" + ""  //@TODO fix this this.avatar_file
+                    + "', tournament_id = " + this.tournament_id
                     + " WHERE id = " + this.id;
 
             DBManager.Execute(query);
         }
         else
         {
-            query = "INSERT INTO submission (team_name, team_email, team_motto, team_avatar"
-                    + ", original_filename, retired, disqualified, ready, tournament_id) VALUES ("
+            query = "INSERT INTO submission (team_name, team_email, team_avatar"
+                    + ", tournament_id) VALUES ("
                     + "'" + this.name + "'"
                     + ", '" + this.email + "'"
-                    + ", '" + this.motto + "'"
                     + ", '" + this.avatar_file + "'"
-                    + ", '" + this.orig_file + "'"
-                    + ", " + DBManager.BoolValue(this.retired)
-                    + ", " + this.disqualified_count
-                    + ", " + DBManager.BoolValue(this.ready)
                     + ", " + this.tournament_id + ")";
 
             // we do want to know what the primary key of this new record is.
@@ -345,8 +315,8 @@ public class PlayerSubmission
      */
     public void Retire()
     {
-        this.retired = true;
-        saveState();
+        String query = "UPDATE submission SET retired = 1 WHERE id = " + this.id;
+        DBManager.Execute(query);
     }
 
 
@@ -404,12 +374,9 @@ public class PlayerSubmission
     public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
     public String Email () { return this.email; }
-    public String Motto () { return this.motto; }
     public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
-    public String SubmissionKey () { return this.orig_file; }
     public int TournamentKey() { return this.tournament_id; }
-    public boolean ReadyToPlay () { return this.ready & !this.retired & (this.disqualified_count == 0); }
-    public boolean Active () { return !this.retired; }
+    public boolean ReadyToPlay () { return this.check_boolfield("ready") & !this.check_boolfield("retired") & !this.check_boolfield("disqualified"); }
     public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
     public int FixtureSlotAllocation ()
     {
@@ -444,7 +411,7 @@ public class PlayerSubmission
             LogManager.Log(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
-
+        LogManager.Log (LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
         return fixture_position;
     }
 
@@ -457,29 +424,28 @@ public class PlayerSubmission
      *
      * @param s - the data to set.
      */
-    public void setName (String s) { this.name = s; }
-    public void setEmail (String s) { this.email = s; }
-    public void setAvatar (String s) { this.avatar_file = s; }
-    public void setMotto (String s) { this.motto = s; }
-    public void setSubmissionKey (String s) { this.orig_file = s; }
-    public void setTournamentKey(int fk) { this.tournament_id = fk; }
-    public boolean IsReady () { return this.ready && !this.retired && (this.disqualified_count == 0); }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 10/9/2015
-     *
-     * Resets the player submission so that it can play games again.
-     *
-     */
-    public void GetReady()
+    public void setName (String s)
     {
-        this.ready = true;
-        this.retired = false;
-        this.disqualified_count = 0;
+        String query = "UPDATE submission SET team_name = '" + s + "' WHERE id = " + this.id;
+        DBManager.Execute(query);
+    }
 
-        saveState();
+    public void setEmail (String s)
+    {
+        String query = "UPDATE submission SET team_email = '" + s + "' WHERE id = " + this.id;
+        DBManager.Execute(query);
+    }
+
+    public void setAvatar (String s)
+    {
+        String query = "UPDATE submission SET team_avatar = '" + s + "' WHERE id = " + this.id;
+        DBManager.Execute(query);
+    }
+
+    public void setTournamentKey(int fk)
+    {
+        String query = "UPDATE submission SET tournament_id = " + fk + " WHERE id = " + this.id;
+        DBManager.Execute(query);
     }
 
 
@@ -543,11 +509,11 @@ public class PlayerSubmission
      */
     public void StartingGame() throws Exception
     {
-        if (!this.ready || this.retired || this.disqualified_count > 0)
+        if (!this.ReadyToPlay())
             throw new Exception ("This player is not able to play.");
 
-        this.ready = false;
-        this.saveState();
+        String query = "UPDATE submission SET ready = 0 WHERE id = " + this.id;
+        DBManager.Execute(query);
     }
 
 
@@ -562,14 +528,59 @@ public class PlayerSubmission
      */
     public void EndingGame (boolean disqualified) throws Exception
     {
-        if (this.ready)
+        if (this.check_boolfield("ready"))
             throw new Exception ("This player does not seem to be playing any game.");
 
-        if (disqualified)
-            this.disqualified_count++;
-        this.ready = true;
+        String query = (disqualified) ? "UPDATE submission SET ready = 1, disqualified = 1"
+                                        : "UPDATE submission SET ready = 1";
+        query += " WHERE id = " + this.id;
+        DBManager.Execute(query);
+    }
 
-        this.saveState();
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * The boolfields retired and ready were causing major issues when they were being stored in this
+     * data object. The underlying data model would be updated but the changes would never filter through
+     * to the class instances. This had the effect of making some players unretireable sometimes.
+     *
+     * So it was decided to keep these booleans within the database and only extract them on an as-needed basis.
+     *
+     * @param field_name - the database field we want the value of
+     * @return the value from the database.
+     */
+    private boolean check_boolfield (String field_name)
+    {
+        String query = "SELECT " + field_name + " FROM submission WHERE id = " + this.id;
+
+        boolean res = false;
+
+        Connection connection = DBManager.connect();
+        ResultSet r = DBManager.ExecuteQuery(query, connection);
+
+        if (r != null)
+        {
+            try
+            {
+                r.next();
+                res = (r.getInt(field_name) == 1);
+                DBManager.disconnect(r);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "PlayerSubmission.check_boolfield - SQL error retrieving field value " + field_name + ". " + e;
+                LogManager.Log(LogType.ERROR, error);
+                DBManager.disconnect(connection);
+            }
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        return res;
     }
 }
 
