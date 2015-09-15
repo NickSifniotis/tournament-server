@@ -28,8 +28,6 @@ import java.util.HashMap;
 
 public class LiveLadder extends Application
 {
-    private TeamDetails [] teams;
-    private HashMap<Integer, TeamDetails> teams_indexed;
     private Tournament tournament;
     private BorderPane main_layout;
     private Label tournament_name;
@@ -144,16 +142,6 @@ public class LiveLadder extends Application
     public void set_tournament (Tournament t)
     {
         this.tournament = t;
-        PlayerSubmission[] players = PlayerSubmission.LoadAll(t);
-        this.teams = new TeamDetails[players.length];
-        this.teams_indexed = new HashMap<>();
-
-        for (int i = 0; i < players.length; i ++)
-        {
-            this.teams[i] = new TeamDetails(players[i]);
-            this.teams_indexed.putIfAbsent(players[i].PrimaryKey(), teams[i]);
-        }
-
         this.tournament_name.setText(this.tournament.Name());
         this.refresh_main_grid();
     }
@@ -172,10 +160,15 @@ public class LiveLadder extends Application
         if (this.tournament == null)
             return;
 
+        PlayerSubmission[] players = PlayerSubmission.LoadAll(this.tournament, true);
+        TeamDetails[] teams = new TeamDetails[players.length];
+        HashMap<Integer, TeamDetails> teams_indexed = new HashMap<>();
 
-        // players start from zero
-        for (TeamDetails t: teams)
-                t.Reset();
+        for (int i = 0; i < players.length; i ++)
+        {
+            teams[i] = new TeamDetails(players[i]);
+            teams_indexed.putIfAbsent(players[i].PrimaryKey(), teams[i]);
+        }
 
 
         // get the games for this tournament.
@@ -192,8 +185,8 @@ public class LiveLadder extends Application
 
         // that's it!
         Arrays.sort(teams);
-        for (int i = 0; i < this.teams.length; i ++)
-            this.teams[i].AddToGrid(grid, i + 1);
+        for (int i = 0; i < teams.length; i ++)
+            teams[i].AddToGrid(grid, i + 1);
     }
 
 }

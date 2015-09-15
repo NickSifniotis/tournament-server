@@ -281,11 +281,26 @@ public class PlayerSubmission
      */
     public static PlayerSubmission [] LoadAll (Tournament t)
     {
-        String query;
-        if (t == null)
-            query = "SELECT * FROM submission";
-        else
-            query = "SELECT * FROM submission WHERE tournament_id = " + t.PrimaryKey();
+        return LoadAll(t, false);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Returns an array of PlayerSubmission objets from the database.
+     *
+     * @param t - the tournament to return submissions for. Returns from all if this is null.
+     * @param active_only - whether or not to return active players only, or all of them.
+     *
+     * @return - the PlayerSubmission[] array
+     */
+    public static PlayerSubmission [] LoadAll (Tournament t, boolean active_only)
+    {
+        String query = "SELECT * FROM submission WHERE 1";
+        query += (t == null) ? "" : " AND tournament_id = " + t.PrimaryKey();
+        query += (active_only) ? " AND retired = 0" : "";
 
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
@@ -351,11 +366,11 @@ public class PlayerSubmission
      *          What a shocker of a sentence that was.
      * @return a player submission object
      */
-    public static PlayerSubmission GetActiveWithOriginalFilename (String original, Tournament t)
+    public static PlayerSubmission GetActiveWithTeamName(String original, Tournament t)
     {
         PlayerSubmission res = null;
 
-        String query = "SELECT * FROM submission WHERE original_filename = '"
+        String query = "SELECT * FROM submission WHERE team_name = '"
                 + original + "' AND retired = 0 AND tournament_id = " + t.PrimaryKey();
 
         try
@@ -369,7 +384,7 @@ public class PlayerSubmission
         }
         catch (Exception e)
         {
-            String error = "PlayerSubmission.GetActiveWithOriginalFilename - Error executing SQL query: "
+            String error = "PlayerSubmission.GetActiveWithTeamName - Error executing SQL query: "
                     + query + ": " + e;
             LogManager.Log(LogType.ERROR, error);
         }
@@ -396,6 +411,42 @@ public class PlayerSubmission
     public boolean ReadyToPlay () { return this.ready & !this.retired & (this.disqualified_count == 0); }
     public boolean Active () { return !this.retired; }
     public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
+    public int FixtureSlotAllocation ()
+    {
+        String query = "SELECT fs.* FROM fixture_slot fs, submission s WHERE"
+                + " fs.tournament_id = s.tournament_id AND fs.submission_id = s.id"
+                + " AND s.id = " + this.id;
+
+        int fixture_position = 0;
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        if (res != null)
+        {
+            try
+            {
+                while (res.next())
+                {
+                    fixture_position = res.getInt("id");
+                }
+            }
+            catch (Exception e)
+            {
+                String er = "Game.ResetAll - SQL error retrieving player data. " + e;
+                LogManager.Log(LogType.ERROR, er);
+                DBManager.disconnect(connection);
+            }
+
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            String er = "Game.ResetAll - No data error retrieving player data.";
+            LogManager.Log(LogType.ERROR, er);
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        return fixture_position;
+    }
 
 
     /**

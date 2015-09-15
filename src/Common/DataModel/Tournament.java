@@ -501,10 +501,7 @@ public class Tournament
         Tournament [] tourney_list = { this };
         Game [] games = Game.LoadAll(tourney_list, false);
         for (Game g: games)
-        {
-            g.Terminate();
-            g.EndGame();
-        }
+            g.Reset();
     }
 
 

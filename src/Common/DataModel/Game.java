@@ -435,4 +435,64 @@ public class Game
         this.in_progress = false;
         this.SaveState();
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Hard reset of the game. If it is being played out, nothing will happen when EndGame is called.
+     */
+    public void Reset()
+    {
+        this.in_progress = false;
+        this.played = false;
+        this.SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Go through every game that this player is going to / has played in,
+     * and perform a hard reset.
+     *
+     * This method is called from PlayerMarshall, when a player is being replaced by a newer one.
+     *
+     * @param fixture_position - the fixture slot that is being reset.
+     */
+    public static void ResetAll(int fixture_position)
+    {
+        // get a list of game_ids for which this fixture slot is playing
+        String query = "SELECT * FROM game_player WHERE fixture_slot_id = " + fixture_position;
+
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        if (res != null)
+        {
+            try
+            {
+                while (res.next())
+                {
+                    Game g = new Game(res.getInt("game_id"));
+                    g.Reset();
+                }
+            }
+            catch (Exception e)
+            {
+                String er = "Game.ResetAll - SQL error retrieving game data. " + e;
+                LogManager.Log(LogType.ERROR, er);
+                DBManager.disconnect(connection);
+            }
+
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            String er = "Game.ResetAll - No data error retrieving game data.";
+            LogManager.Log(LogType.ERROR, er);
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+    }
 }

@@ -2,6 +2,7 @@ package PlayerMarshall;
 
 import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
+import Common.DataModel.Game;
 import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
@@ -86,7 +87,7 @@ public class PlayerMarshall extends Application {
 
         boolean can_resubmit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
         boolean can_submit = (!tournament.GameOn()) | tournament.AllowResubmitOn();
-        boolean is_new = (PlayerSubmission.GetActiveWithOriginalFilename(metadata.team_name, tournament) == null);
+        boolean is_new = (PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament) == null);
 
 
         // the zeroth barrier - no metadata, no proceeding.
@@ -151,8 +152,11 @@ public class PlayerMarshall extends Application {
         // If this is an existing player, and we have made it this far, retire the old player.
         if (!is_new)
         {
-            // @TODO: More retirement code here. The games and the logs!
-            PlayerSubmission.GetActiveWithOriginalFilename(metadata.team_name, tournament).Retire();
+            PlayerSubmission old_player = PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament);
+            submission_slot = old_player.FixtureSlotAllocation();
+
+            Game.ResetAll(submission_slot);
+            old_player.Retire();
         }
 
 
