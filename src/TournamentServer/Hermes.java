@@ -11,6 +11,6 @@ package TournamentServer;
  */
 public class Hermes
 {
-    public String message;
-    public String payload;
+    public Caduceus message;
+    public int payload;
 }

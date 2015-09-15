@@ -6,9 +6,7 @@ import Common.DataModel.Scores;
 import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
 
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -116,23 +114,31 @@ public class TournamentThread extends Thread
                 { /* fuck off, I flat out have no idea what to do here. */ }
 
                 // deal with the message
-                if (message.message.equals("Q"))
-                    user_signalled_shutdown = true;
 
-                if (message.message.equals("THREAD_POOL"))
+                switch (message.message)
                 {
-                    int new_target = Integer.parseInt(message.payload);
-                    if (new_target > 0)
-                    {
-                        // if it's less, don't worry about it. But if it's more, grow the array.
-                        if (new_target > thread_pool_target)
+                    case END:
+                        user_signalled_shutdown = true;
+                        break;
+                    case KILL_GAME:
+                        this.abort_game(message.payload);
+                        break;
+                    case KILL_TOURNAMENT:
+                        this.abort_tournament(message.payload);
+                        break;
+                    case INC_THREAD_POOL:
+                        this.thread_pool_target ++;
+                        if (this.thread_pool_target > this.thread_pool.length)
                         {
-                            GameManagerChild [] new_array = new GameManagerChild[new_target];
+                            GameManagerChild [] new_array = new GameManagerChild[this.thread_pool_target];
                             System.arraycopy(thread_pool, 0, new_array, 0, thread_pool.length);
                             thread_pool = new_array;
                         }
-                        thread_pool_target = new_target;
-                    }
+                        break;
+                    case DEC_THREAD_POOL:
+                        if (this.thread_pool_target > 1)
+                            this.thread_pool_target--;
+                        break;
                 }
             }
 
@@ -160,7 +166,7 @@ public class TournamentThread extends Thread
     {
         for (int i = 0; i < thread_pool.length; i ++)
             if (thread_pool[i] != null)
-                if (thread_pool[i].finished)
+                if (thread_pool[i].Finished())
                 {
                     this.end_game(i);
                 }
@@ -296,6 +302,38 @@ public class TournamentThread extends Thread
         thread_pool[thread] = null;
 
         LogManager.Log (LogType.TOURNAMENT, "Termination successful.");
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Sends a signal to abort the game.
+     *
+     */
+    private void abort_game(int game_id)
+    {
+        for (GameManagerChild gm: thread_pool)
+            if (gm.Game().PrimaryKey() == game_id)
+                gm.Abort();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Shuts down a tournament, and seeks out any active games being played
+     * for that tournament and kills them off too.
+     *
+     * @param tournament_id - the tournament to shut down
+     */
+    private void abort_tournament (int tournament_id)
+    {
+        for (GameManagerChild gm: thread_pool)
+            if (gm.Game().Tournament().PrimaryKey() == tournament_id)
+                gm.Abort();
     }
 
 

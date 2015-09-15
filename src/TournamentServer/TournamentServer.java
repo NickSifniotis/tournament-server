@@ -28,7 +28,19 @@ public class TournamentServer
             String command = in.nextLine();
 
             Hermes message = new Hermes();
-            message.message = command;
+            switch (command)
+            {
+                case "Q":
+                    message.message = Caduceus.END;
+                    break;
+                case "+":
+                    message.message = Caduceus.INC_THREAD_POOL;
+                    break;
+                case "-":
+                    message.message = Caduceus.DEC_THREAD_POOL;
+                    break;
+                
+            }
 
             messenger.add(message);
 

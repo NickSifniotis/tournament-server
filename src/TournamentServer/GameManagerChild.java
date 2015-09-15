@@ -18,7 +18,8 @@ import TournamentServer.Exceptions.PlayerMoveException;
  */
 public class GameManagerChild extends Thread
 {
-    public boolean finished;
+    private boolean finished;
+    private boolean aborted;
 
     private Scores game_scores;
     private Game game;
@@ -68,9 +69,12 @@ public class GameManagerChild extends Thread
     @Override
     public void run ()
     {
-        finished = false;
-        run_game();
-        finished = true;
+        this.finished = false;
+        this.aborted = false;
+
+        this.run_game();
+
+        this.finished = true;
     }
 
 
@@ -87,7 +91,7 @@ public class GameManagerChild extends Thread
 
         Object game_state = engine.InitialiseGame(players.length);
 
-        while (engine.AreYouStillAlive(game_state) && game_scores.GameOn())
+        while (engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted)
         {
             Object move;
             try
@@ -147,4 +151,6 @@ public class GameManagerChild extends Thread
     public Game Game() { return this.game; }
     public Scores Scores() { return this.game_scores; }
     public PlayerManager[] Players () { return this.players; }
+    public boolean Finished () { return this.finished; }
+    public void Abort () { this.aborted = true; this.Game().Terminate(); }
 }
