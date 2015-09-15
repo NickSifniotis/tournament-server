@@ -6,6 +6,7 @@ import Common.DataModel.Scores;
 import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import Common.SystemState;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -314,9 +315,13 @@ public class TournamentThread extends Thread
      */
     private void abort_game(int game_id)
     {
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to abort game " + game_id);
+
         for (GameManagerChild gm: thread_pool)
             if (gm.Game().PrimaryKey() == game_id)
                 gm.Abort();
+
+        LogManager.Log(LogType.TOURNAMENT, "Abortion of game " + game_id + " finished.");
     }
 
 
@@ -331,9 +336,12 @@ public class TournamentThread extends Thread
      */
     private void abort_tournament (int tournament_id)
     {
-        for (GameManagerChild gm: thread_pool)
-            if (gm.Game().Tournament().PrimaryKey() == tournament_id)
-                gm.Abort();
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to reset tournament " + tournament_id);
+
+        Tournament t = new Tournament(tournament_id);
+        t.ResetTournament();
+
+        LogManager.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
     }
 
 
