@@ -404,18 +404,35 @@ public class Game
      * 10/9/2015
      *
      * Signals that the game has finished being played.
-     * Chucks an exception if the method has been called at an inappropriate time.
+     * If this method is called while in_progress is false,
+     * reset the game.
      *
-     * @throws Exception - has a sook if the game is not in the correct state.
      */
-    public void EndGame() throws Exception
+    public void EndGame()
     {
-        if (!this.in_progress)
-            throw new Exception ("Unable to end a game that is not in progress.");
-
+        this.played = this.in_progress;
         this.in_progress = false;
-        this.played = true;
 
+        this.SaveState();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * There are a number of reasons why the server may want to kill off a game
+     * that is in progress. One of the game players may have been retired, for
+     * example, or the operator may have signalled a tournament reset.
+     *
+     * This method sets the flags to indicate that the game has been terminated
+     * abnormally, so that when the game reaches an end it will not be saved as
+     * having been 'played'.
+     * 
+     */
+    public void Terminate()
+    {
+        this.in_progress = false;
         this.SaveState();
     }
 }
