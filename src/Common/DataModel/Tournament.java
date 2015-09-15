@@ -484,4 +484,46 @@ public class Tournament
         String query = "UPDATE fixture_slot SET submission_id = " + player.PrimaryKey() + " WHERE id = " + slot_key;
         DBManager.Execute(query);
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Resets the tournament back to square one.
+     * That is to say, marks all of these tournament's games as unplayed
+     * and switches the tournament off.
+     */
+    public void ResetTournament()
+    {
+        this.StopTournament();
+
+        Tournament [] tourney_list = { this };
+        Game [] games = Game.LoadAll(tourney_list, false);
+        for (Game g: games)
+        {
+            g.Terminate();
+            g.EndGame();
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 15/09/2015
+     *
+     * Start and stop this tournament.
+     *
+     */
+    public void StartTournament()
+    {
+        this.game_on = true;
+        SaveState();
+    }
+
+    public void StopTournament()
+    {
+        this.game_on = false;
+        SaveState();
+    }
 }

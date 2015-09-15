@@ -32,6 +32,7 @@ public class TournamentServer
             {
                 case "Q":
                     message.message = Caduceus.END;
+                    finished = true;
                     break;
                 case "+":
                     message.message = Caduceus.INC_THREAD_POOL;
@@ -39,13 +40,10 @@ public class TournamentServer
                 case "-":
                     message.message = Caduceus.DEC_THREAD_POOL;
                     break;
-                
+
             }
 
             messenger.add(message);
-
-            if (command.equals("Q"))
-                finished = true;
         }
 
         // yeah, but you gotta wait for the child process to terminate too.
