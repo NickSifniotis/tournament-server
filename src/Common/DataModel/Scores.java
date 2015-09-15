@@ -53,7 +53,7 @@ public class Scores
         DBManager.Execute(query);
 
         for (int i = 0; i < players.length; i ++)
-            this.scores[i] = new Score(game.PrimaryKey(), players[i].GetDatalink().PrimaryKey());
+            this.scores[i] = new Score(game.PrimaryKey(), players[i].PrimaryKey());
     }
 
 

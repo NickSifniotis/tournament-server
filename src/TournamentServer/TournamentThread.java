@@ -283,7 +283,7 @@ public class TournamentThread extends Thread
         try
         {
             for (int i = 0; i < game_players.length; i++)
-                game_players[i].GetDatalink().EndingGame(game_scores.Disqualified(i));
+                game_players[i].EndingGame(game_scores.Disqualified(i));
 
             game_thread.Game().EndGame();
         }

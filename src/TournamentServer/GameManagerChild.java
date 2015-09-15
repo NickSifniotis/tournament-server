@@ -99,7 +99,7 @@ public class GameManagerChild extends Thread
                 // these exceptions indicate that the player failed to return a move for some reason.
                 // they have nothing to say about the validity of the move that was returned. That
                 // is a separate test...
-
+//@TODO: Add 'null move' rule option to tournament, implement. The null move function belongs in IPlayer
                 game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
 
                 finished = true;
@@ -129,6 +129,7 @@ public class GameManagerChild extends Thread
 
             // the move passed the threefold barriers
             // progress the engine.
+            //@TODO: Log the move into the game logs.
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }

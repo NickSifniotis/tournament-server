@@ -105,8 +105,6 @@ public class PlayerManager
      *
      * @return the record.
      */
-    public PlayerSubmission GetDatalink()
-    {
-        return this.data_link;
-    }
+    public int PrimaryKey () { return this.data_link.PrimaryKey(); }
+    public void EndingGame (boolean value) throws Exception { this.data_link.EndingGame(value); }
 }

@@ -428,7 +428,7 @@ public class Game
      * This method sets the flags to indicate that the game has been terminated
      * abnormally, so that when the game reaches an end it will not be saved as
      * having been 'played'.
-     * 
+     *
      */
     public void Terminate()
     {
