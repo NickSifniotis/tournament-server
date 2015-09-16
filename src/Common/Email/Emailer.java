@@ -49,7 +49,7 @@ public class Emailer
             Transport transport = mailSession.getTransport();
 
             // creates a new e-mail message
-            Message msg = new MimeMessage(mailSession);
+            MimeMessage msg = new MimeMessage(mailSession);
 
 
             msg.setFrom(new InternetAddress(userName));
@@ -60,7 +60,7 @@ public class Emailer
 
             // creates message part
             MimeBodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setContent(body, "text/html");
+            messageBodyPart.setContent(body, "text/html; charset=utf-8");
 
             // creates multi-part
             Multipart multipart = new MimeMultipart();
