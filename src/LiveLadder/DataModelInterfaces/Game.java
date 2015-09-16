@@ -83,4 +83,24 @@ public class Game
             LogManager.Log(LogType.ERROR, error);
         }
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Distribute the points to teams, if this game is over.
+     *
+     * @param teams - the team manifest
+     */
+    public void DistributePoints (HashMap<Integer,TeamDetails> teams)
+    {
+        // we'd get some truly spasmodic ladder movements if this wasnt the case
+        if (source_game.InProgress())
+            return;
+
+        PointStructure points = new PointStructure(source_game.TournamentId());
+
+        points.DistributePoints(teams, source_scores);
+    }
 }

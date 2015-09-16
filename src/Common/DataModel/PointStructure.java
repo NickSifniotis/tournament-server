@@ -4,9 +4,12 @@ import Common.DBManager;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by nsifniotis on 17/09/15.
@@ -19,7 +22,7 @@ import java.sql.SQLException;
  * position         int                     W TM, R LL
  * points           int                     W TM, R LL
  */
-public class PointStructure extends Entity
+public class PointStructure extends Entity implements Comparable
 {
     private int tournament_id;
     private int position;
@@ -31,7 +34,7 @@ public class PointStructure extends Entity
      * 17/09/2015
      *
      * Create a new blank record and save it immediately.
-     * 
+     *
      */
     public PointStructure()
     {
@@ -59,6 +62,50 @@ public class PointStructure extends Entity
             String error = "PointStructure.constructor (resultset) - SQL error encountered: " + e;
             LogManager.Log(LogType.ERROR, error);
         }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Get them all from the database!
+     *
+     * @param tournament_id - which tournament to load for
+     * @return all of the point items
+     */
+    public static PointStructure[] LoadAll (int tournament_id)
+    {
+        List<PointStructure> res = new LinkedList<>();
+        String query = "SELECT * FROM point_structure WHERE tournament_id = " + tournament_id;
+        Connection connection = DBManager.connect();
+        ResultSet records = DBManager.ExecuteQuery(query, connection);
+
+        if (records != null)
+        {
+            try
+            {
+                while (records.next())
+                {
+                    res.add(new PointStructure(records));
+                }
+
+                DBManager.disconnect(records);          // disconnect by result
+            }
+            catch (Exception e)
+            {
+                String error = "PointStructure.LoadAll (t_id) - SQL error retrieving game data. " + e;
+                LogManager.Log(LogType.ERROR, error);
+                DBManager.disconnect(connection);
+            }
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        PointStructure[] temp = new PointStructure[res.size()];
+        return res.toArray(temp);
     }
 
 
@@ -180,5 +227,22 @@ public class PointStructure extends Entity
     protected String table_name()
     {
         return "point_structure";
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * I'd rather do this than write a sorting algorithm. Even for an array with fewer than ten elements. Go me!
+     *
+     * @param o - the other item.
+     * @return the results of the comparison
+     */
+    @Override
+    public int compareTo(Object o)
+    {
+        PointStructure other = (PointStructure) o;
+        return Integer.compare(this.position, other.position);
     }
 }

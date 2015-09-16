@@ -22,7 +22,7 @@ import java.sql.SQLException;
  * disqualified         boolean             Was this player the cause of abnormal termination?
  *
  */
-public class Score extends Entity
+public class Score extends Entity implements Comparable<Score>
 {
     private int submission_id;
     private int game_id;
@@ -249,4 +249,19 @@ public class Score extends Entity
     public int Score() { return this.score; }
     public int SubmissionKey () { return this.submission_id; }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Lazy sorting is the best sort of sorting.
+     *
+     * @param o - the other score to compare against
+     * @return the result of the comparison
+     */
+    @Override
+    public int compareTo(Score o)
+    {
+        return Integer.compare(o.score, this.score);
+    }
 }

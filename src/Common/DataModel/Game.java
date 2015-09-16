@@ -31,8 +31,6 @@ public class Game extends Entity
     private int round_number;
     private int game_number;
     private int tournament_id;
-    private boolean played;
-    private boolean in_progress;
 
 
     @Override

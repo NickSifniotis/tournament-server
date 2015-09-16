@@ -163,6 +163,22 @@ public class TeamDetails implements Comparable<TeamDetails>
 
     /**
      * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Adds the given points divident to this player's running total.
+     *
+     * @param points - the number of points to add.
+     */
+    public void AddPoints (int points)
+    {
+        this.points += points;
+
+        this.my_labels[LadderColumnStructure.POINTS.ordinal()].setText(String.valueOf(this.points));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
      * 16/09/2015
      *
      * Returns all current players for the tournament.

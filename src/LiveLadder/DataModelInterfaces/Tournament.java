@@ -74,12 +74,21 @@ public class Tournament
     }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Scoring a game is tournament level stuff, I suppose.
+     *
+     * @param game - the game to score
+     * @param teams - the team manifest for this tournament
+     */
     public void ScoreGame (Game game, HashMap<Integer, TeamDetails> teams)
     {
         // handle the for/against stuff first.
         game.DistributeScores(teams);
 
         // handle the points distribution second
-        //@TODO: that.
+        game.DistributePoints(teams);
     }
 }
