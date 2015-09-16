@@ -140,18 +140,6 @@ public class PlayerMarshall extends Application
         }
 
 
-        // If this is an existing player, and we have made it this far, retire the old player.
-        if (old_player != null)
-        {
-            LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
-
-            submission_slot = old_player.FixtureSlotAllocation();
-        //@TODO: The game data view needs to be defined ..
-            Game.SupercedeGames(submission_slot);
-            old_player.Retire();
-        }
-
-
         // create the new submission
         PlayerSubmission new_submission = new PlayerSubmission();
         new_submission.SetData(metadata, tournament.PrimaryKey());
@@ -173,6 +161,14 @@ public class PlayerMarshall extends Application
             LogManager.Log(LogType.ERROR, error);
         }
 
+        // If this is an existing player, and we have made it this far, retire the old player.
+        if (old_player != null)
+        {
+            LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
+            old_player.Retire();
+            submission_slot = old_player.FixtureSlotAllocation();
+            Game.SupercedeGames(submission_slot);
+        }
 
         // add the player to the tournament
         tournament.AssignSlotToPlayer(submission_slot, new_submission.PrimaryKey());
