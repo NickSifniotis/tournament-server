@@ -40,6 +40,11 @@ public class Tournament extends Entity
     private PointStructure points;
 
 
+    @Override
+    protected String table_name() {
+        return "tournament";
+    }
+
     /**
      * Nick Sifniotis u5809912
      * 8/9/2015
@@ -508,7 +513,7 @@ public class Tournament extends Entity
         Tournament [] tourney_list = { this };
         Game [] games = Game.LoadAll(tourney_list, false);
         for (Game g: games)
-            g.Reset();
+            g.Supercede();
     }
 
 

@@ -17,6 +17,8 @@ public abstract class Entity
     protected int id;               // the universal primary key, haha
 
 
+    protected abstract String table_name();
+
     /**
      * Nick Sifniotis u5809912
      * 16/09/2015
@@ -46,7 +48,7 @@ public abstract class Entity
      */
     protected boolean check_boolfield (String field_name)
     {
-        String query = "SELECT " + field_name + " FROM submission WHERE id = " + this.id;
+        String query = "SELECT " + field_name + " FROM " + table_name() + " WHERE id = " + this.id;
 
         boolean res = false;
 

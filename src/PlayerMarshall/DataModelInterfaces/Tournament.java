@@ -53,4 +53,15 @@ public class Tournament
     {
         data_object.AddPlayerToFixture(slot_id, player_id);
     }
+
+    public static Tournament[] LoadAll()
+    {
+        Common.DataModel.Tournament[] tourneys = Common.DataModel.Tournament.LoadAll();
+        Tournament [] results = new Tournament[tourneys.length];
+
+        for (int i = 0; i < tourneys.length; i ++)
+            results [i] = new Tournament(tourneys[i]);
+
+        return results;
+    }
 }

@@ -31,6 +31,11 @@ public class Score extends Entity
     private boolean disqualified;
 
 
+    @Override
+    protected String table_name() {
+        return "score";
+    }
+
     /**
      * Nick Sifniotis u5809912
      * 13/09/2015

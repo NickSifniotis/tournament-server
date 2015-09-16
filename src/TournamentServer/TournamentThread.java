@@ -341,7 +341,7 @@ public class TournamentThread extends Thread
         Tournament t = new Tournament(tournament_id);
         t.ResetTournament();
 
-        LogManager.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
+        LogManager.Log(LogType.TOURNAMENT, "Supercede of tournament " + tournament_id + " successful!");
     }
 
 

@@ -17,12 +17,13 @@ import java.util.List;
  *
  * DB schema is as follows
  *
- * id               int prikey
- * round_number     integer
- * game_number      integer
- * tournament_id    integer fk
- * played           boolean
- * in_progress      boolean
+ * id               int prikey              R everyone
+ * round_number     integer                 W Fix(T off), PM (T on) R LL, TS
+ * game_number      integer                 W Fix(T off), PM (T on) R LL, TS
+ * tournament_id    integer fk              W Fix, PM R LL, TS
+ * played           boolean                 W TS, R LL
+ * in_progress      boolean                 W TS, R LL
+ * superceded       boolean                 W PM, R TS, LL
  *
  */
 public class Game extends Entity
@@ -33,6 +34,11 @@ public class Game extends Entity
     private boolean played;
     private boolean in_progress;
 
+
+    @Override
+    protected String table_name() {
+        return "game";
+    }
 
     /**
      * Nick Sifniotis u5809912
@@ -423,6 +429,40 @@ public class Game extends Entity
 
     /**
      * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
+     * Various setter functions.
+     *
+     * @param value - the values to set.
+     */
+    public void SetGamePlayed (boolean value)
+    {
+        String query = "UPDATE game SET played = " + DBManager.BoolValue(value) + " WHERE id = " + id;
+        DBManager.Execute(query);
+    }
+    public void SetInProgress (boolean value)
+    {
+        String query = "UPDATE game SET in_progress = " + DBManager.BoolValue(value) + " WHERE id = " + id;
+        DBManager.Execute(query);
+    }
+    public void SetTournamentKey (int value)
+    {
+        String query = "UPDATE game SET tournament_id = " + value + " WHERE id = " + id;
+        DBManager.Execute(query);
+    }
+    public void SetRoundNumber (int value)
+    {
+        String query = "UPDATE game SET round_number = " + value + " WHERE id = " + id;
+        DBManager.Execute(query);
+    }
+    public void SetGameNumber (int value)
+    {
+        String query = "UPDATE game SET game_number = " + value + " WHERE id = " + id;
+        DBManager.Execute(query);
+    }
+
+    /**
+     * Nick Sifniotis u5809912
      * 10/9/2015
      *
      * Records in the database the fact that this game has been started.
@@ -485,11 +525,53 @@ public class Game extends Entity
      *
      * Hard reset of the game. If it is being played out, nothing will happen when EndGame is called.
      */
-    public void Reset()
+    public void Supercede()
     {
-        this.in_progress = false;
-        this.played = false;
-        this.SaveState();
+        // first, supercede this game itself.
+        String query = "UPDATE game SET superceded = 1 WHERE id = " + this.id;
+        DBManager.Execute(query);
+
+        // second, create a new, blank game record.
+        Game new_game = new Game(true);
+
+        // third, clone this game's records in game_player
+        query = "SELECT * FROM game_player WHERE game_id = " + id;
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+        if (res != null)
+        {
+            try
+            {
+                while (res.next())
+                {
+                    String insert_query = "INSERT INTO game_player (position, fixture_slot_id, game_id) VALUES"
+                                            + " (" + res.getInt("position")
+                                            + ", " + res.getInt("fixture_slot_id")
+                                            + ", " + new_game.PrimaryKey()
+                                            + ")";
+                    DBManager.Execute (insert_query);
+                }
+            }
+            catch (Exception e)
+            {
+                String er = "Game.Supercede - SQL error retrieving game data. " + e;
+                LogManager.Log(LogType.ERROR, er);
+                DBManager.disconnect(connection);
+            }
+
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            String er = "Game.Supercede - no data found in game_player for game_id " + id;
+            LogManager.Log(LogType.ERROR, er);
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        // fourth, finally, populate this new game with the data from the old one.
+        new_game.SetRoundNumber(this.RoundNumber());
+        new_game.SetGameNumber(this.GameNumber());
+        new_game.SetTournamentKey(this.tournament.PrimaryKey());
     }
 
 
@@ -518,7 +600,7 @@ public class Game extends Entity
                 while (res.next())
                 {
                     Game g = new Game(res.getInt("game_id"));
-                    g.Reset();
+                    g.Supercede();
                 }
             }
             catch (Exception e)

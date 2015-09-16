@@ -2,11 +2,11 @@ package PlayerMarshall;
 
 import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
-import Common.DataModel.Game;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import PlayerMarshall.DataModelInterfaces.Game;
 import PlayerMarshall.DataModelInterfaces.PlayerSubmission;
 import PlayerMarshall.DataModelInterfaces.Tournament;
 import javafx.animation.Animation;
@@ -147,7 +147,7 @@ public class PlayerMarshall extends Application
 
             submission_slot = old_player.FixtureSlotAllocation();
         //@TODO: The game data view needs to be defined ..
-            Game.ResetAll(submission_slot);
+            Game.SupercedeGames(submission_slot);
             old_player.Retire();
         }
 

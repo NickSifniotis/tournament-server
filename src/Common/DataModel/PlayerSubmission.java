@@ -40,6 +40,11 @@ public class PlayerSubmission extends Entity
     private String avatar_file;
 
 
+    @Override
+    protected String table_name() {
+        return "submission";
+    }
+
     /**
      * Nick Sifniotis u5809912
      * 31/08/2015
@@ -393,7 +398,7 @@ public class PlayerSubmission extends Entity
             LogManager.Log(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
-        LogManager.Log (LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
+        LogManager.Log(LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
         return fixture_position;
     }
 

@@ -57,7 +57,7 @@ public class MainPanel
 
         btnTest = new Button("Test JAR");
         btnSave = new Button("Save");
-        btnReset = new Button("Reset");
+        btnReset = new Button("Supercede");
         btnChoose = new Button("Select JAR ..");
 
         Separator row4 = new Separator();

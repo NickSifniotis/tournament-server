@@ -23,6 +23,11 @@ public class PointStructure extends Entity
     private int [] points;
 
 
+    @Override
+    protected String table_name() {
+        return "point_structure";
+    }
+
     /**
      * Nick Sifniotis u5809912
      * 12/09/2015

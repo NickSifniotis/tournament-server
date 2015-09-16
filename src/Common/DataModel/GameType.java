@@ -39,6 +39,11 @@ public class GameType extends Entity
     private int max_players;
 
 
+    @Override
+    protected String table_name() {
+        return "game_type";
+    }
+
     /**
      * Nick Sifniotis u5809912
      * 8/9/2015
