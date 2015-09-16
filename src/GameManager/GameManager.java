@@ -2,10 +2,9 @@ package GameManager;
 
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
-import Common.DataModel.GameType;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
+import GameManager.DataModelInterfaces.GameType;
 import GameManager.GUI.MainPanel;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -17,7 +16,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -52,8 +50,8 @@ public class GameManager extends Application
      * This is the more interesting function. It sets up the GUI
      * for the GameManager application.
      *
-     * @param primaryStage
-     * @throws Exception
+     * @param primaryStage - the stage where the scheme will be set!
+     * @throws Exception because the base implementation says we must do that
      */
     @Override
     public void start(Stage primaryStage) throws Exception
@@ -91,7 +89,7 @@ public class GameManager extends Application
         structural_layout.setCenter(main_layout);
         structural_layout.setBottom(footer);
 
-        Scene scene = new Scene (structural_layout, 300, 550);
+        Scene scene = new Scene (structural_layout);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Game Manager");
         primaryStage.show();
@@ -143,9 +141,7 @@ public class GameManager extends Application
         this.num_games_status.setText("Num Games: " + games.length);
 
         for (GameType game: games)
-        {
             this.game_chooser.getItems().add (game);
-        }
     }
 
 
@@ -293,6 +289,7 @@ public class GameManager extends Application
         }
     }
 
+
     public void resetButtonClicked ()
     {
         curr_gametype = new GameType();
@@ -301,6 +298,7 @@ public class GameManager extends Application
         setState(GameManagerStates.EDITING);
         this.my_panel.updateFields(curr_gametype, null);
     }
+
 
     public void saveButtonClicked ()
     {
@@ -384,8 +382,7 @@ public class GameManager extends Application
             return;
         }
 
-        // holy shit. We are saving this game!
-        this.curr_gametype.SaveState();
+
         try
         {
             Files.deleteIfExists(Paths.get(curr_gametype.SourceFilename()));

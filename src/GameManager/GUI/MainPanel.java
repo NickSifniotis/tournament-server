@@ -1,6 +1,6 @@
 package GameManager.GUI;
 
-import Common.DataModel.GameType;
+import GameManager.DataModelInterfaces.GameType;
 import GameManager.GameManagerStates;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
@@ -57,7 +57,7 @@ public class MainPanel
 
         btnTest = new Button("Test JAR");
         btnSave = new Button("Save");
-        btnReset = new Button("Supercede");
+        btnReset = new Button("Reset");
         btnChoose = new Button("Select JAR ..");
 
         Separator row4 = new Separator();
