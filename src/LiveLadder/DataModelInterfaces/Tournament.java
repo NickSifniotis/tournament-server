@@ -74,8 +74,12 @@ public class Tournament
     }
 
 
-    public void ScoreGame (int game_id, HashMap<Integer, TeamDetails> teams)
+    public void ScoreGame (Game game, HashMap<Integer, TeamDetails> teams)
     {
-        this.data_object.PointStructure().ScoreGame(game_id, teams);
+        // handle the for/against stuff first.
+        game.DistributeScores(teams);
+
+        // handle the points distribution second
+        //@TODO: that.
     }
 }

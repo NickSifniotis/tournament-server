@@ -203,7 +203,11 @@ public class TournamentThread extends Thread
         {
             // load the current state of the tournaments, and all playable games connected to them.
             Tournament[] tournaments = Tournament.LoadAll(true);
-            Game[] games = Game.LoadAll(tournaments, true);
+            int[] keys = new int[tournaments.length];
+            for (int i = 0; i < tournaments.length; i++)
+                keys[i] = tournaments[i].PrimaryKey();
+
+            Game[] games = Game.LoadAll(keys, true);
             int game_counter = 0;
 
             boolean success = false;

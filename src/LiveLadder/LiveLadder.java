@@ -8,8 +8,7 @@ package LiveLadder;
  *
  */
 
-import Common.DataModel.Game;
-import Common.DataModel.PointStructure;
+import LiveLadder.DataModelInterfaces.Game;
 import LiveLadder.DataModelInterfaces.TeamDetails;
 import LiveLadder.DataModelInterfaces.Tournament;
 import javafx.animation.Animation;
@@ -168,15 +167,10 @@ public class LiveLadder extends Application
 
 
         // get the games for this tournament.
-        Tournament [] tournaments = { this.tournament };
-        Game[] games = Game.LoadAll(tournaments, false);
-        PointStructure points = this.tournament.PointStructure();
+        Game[] games = Game.LoadAll(tournament.PrimaryKey());
 
-
-        // find the ones with interesting scores - games in progress or have been played.
         for (Game g: games)
-            if (g.Started())
-                points.ScoreGame(g, teams_indexed);
+                tournament.ScoreGame(g, teams_indexed);
 
 
         // that's it!

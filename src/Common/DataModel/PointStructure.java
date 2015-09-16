@@ -65,7 +65,7 @@ public class PointStructure extends Entity
      * @param teams - a hashmap (key = submission prikey) of all the players in this tournament
      */
     public void ScoreGame (int g_id, HashMap<Integer, TeamDetails> teams)
-    {
+    {/*
         Scores game_scores;
         try
         {
@@ -109,5 +109,6 @@ public class PointStructure extends Entity
 
 
         // use the points system to calculate points and things.
+        */
     }
 }

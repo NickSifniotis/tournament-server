@@ -510,7 +510,7 @@ public class Tournament extends Entity
     {
         this.StopTournament();
 
-        Tournament [] tourney_list = { this };
+        int [] tourney_list = { this.id };
         Game [] games = Game.LoadAll(tourney_list, false);
         for (Game g: games)
             g.Supercede();

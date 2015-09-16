@@ -157,7 +157,7 @@ public class Game extends Entity
      * @return an array of Game objects that match the criteria. They are ordered
      *          by round_number so that earlier games are always played before later ones.
      */
-    public static Game [] LoadAll (Tournament[] tournaments, boolean playable_only)
+    public static Game [] LoadAll (int[] tournaments, boolean playable_only)
     {
         List<Game> res = new ArrayList<>();
 
@@ -169,8 +169,8 @@ public class Game extends Entity
         if (tournaments != null)
         {
             tournament_clause = " AND g.tournament_id IN (0";
-            for (Tournament tournament: tournaments)
-                tournament_clause += ", " + tournament.PrimaryKey();
+            for (int tournament: tournaments)
+                tournament_clause += ", " + tournament;
 
             tournament_clause += ")";
         }
@@ -295,7 +295,7 @@ public class Game extends Entity
      * Nick Sifniotis u5809912
      * 9/9/2015
      *
-     * Inheritance!!! The lack of it is hurting me. Althogh I can see no reason why I should use it,
+     * Inheritance!!! The lack of it is hurting me. Although I can see no reason why I should use it,
      * it's not like I'll be creating collections of random DataModel objects ...
      *
      */
@@ -359,6 +359,7 @@ public class Game extends Entity
     public int GameNumber() { return this.game_number; }
     public boolean Started() { return this.check_boolfield("played") | this.check_boolfield("in_progress"); }
     public boolean InProgress() { return this.check_boolfield("in_progress"); }
+    public boolean Superceded() { return this.check_boolfield("superceded"); }
 
 
     /**
