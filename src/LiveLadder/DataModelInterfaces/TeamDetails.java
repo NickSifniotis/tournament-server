@@ -22,6 +22,7 @@ public class TeamDetails implements Comparable<TeamDetails>
     private int score_for;
     private int score_against;
     private boolean playing_now;
+    private boolean retired;
 
     private Label [] my_labels;
 
@@ -37,6 +38,7 @@ public class TeamDetails implements Comparable<TeamDetails>
     public TeamDetails (PlayerSubmission p)
     {
         this.id = p.PrimaryKey();
+        this.retired = p.Retired();
         this.my_labels = new Label[LadderColumnStructure.values().length];
         for (int i = 0; i < this.my_labels.length; i++)
         {
@@ -81,6 +83,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         return (double) score_for / score_against;
     }
     public int Differential () {return this.score_for - this.score_against; }
+    public boolean Retired() { return this.retired; }
 
 
     /**
@@ -158,9 +161,6 @@ public class TeamDetails implements Comparable<TeamDetails>
     }
 
 
-    public void SetPlayingNow() { this.playing_now = true; }
-
-
     /**
      * Nick Sifniotis u5809912
      * 16/09/2015
@@ -172,7 +172,7 @@ public class TeamDetails implements Comparable<TeamDetails>
      */
     public static TeamDetails[] LoadAll (int tournament_id)
     {
-        Common.DataModel.PlayerSubmission[] players = Common.DataModel.PlayerSubmission.LoadAll(tournament_id, true);
+        Common.DataModel.PlayerSubmission[] players = Common.DataModel.PlayerSubmission.LoadAll(tournament_id, false);
         TeamDetails [] res = new TeamDetails[players.length];
 
         for (int i = 0; i < players.length; i++)

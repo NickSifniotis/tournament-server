@@ -1,6 +1,8 @@
 package LiveLadder.DataModelInterfaces;
 
 import Common.DataModel.Score;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -66,11 +68,19 @@ public class Game
         for (int i = 0; i < source_scores.length; i++)
             team_keys[i] = source_scores[i].SubmissionKey();
 
-        for (int i: team_keys)
-            for (Score s: source_scores)
-                if (s.SubmissionKey() == i)
-                    teams.get(i).AddScores(s.Score(), 0);
-                else
-                    teams.get(i).AddScores(0, s.Score());
+        try
+        {
+            for (int i : team_keys)
+                for (Score s : source_scores)
+                    if (s.SubmissionKey() == i)
+                        teams.get(i).AddScores(s.Score(), 0);
+                    else
+                        teams.get(i).AddScores(0, s.Score());
+        }
+        catch (Exception e)
+        {
+            String error = "DistributeScores (Liveladder Game) error: " + e;
+            LogManager.Log(LogType.ERROR, error);
+        }
     }
 }

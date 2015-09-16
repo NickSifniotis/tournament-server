@@ -170,13 +170,14 @@ public class LiveLadder extends Application
         Game[] games = Game.LoadAll(tournament.PrimaryKey());
 
         for (Game g: games)
-                tournament.ScoreGame(g, teams_indexed);
+            tournament.ScoreGame(g, teams_indexed);
 
 
         // that's it!
         Arrays.sort(teams);
         for (int i = 0; i < teams.length; i ++)
-            teams[i].AddToGrid(grid, i + 1);
+            if (!teams[i].Retired())
+                teams[i].AddToGrid(grid, i + 1);
     }
 
 }

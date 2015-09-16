@@ -2,6 +2,9 @@ package TournamentServer.DataModelInterfaces;
 
 import Common.DataModel.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by nsifniotis on 16/09/15.
  *
@@ -28,6 +31,8 @@ public class Game
      * 16/09/2015
      *
      * Wrapper class for the LoadAll method.
+     * Only return playable games (taken care of by the supermethod)
+     * that have not been superceded (taken care of here)
      *
      * @param tournaments - the tournaments to load games for
      * @return an array containing all games.
@@ -35,11 +40,13 @@ public class Game
     public static Game[] LoadAll(int[] tournaments)
     {
         Common.DataModel.Game[] all = Common.DataModel.Game.LoadAll(tournaments, true);
-        Game[] res = new Game[all.length];
-        for (int i = 0; i < all.length; i ++)
-            res[i] = new Game(all[i]);
+        List<Game> holding = new LinkedList<>();
+        for (Common.DataModel.Game g: all)
+            if (!g.Superceded())
+                holding.add (new Game(g));
 
-        return res;
+        Game[] res = new Game[holding.size()];
+        return holding.toArray(res);
     }
 
 
