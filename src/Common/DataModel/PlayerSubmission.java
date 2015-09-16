@@ -363,7 +363,10 @@ public class PlayerSubmission extends Entity
     public String Email () { return this.email; }
     public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
     public int TournamentKey() { return this.tournament_id; }
-    public boolean ReadyToPlay () { return this.check_boolfield("ready") & !this.check_boolfield("retired") & !this.check_boolfield("disqualified"); }
+    public boolean Playing() { return this.check_boolfield("playing"); }
+    public boolean Retired() { return this.check_boolfield("retired"); }
+    public boolean Disqualified() { return this.check_boolfield("disqualified"); }
+    public boolean ReadyToPlay () { return !(Playing() | Retired() | Disqualified()); }
     public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
     public int FixtureSlotAllocation ()
     {
@@ -491,15 +494,10 @@ public class PlayerSubmission extends Entity
      * 10/9/2015
      *
      * Records the fact that this player is currently playing a game.
-     *
-     * @throws Exception - if the player is not in the correct state to be starting games.
      */
-    public void StartingGame() throws Exception
+    public void StartingGame()
     {
-        if (!this.ReadyToPlay())
-            throw new Exception ("This player is not able to play.");
-
-        String query = "UPDATE submission SET ready = 0 WHERE id = " + this.id;
+        String query = "UPDATE submission SET playing = " + DBManager.BoolValue(true) + " WHERE id = " + this.id;
         DBManager.Execute(query);
     }
 
@@ -515,11 +513,12 @@ public class PlayerSubmission extends Entity
      */
     public void EndingGame (boolean disqualified) throws Exception
     {
-        if (this.check_boolfield("ready"))
+        if (!Playing())
             throw new Exception ("This player does not seem to be playing any game.");
 
-        String query = (disqualified) ? "UPDATE submission SET ready = 1, disqualified = 1"
-                                        : "UPDATE submission SET ready = 1";
+        String query = (disqualified) ? "UPDATE submission SET playing = " + DBManager.BoolValue(false)
+                                            + ", disqualified = " + DBManager.BoolValue(true)
+                                        : "UPDATE submission SET playing = " + DBManager.BoolValue(false);
         query += " WHERE id = " + this.id;
         DBManager.Execute(query);
     }

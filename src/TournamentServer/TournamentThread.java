@@ -6,7 +6,6 @@ import Common.DataModel.Scores;
 import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -294,7 +293,7 @@ public class TournamentThread extends Thread
         try
         {
             for (int i = 0; i < game_players.length; i++)
-                game_players[i].EndingGame(game_scores.Disqualified(i));
+                game_players[i].EndGame(game_scores.Disqualified(i));
 
             game_thread.Game().EndGame();
         }

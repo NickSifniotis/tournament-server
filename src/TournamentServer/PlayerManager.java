@@ -2,11 +2,11 @@ package TournamentServer;
 
 
 import AcademicsInterface.IPlayer;
-import Common.DataModel.PlayerSubmission;
 import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
+import TournamentServer.DataModelInterfaces.PlayerSubmission;
 import TournamentServer.Exceptions.NoMoveMadeException;
 import TournamentServer.Exceptions.PlayerMoveException;
 import TournamentServer.Exceptions.TimeoutException;
@@ -23,7 +23,7 @@ public class PlayerManager
 {
     private Tournament tournament;
     private IPlayer my_player;
-    private PlayerSubmission data_link;
+    private PlayerSubmission submission;
 
 
     /**
@@ -38,7 +38,7 @@ public class PlayerManager
     public PlayerManager(Tournament tourney, PlayerSubmission player)
     {
         this.tournament = tourney;
-        this.data_link = player;
+        this.submission = player;
 
         // create the IPlayer player interface for the player that this manager manages.
         try
@@ -106,6 +106,6 @@ public class PlayerManager
      *
      * @return the record.
      */
-    public int PrimaryKey () { return this.data_link.PrimaryKey(); }
-    public void EndingGame (boolean value) throws Exception { this.data_link.EndingGame(value); }
+    public int PrimaryKey () { return this.submission.PrimaryKey(); }
+    public void EndGame(boolean value) throws Exception { this.submission.EndGame(value); }
 }
