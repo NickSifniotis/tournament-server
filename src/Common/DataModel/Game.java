@@ -30,7 +30,7 @@ public class Game extends Entity
 {
     private int round_number;
     private int game_number;
-    private Tournament tournament;
+    private int tournament_id;
     private boolean played;
     private boolean in_progress;
 
@@ -221,9 +221,7 @@ public class Game extends Entity
         this.id = 0;
         this.round_number = 0;
         this.game_number = 0;
-        this.played = false;
-        this.in_progress = false;
-        this.tournament = null;
+        this.tournament_id = 0;
     }
 
 
@@ -247,9 +245,7 @@ public class Game extends Entity
         this.id = input.getInt("id");
         this.round_number = input.getInt ("round_number");
         this.game_number = input.getInt ("game_number");
-        this.played = (input.getInt("played") == 1);
-        this.in_progress = (input.getInt("in_progress") == 1);
-        this.tournament = new Tournament(input.getInt("tournament_id"));
+        this.tournament_id = input.getInt("tournament_id");
     }
 
 
@@ -329,22 +325,18 @@ public class Game extends Entity
         {
             query = "UPDATE game SET round_number = " + this.round_number
                     + ", game_number = " + this.game_number
-                    + ", tournament_id = " + this.tournament.PrimaryKey()
-                    + ", played = " + DBManager.BoolValue(this.played)
-                    + ", in_progress = " + DBManager.BoolValue(this.in_progress)
+                    + ", tournament_id = " + this.tournament_id
                     + " WHERE id = " + this.id;
 
             DBManager.Execute(query);
         }
         else
         {
-            query = "INSERT INTO game (tournament_id, round_number, game_number, played, in_progress)"
+            query = "INSERT INTO game (tournament_id, round_number, game_number)"
                     + " VALUES ("
-                    + this.tournament.PrimaryKey()
+                    + this.tournament_id
                     + ", " + this.round_number
                     + ", " + this.game_number
-                    + ", " + DBManager.BoolValue(this.played)
-                    + ", " + DBManager.BoolValue(this.in_progress)
                     + ")";
 
             // we do want to know what the primary key of this new record is.
@@ -361,7 +353,8 @@ public class Game extends Entity
      *
      * @return - whatever it is that is being asked for.
      */
-    public Tournament Tournament () { return this.tournament; }
+    public Tournament Tournament () { return new Tournament(this.tournament_id); }
+    public int TournamentId() { return this.tournament_id; }
     public int RoundNumber () { return this.round_number; }
     public int GameNumber() { return this.game_number; }
     public boolean Started() { return this.check_boolfield("played") | this.check_boolfield("in_progress"); }
@@ -571,7 +564,7 @@ public class Game extends Entity
         // fourth, finally, populate this new game with the data from the old one.
         new_game.SetRoundNumber(this.RoundNumber());
         new_game.SetGameNumber(this.GameNumber());
-        new_game.SetTournamentKey(this.tournament.PrimaryKey());
+        new_game.SetTournamentKey(this.tournament_id);
     }
 
 
@@ -593,15 +586,14 @@ public class Game extends Entity
 
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
+        List <Integer> games_to_process = new LinkedList<>();
+
         if (res != null)
         {
             try
             {
                 while (res.next())
-                {
-                    Game g = new Game(res.getInt("game_id"));
-                    g.Supercede();
-                }
+                    games_to_process.add(res.getInt("game_id"));
             }
             catch (Exception e)
             {
@@ -618,5 +610,10 @@ public class Game extends Entity
             LogManager.Log(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
-    }
+
+        for (int game_id: games_to_process)
+        {
+            Game g = new Game (game_id);
+            g.Supercede();
+        }    }
 }
