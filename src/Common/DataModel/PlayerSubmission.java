@@ -336,12 +336,12 @@ public class PlayerSubmission
      *          What a shocker of a sentence that was.
      * @return a player submission object
      */
-    public static PlayerSubmission GetActiveWithTeamName(String original, Tournament t)
+    public static PlayerSubmission GetActiveWithTeamName(String original, int t_id)
     {
         PlayerSubmission res = null;
 
         String query = "SELECT * FROM submission WHERE team_name = '"
-                + original + "' AND retired = 0 AND tournament_id = " + t.PrimaryKey();
+                + original + "' AND retired = 0 AND tournament_id = " + t_id;
 
         try
         {
@@ -456,19 +456,19 @@ public class PlayerSubmission
      * Returns a count of the number of players who have been assigned slots in a tournament.
      * If the parameter tourney is null, get a count of registrations for all tournaments.
      *
-     * @param tourney - the tournament to query, or null for all.
+     * @param tourney_id - the tournament to query, or zero for all.
      * @return a count of the number of registered players.
      */
-    public static int CountRegisteredPlayers (Tournament tourney)
+    public static int CountRegisteredPlayers (int tourney_id)
     {
         String query;
 
-        if (tourney == null)
+        if (tourney_id == 0)
             query = "SELECT COUNT(*) AS count FROM fixture_slot"
                 + " WHERE submission_id <> 0";
         else
             query = "SELECT COUNT(*) AS count FROM fixture_slot"
-                + " WHERE submission_id <> 0 AND tournament_id = " + tourney.PrimaryKey();
+                + " WHERE submission_id <> 0 AND tournament_id = " + tourney_id;
 
         int res = 0;
 

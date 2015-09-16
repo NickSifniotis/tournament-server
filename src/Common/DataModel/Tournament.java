@@ -477,13 +477,13 @@ public class Tournament
      * slot_key is the value returned by GetNextAvailableSlot() above.
      *
      * @param slot_key - the slot key to assign the player to
-     * @param player - the player to assign to that slot
+     * @param player_id - the player to assign to that slot
      */
-    public void AddPlayerToFixture (int slot_key, PlayerSubmission player)
+    public void AddPlayerToFixture (int slot_key, int player_id)
     {
-        LogManager.Log (LogType.TOURNAMENT, "Adding player " + player.PrimaryKey() + " to fixture slot " + slot_key);
+        LogManager.Log (LogType.TOURNAMENT, "Adding player " + player_id + " to fixture slot " + slot_key);
 
-        String query = "UPDATE fixture_slot SET submission_id = " + player.PrimaryKey() + " WHERE id = " + slot_key;
+        String query = "UPDATE fixture_slot SET submission_id = " + player_id + " WHERE id = " + slot_key;
         DBManager.Execute(query);
     }
 

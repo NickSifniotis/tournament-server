@@ -3,13 +3,12 @@ package PlayerMarshall;
 import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
 import Common.DataModel.Game;
-import Common.DataModel.Tournament;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import Common.SystemState;
 import PlayerMarshall.DataModelInterfaces.PlayerSubmission;
+import PlayerMarshall.DataModelInterfaces.Tournament;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -34,8 +33,8 @@ import java.nio.file.Paths;
  * Main PlayerMarshall class
  * Functionality and GUI - not great design, Nick
  */
-public class PlayerMarshall extends Application {
-
+public class PlayerMarshall extends Application
+{
     private static String last_log_message;
     private static Label log_label;
     private static Label tourney_label;
@@ -54,13 +53,11 @@ public class PlayerMarshall extends Application {
      */
     public static File [] GetNewSubmissions (Tournament t)
     {
-        String full_path = SystemState.input_folder + t.PrimaryKey() + "/";
-
-        File folder = new File (full_path);
+        File folder = new File (t.InputFolder());
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles == null)
-            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + full_path + " is not a directory.");
+            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
     }
@@ -85,9 +82,7 @@ public class PlayerMarshall extends Application {
         File extracted_submission = verifier.ExtractSubmission(submission);
         SubmissionMetadata metadata = verifier.ExtractMetaData(submission);
 
-        boolean can_resubmit = (tournament.GameOn()) ? tournament.AllowResubmitOn() : tournament.AllowResubmitOff();
-        boolean can_submit = (!tournament.GameOn()) | tournament.AllowResubmitOn();
-        boolean is_new = (PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament) == null);
+        PlayerSubmission old_player = PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament.PrimaryKey());
 
 
         // the zeroth barrier - no metadata, no proceeding.
@@ -99,19 +94,31 @@ public class PlayerMarshall extends Application {
 
 
         // the first barrier - are we accepting submissions?
-        if (is_new)
+        int submission_slot = 0;
+
+        if (old_player == null)         // this is a new team submission
         {
-            if (!can_submit)
+            if (!tournament.AllowSubmit())
             {
                 SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email);
+                return;
+            }
+
+            try
+            {
+                submission_slot = tournament.AvailableSlot();
+            }
+            catch (Exception e)
+            {
+                SubmissionFailure(submission, EmailTypes.NO_SLOTS_AVAILABLE, metadata.team_email);
                 return;
             }
         }
         else
         {
-            if (!can_resubmit)
+            if (!tournament.AllowResubmit())
             {
-                if (tournament.GameOn())
+                if (tournament.Running())
                 {
                     SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, metadata.team_email);
                     return;
@@ -133,31 +140,13 @@ public class PlayerMarshall extends Application {
         }
 
 
-        int submission_slot = 0;
-        // If this is a new player, make sure that there is room in the tournament for them.
-        if (is_new)
-        {
-            try
-            {
-                submission_slot = tournament.GetNextAvailableSlot();
-            }
-            catch (Exception e)
-            {
-                SubmissionFailure(submission, EmailTypes.NO_SLOTS_AVAILABLE, metadata.team_email);
-                return;
-            }
-        }
-
-
         // If this is an existing player, and we have made it this far, retire the old player.
-        if (!is_new)
+        if (old_player != null)
         {
-            PlayerSubmission old_player = PlayerSubmission.GetActiveWithTeamName(metadata.team_name, tournament);
             LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
 
             submission_slot = old_player.FixtureSlotAllocation();
-//@TODO: For some reason, this code is missing active games. It could be that the Game object in the
-            // tournament thread is reverting back to play-on because it falls out of synch with the database.
+        //@TODO: The game data view needs to be defined ..
             Game.ResetAll(submission_slot);
             old_player.Retire();
         }
@@ -186,7 +175,7 @@ public class PlayerMarshall extends Application {
 
 
         // add the player to the tournament
-        tournament.AddPlayerToFixture(submission_slot, new_submission);
+        tournament.AssignSlotToPlayer(submission_slot, new_submission.PrimaryKey());
 
         //@TODO: Avatar code goes here
         //new_submission.setAvatar("");
@@ -219,7 +208,7 @@ public class PlayerMarshall extends Application {
             }
         }
 
-        int registered_players = PlayerSubmission.CountRegisteredPlayers(null);
+        int registered_players = PlayerSubmission.CountRegisteredPlayers(0);
 
         tourney_label.setText(String.valueOf(tourneys.length));
         player_label.setText(String.valueOf(registered_players));

@@ -1,6 +1,6 @@
 package PlayerMarshall.DataModelInterfaces;
 
-import Common.DataModel.Tournament;
+
 
 /**
  * Created by nsifniotis on 16/09/15.
@@ -64,12 +64,16 @@ public class PlayerSubmission
      * Wrapper method for the entity within the common.datamodel package.
      *
      * @param name - the team name to search for
-     * @param tournament - the tournament that the player plays in.
+     * @param t_id - the tournament that the player plays in.
      * @return
      */
-    public static PlayerSubmission GetActiveWithTeamName(String name, Tournament tournament)
+    public static PlayerSubmission GetActiveWithTeamName(String name, int t_id)
     {
-        return new PlayerSubmission(Common.DataModel.PlayerSubmission.GetActiveWithTeamName(name, tournament));
+        Common.DataModel.PlayerSubmission result = Common.DataModel.PlayerSubmission.GetActiveWithTeamName(name, t_id);
+        if (result == null)
+            return null;
+
+        return new PlayerSubmission(result);
     }
 
 
@@ -129,5 +133,5 @@ public class PlayerSubmission
      */
     public int PrimaryKey() { return this.data_object.PrimaryKey(); }
     public String MarshalledSource() { return this.data_object.MarshalledSource(); }
-    public static int CountRegisteredPlayers (Tournament t) { return Common.DataModel.PlayerSubmission.CountRegisteredPlayers(t); }
+    public static int CountRegisteredPlayers (int t_id) { return Common.DataModel.PlayerSubmission.CountRegisteredPlayers(t_id); }
 }
