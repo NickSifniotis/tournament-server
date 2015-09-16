@@ -102,4 +102,20 @@ public interface IGameEngine {
      * @return whether or not the game is still Alive
      */
     boolean AreYouStillAlive(Object game_state);
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
+     * This function accepts a game state and a move about to be played, and produces a String
+     * entry for the game log file, to record it.
+     *
+     * There are no restrictions on what this log entry can look like. Talk about your mother for all I care.
+     *
+     * @param game_state - the current state of the game
+     * @param move - the move that the player proposes to make
+     * @return - an entry for the game logs.
+     */
+    String log_entry (Object game_state, Object move);
 }
