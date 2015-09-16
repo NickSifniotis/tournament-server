@@ -117,5 +117,5 @@ public interface IGameEngine {
      * @param move - the move that the player proposes to make
      * @return - an entry for the game logs.
      */
-    String log_entry (Object game_state, Object move);
+    String LogEntry (Object game_state, Object move);
 }

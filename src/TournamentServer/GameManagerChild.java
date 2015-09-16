@@ -48,6 +48,9 @@ public class GameManagerChild extends Thread
         try
         {
             this.game.StartGame();
+
+            for (int i = 0; i < players.length; i ++)
+                LogManager.GameLog(game.PrimaryKey(), "Player " + i + ": " + players[i].Name());
         }
         catch (Exception e)
         {
@@ -93,10 +96,11 @@ public class GameManagerChild extends Thread
 
         while (engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted)
         {
+            int current_player = engine.GetCurrentPlayer(game_state);
             Object move;
             try
             {
-                move = players[engine.GetCurrentPlayer(game_state)].nextMove(game_state);
+                move = players[current_player].nextMove(game_state);
             }
             catch (PlayerMoveException e)
             {
@@ -106,10 +110,11 @@ public class GameManagerChild extends Thread
 //@TODO: Add 'null move' rule option to tournament, implement. The null move function belongs in IPlayer
 
                 // log what the fuck has happened as well.
-                LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with a player move: " + e);
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for throwing a PlayerMoveException.");
+                LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with player " + current_player + "'s move: " + e);
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for throwing a PlayerMoveException.");
+                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - failed to return a move.");
 
-                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
+                game_scores.Disqualify(current_player);
 
                 finished = true;
                 return;
@@ -119,8 +124,9 @@ public class GameManagerChild extends Thread
             // who knows. If there's a way to screw up, you can be sure Java will find it
             if (move == null)
             {
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for returning a move that is null.");
-                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is null.");
+                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a null move.");
+                game_scores.Disqualify(current_player);
 
                 finished = true;
                 return;
@@ -130,8 +136,9 @@ public class GameManagerChild extends Thread
             // fuck you cheats
             if (!engine.IsLegitimateMove(game_state, move))
             {
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying below player for returning a move that is not legit.");
-                game_scores.Disqualify(engine.GetCurrentPlayer(game_state));
+                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
+                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
+                game_scores.Disqualify(current_player);
 
                 finished = true;
                 return;
@@ -140,7 +147,7 @@ public class GameManagerChild extends Thread
 
             // the move passed the threefold barriers
             // progress the engine.
-            //@TODO: Log the move into the game logs.
+            LogManager.GameLog(game.PrimaryKey(), engine.LogEntry(game_state, move));
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }
