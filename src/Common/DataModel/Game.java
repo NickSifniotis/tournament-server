@@ -353,7 +353,6 @@ public class Game extends Entity
      *
      * @return - whatever it is that is being asked for.
      */
-    public Tournament Tournament () { return new Tournament(this.tournament_id); }
     public int TournamentId() { return this.tournament_id; }
     public int RoundNumber () { return this.round_number; }
     public int GameNumber() { return this.game_number; }
@@ -463,8 +462,7 @@ public class Game extends Entity
      */
     public void StartGame()
     {
-        String query = "UPDATE game SET in_progress = " + DBManager.BoolValue(true) + " WHERE id = " + this.id;
-        DBManager.Execute(query);
+        SetInProgress(true);
     }
 
 
@@ -473,18 +471,11 @@ public class Game extends Entity
      * 10/9/2015
      *
      * Signals that the game has finished being played.
-     * If this method is called while in_progress is false,
-     * reset the game.
-     *
      */
     public void EndGame()
     {
-        this.reloadState();
-
-        this.played = this.in_progress;
-        this.in_progress = false;
-
-        this.SaveState();
+        SetInProgress(false);
+        SetGamePlayed(true);
     }
 
 
@@ -503,8 +494,7 @@ public class Game extends Entity
      */
     public void Terminate()
     {
-        String query = "UPDATE game SET in_progress = " + DBManager.BoolValue(false) + " WHERE id = " + this.id;
-        DBManager.Execute(query);
+        SetInProgress(false);
     }
 
 

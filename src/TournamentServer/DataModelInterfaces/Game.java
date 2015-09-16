@@ -1,5 +1,7 @@
 package TournamentServer.DataModelInterfaces;
 
+import Common.DataModel.*;
+
 /**
  * Created by nsifniotis on 16/09/15.
  *
@@ -20,7 +22,57 @@ public class Game
         data_object = item;
     }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
+     * Wrapper class for the LoadAll method.
+     *
+     * @param tournaments - the tournaments to load games for
+     * @return an array containing all games.
+     */
+    public static Game[] LoadAll(int[] tournaments)
+    {
+        Common.DataModel.Game[] all = Common.DataModel.Game.LoadAll(tournaments, true);
+        Game[] res = new Game[all.length];
+        for (int i = 0; i < all.length; i ++)
+            res[i] = new Game(all[i]);
+
+        return res;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809902
+     * 16/09/2015
+     *
+     * Accessor functions
+     *
+     * @return data
+     */
     public int PrimaryKey() { return data_object.PrimaryKey(); }
+    public int TournamentKey() { return data_object.TournamentId(); }
     public void StartGame() { data_object.StartGame(); }
+    public void EndGame() { data_object.EndGame(); }
     public void Terminate() { data_object.Terminate(); }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
+     * Obtain the player submissions for this game.
+     *
+     * @return an array containing the playersubmission objects.
+     */
+    public PlayerSubmission[] Players ()
+    {
+        Common.DataModel.PlayerSubmission[] all = data_object.GetPlayers();
+        PlayerSubmission[] res = new PlayerSubmission[all.length];
+        for (int i = 0; i < all.length; i ++)
+            res[i] = new PlayerSubmission(all[i]);
+
+        return res;
+    }
 }

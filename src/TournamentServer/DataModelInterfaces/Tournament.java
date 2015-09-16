@@ -1,5 +1,6 @@
 package TournamentServer.DataModelInterfaces;
 
+import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IPlayer;
 
 /**
@@ -51,11 +52,31 @@ public class Tournament
      * Nick Sifniotis u5809912
      * 16/09/2015
      *
+     * We only want the keys! The fucking keys!!
+     *
+     * @return an array of primary keys.
+     */
+    public static int[] LoadKeys ()
+    {
+        Tournament[] all = LoadAll();
+        int[] keys = new int[all.length];
+        for (int i = 0; i < all.length; i ++)
+            keys[i] = all[i].PrimaryKey();
+
+        return keys;
+    }
+
+    /**
+     * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
      * Various accessor functions
      * @return the requested data.
      */
     public int PrimaryKey () { return data_object.PrimaryKey(); }
+    public String Name() { return data_object.Name(); }
     public IPlayer PlayerInterface() { return data_object.PlayerInterface(); }
+    public IGameEngine GameEngine() { return data_object.GameEngine(); }
     public int Timeout() { return data_object.Timeout(); }
     public int NumPlayers() { return data_object.NumPlayers(); }
 

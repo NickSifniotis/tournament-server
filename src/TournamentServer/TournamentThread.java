@@ -1,8 +1,8 @@
 package TournamentServer;
 
-import Common.DataModel.Game;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.PlayerSubmission;
 import TournamentServer.DataModelInterfaces.Scores;
 import TournamentServer.DataModelInterfaces.Tournament;
@@ -201,12 +201,8 @@ public class TournamentThread extends Thread
         if (this.running_threads < thread_pool_target && available_spot != -1)
         {
             // load the current state of the tournaments, and all playable games connected to them.
-            Tournament[] tournaments = Tournament.LoadAll();
-            int[] keys = new int[tournaments.length];
-            for (int i = 0; i < tournaments.length; i++)
-                keys[i] = tournaments[i].PrimaryKey();
-
-            Game[] games = Game.LoadAll(keys, true);
+            int[] tournament_keys = Tournament.LoadKeys();
+            Game[] games = Game.LoadAll(tournament_keys);
             int game_counter = 0;
 
             boolean success = false;
@@ -232,11 +228,11 @@ public class TournamentThread extends Thread
      */
     private boolean launch_game (Game game, int thread)
     {
-        Tournament tournament = new Tournament(game.TournamentId());
+        Tournament tournament = new Tournament(game.TournamentKey());
 
-        LogManager.Log (LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
+        LogManager.Log (LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + tournament.Name());
 
-        PlayerSubmission[] players = game.GetPlayers();
+        PlayerSubmission[] players = game.Players();
 
         // games only launch one at a time. So it's fair to assume that all players that are ready
         // to play now will still be ready to play in a couple of milliseconds.
@@ -267,7 +263,7 @@ public class TournamentThread extends Thread
             return false;
         }
 
-        thread_pool[thread] = new GameManagerChild(game, game.Tournament().GameEngine(), player_managers);
+        thread_pool[thread] = new GameManagerChild(game, tournament.GameEngine(), player_managers);
         thread_pool[thread].start();
 
         LogManager.Log (LogType.TOURNAMENT, "Game started!");
@@ -346,7 +342,7 @@ public class TournamentThread extends Thread
         Tournament t = new Tournament(tournament_id);
         t.ResetTournament();
 
-        LogManager.Log(LogType.TOURNAMENT, "Supercede of tournament " + tournament_id + " successful!");
+        LogManager.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
     }
 
 
