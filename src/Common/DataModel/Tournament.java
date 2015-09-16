@@ -312,13 +312,6 @@ public class Tournament extends Entity
     public boolean GameOn () { return this.check_boolfield("game_on"); }
     public int NumPlayers () { return this.num_players; }
 
-    public PointStructure PointStructure ()
-    {
-        if (this.points == null)
-            this.points = new PointStructure(this);
-
-        return this.points;
-    }
 
     @Override
     public String toString () { return this.Name(); }

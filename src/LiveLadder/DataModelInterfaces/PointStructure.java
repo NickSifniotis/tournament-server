@@ -69,7 +69,7 @@ public class PointStructure
         {
             List<Integer> player_holding = new LinkedList<>();
             int cumulative = 0;
-            int last_item_score = scores[0].Score() + 1;
+            int last_item_score = scores[0].Score();
             int counter = 0;
 
             for (Score s: scores)

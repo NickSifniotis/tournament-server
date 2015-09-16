@@ -22,7 +22,7 @@ import java.util.List;
  * position         int                     W TM, R LL
  * points           int                     W TM, R LL
  */
-public class PointStructure extends Entity implements Comparable
+public class PointStructure extends Entity implements Comparable<PointStructure>
 {
     private int tournament_id;
     private int position;
@@ -240,9 +240,8 @@ public class PointStructure extends Entity implements Comparable
      * @return the results of the comparison
      */
     @Override
-    public int compareTo(Object o)
+    public int compareTo(PointStructure o)
     {
-        PointStructure other = (PointStructure) o;
-        return Integer.compare(this.position, other.position);
+        return Integer.compare(this.position, o.position);
     }
 }
