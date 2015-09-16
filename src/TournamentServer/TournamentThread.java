@@ -1,11 +1,11 @@
 package TournamentServer;
 
 import Common.DataModel.Game;
-import Common.DataModel.PlayerSubmission;
-import Common.DataModel.Scores;
-import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import TournamentServer.DataModelInterfaces.PlayerSubmission;
+import TournamentServer.DataModelInterfaces.Scores;
+import TournamentServer.DataModelInterfaces.Tournament;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -201,7 +201,7 @@ public class TournamentThread extends Thread
         if (this.running_threads < thread_pool_target && available_spot != -1)
         {
             // load the current state of the tournaments, and all playable games connected to them.
-            Tournament[] tournaments = Tournament.LoadAll(true);
+            Tournament[] tournaments = Tournament.LoadAll();
             int[] keys = new int[tournaments.length];
             for (int i = 0; i < tournaments.length; i++)
                 keys[i] = tournaments[i].PrimaryKey();
@@ -232,6 +232,8 @@ public class TournamentThread extends Thread
      */
     private boolean launch_game (Game game, int thread)
     {
+        Tournament tournament = new Tournament(game.TournamentId());
+
         LogManager.Log (LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + game.Tournament().Name());
 
         PlayerSubmission[] players = game.GetPlayers();
@@ -242,7 +244,7 @@ public class TournamentThread extends Thread
         for (PlayerSubmission player: players)
                 lets_play &= player.ReadyToPlay();
 
-        if (!lets_play || players.length != game.Tournament().NumPlayers())
+        if (!lets_play || players.length != tournament.NumPlayers())
         {
             LogManager.Log (LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready.");
             return false;
@@ -254,8 +256,8 @@ public class TournamentThread extends Thread
         {
             for (int i = 0; i < players.length; i++)
             {
-                players[i].StartingGame();
-                player_managers[i] = new PlayerManager(game.Tournament(), players[i]);
+                players[i].StartGame();
+                player_managers[i] = new PlayerManager(tournament, players[i]);
             }
         }
         catch (Exception e)

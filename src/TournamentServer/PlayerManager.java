@@ -2,11 +2,11 @@ package TournamentServer;
 
 
 import AcademicsInterface.IPlayer;
-import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
 import TournamentServer.DataModelInterfaces.PlayerSubmission;
+import TournamentServer.DataModelInterfaces.Tournament;
 import TournamentServer.Exceptions.NoMoveMadeException;
 import TournamentServer.Exceptions.PlayerMoveException;
 import TournamentServer.Exceptions.TimeoutException;

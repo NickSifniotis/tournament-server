@@ -1,8 +1,8 @@
 package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
-import Common.DataModel.Game;
-import Common.DataModel.Scores;
+import TournamentServer.DataModelInterfaces.Game;
+import TournamentServer.DataModelInterfaces.Scores;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import TournamentServer.Exceptions.PlayerMoveException;
@@ -43,7 +43,7 @@ public class GameManagerChild extends Thread
         this.engine = engine;
         this.players = players;
 
-        this.game_scores = new Scores(game, players);
+        this.game_scores = new Scores(game.PrimaryKey(), players);
 
         try
         {

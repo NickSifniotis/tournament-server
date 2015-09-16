@@ -37,6 +37,7 @@ public class PlayerSubmission
     public boolean Playing() { return data_object.Playing(); }
     public boolean Retired() { return data_object.Retired();}
     public boolean Disqualified() { return data_object.Disqualified(); }
+    public boolean ReadyToPlay() { return data_object.ReadyToPlay(); }
     public String MarshalledSource() { return data_object.MarshalledSource(); }
 
     public void StartGame() { data_object.StartingGame(); }

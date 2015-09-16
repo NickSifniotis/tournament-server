@@ -460,16 +460,11 @@ public class Game extends Entity
      * 10/9/2015
      *
      * Records in the database the fact that this game has been started.
-     *
-     * @throws Exception - has a sook if the game is not in the correct state.
      */
-    public void StartGame() throws Exception
+    public void StartGame()
     {
-        if (this.in_progress || this.played)
-            throw new Exception ("Unable to start a game that has already been started.");
-
-        this.in_progress = true;
-        this.SaveState();
+        String query = "UPDATE game SET in_progress = " + DBManager.BoolValue(true) + " WHERE id = " + this.id;
+        DBManager.Execute(query);
     }
 
 
@@ -508,8 +503,8 @@ public class Game extends Entity
      */
     public void Terminate()
     {
-        this.in_progress = false;
-        this.SaveState();
+        String query = "UPDATE game SET in_progress = " + DBManager.BoolValue(false) + " WHERE id = " + this.id;
+        DBManager.Execute(query);
     }
 
 
