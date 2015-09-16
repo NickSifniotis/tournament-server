@@ -31,9 +31,8 @@ import java.util.List;
  * retired              boolean         PM writable, TS LL readable     def 0
  *
  */
-public class PlayerSubmission
+public class PlayerSubmission extends Entity
 {
-    private int id;
     private int tournament_id;
 
     private String name;
@@ -168,22 +167,6 @@ public class PlayerSubmission
         name = "";
         email = "";
         avatar_file = "";
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 9/9/2015
-     *
-     * Sets the metadata of this submission.
-     *
-     * @param data - the data extracted using IVerification.ExtractMetaData
-     */
-    public void SetMetaData (SubmissionMetadata data)
-    {
-        this.setName(data.team_name);
-        this.setAvatar(data.team_picture);
-        this.setEmail(data.team_email);
     }
 
 
@@ -331,7 +314,7 @@ public class PlayerSubmission
      * This method returns only the one unretired player, not the complete set of all submissions
      *
      * @param original - the filename that has been detected in the input folder.
-     * @param t - the tournament in question. Clearly it is desirable to support multiple
+     * @param t_id - the tournament in question. Clearly it is desirable to support multiple
      *          tournaments and submissions with common filenames thereof
      *          What a shocker of a sentence that was.
      * @return a player submission object
@@ -371,7 +354,6 @@ public class PlayerSubmission
      *
      * @return various interesting bits of data.
      */
-    public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
     public String Email () { return this.email; }
     public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
@@ -535,52 +517,6 @@ public class PlayerSubmission
                                         : "UPDATE submission SET ready = 1";
         query += " WHERE id = " + this.id;
         DBManager.Execute(query);
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 15/09/2015
-     *
-     * The boolfields retired and ready were causing major issues when they were being stored in this
-     * data object. The underlying data model would be updated but the changes would never filter through
-     * to the class instances. This had the effect of making some players unretireable sometimes.
-     *
-     * So it was decided to keep these booleans within the database and only extract them on an as-needed basis.
-     *
-     * @param field_name - the database field we want the value of
-     * @return the value from the database.
-     */
-    private boolean check_boolfield (String field_name)
-    {
-        String query = "SELECT " + field_name + " FROM submission WHERE id = " + this.id;
-
-        boolean res = false;
-
-        Connection connection = DBManager.connect();
-        ResultSet r = DBManager.ExecuteQuery(query, connection);
-
-        if (r != null)
-        {
-            try
-            {
-                r.next();
-                res = (r.getInt(field_name) == 1);
-                DBManager.disconnect(r);          // disconnect by result
-            }
-            catch (Exception e)
-            {
-                String error = "PlayerSubmission.check_boolfield - SQL error retrieving field value " + field_name + ". " + e;
-                LogManager.Log(LogType.ERROR, error);
-                DBManager.disconnect(connection);
-            }
-        }
-        else
-        {
-            DBManager.disconnect(connection);   // disconnect by connection
-        }
-
-        return res;
     }
 }
 

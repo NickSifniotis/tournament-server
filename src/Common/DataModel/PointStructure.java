@@ -17,7 +17,7 @@ import java.util.HashMap;
  * objects. This allows the LiveLadder to palm off the scoring task to this object.
  *
  */
-public class PointStructure
+public class PointStructure extends Entity
 {
     private int num_players;
     private int [] points;

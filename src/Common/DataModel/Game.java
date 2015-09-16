@@ -25,9 +25,8 @@ import java.util.List;
  * in_progress      boolean
  *
  */
-public class Game
+public class Game extends Entity
 {
-    private int id;
     private int round_number;
     private int game_number;
     private Tournament tournament;
@@ -356,12 +355,11 @@ public class Game
      *
      * @return - whatever it is that is being asked for.
      */
-    public int PrimaryKey () { return this.id; }
     public Tournament Tournament () { return this.tournament; }
     public int RoundNumber () { return this.round_number; }
     public int GameNumber() { return this.game_number; }
-    public boolean Started() { return this.played | this.in_progress; }
-    public boolean InProgress() { return this.in_progress; }
+    public boolean Started() { return this.check_boolfield("played") | this.check_boolfield("in_progress"); }
+    public boolean InProgress() { return this.check_boolfield("in_progress"); }
 
 
     /**

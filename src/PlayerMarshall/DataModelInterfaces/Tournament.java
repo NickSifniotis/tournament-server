@@ -45,7 +45,7 @@ public class Tournament
     public String InputFolder() { return SystemState.input_folder + data_object.PrimaryKey() + "/"; }
     public boolean Running() { return data_object.GameOn(); }
     public boolean AllowResubmit() { return (data_object.GameOn()) ? data_object.AllowResubmitOn() : data_object.AllowResubmitOff(); }
-    public boolean AllowSubmit() { return !data_object.GameOn(); }
+    public boolean AllowSubmit() { return (data_object.GameOn()) ? data_object.AllowSubmitOn() : data_object.AllowSubmitOff(); }
     public int AvailableSlot() throws Exception { return data_object.GetNextAvailableSlot(); }
     public IVerification Verification() { return data_object.Verification(); }
 

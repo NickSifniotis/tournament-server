@@ -23,14 +23,16 @@ import java.util.List;
  * Data model for the tournaments themselves
  *
  */
-public class Tournament
+public class Tournament extends Entity
 {
-    private int id;
     private String name;
     private boolean game_on;
     private int timeout;
     private boolean allow_resubmit;
     private boolean allow_resubmit_on;
+    private boolean allow_submit;
+    private boolean allow_submit_on;
+    private boolean use_null_moves;
     private GameType game;
     private int num_players;
     private String player_interface_class;
@@ -296,12 +298,15 @@ public class Tournament
      * @return a whole bunch of different things
      */
     public String Name() { return this.name; }
-    public int PrimaryKey () { return this.id; }
     public int Timeout () { return this.timeout; }
-    public boolean AllowResubmitOff () { return this.allow_resubmit; }
-    public boolean AllowResubmitOn () { return this.allow_resubmit_on; }
-    public boolean GameOn () { return this.game_on; }
+    public boolean AllowResubmitOff () { return this.check_boolfield("allow_resubmit"); }
+    public boolean AllowResubmitOn () { return this.check_boolfield("allow_resubmit_on"); }
+    public boolean AllowSubmitOff () { return this.check_boolfield("allow_submit"); }
+    public boolean AllowSubmitOn () { return this.check_boolfield("allow_submit_on"); }
+    public boolean UsesNullMoves () { return this.check_boolfield("use_null_moves"); }
+    public boolean GameOn () { return this.check_boolfield("game_on"); }
     public int NumPlayers () { return this.num_players; }
+
     public PointStructure PointStructure ()
     {
         if (this.points == null)

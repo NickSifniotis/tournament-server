@@ -22,9 +22,8 @@ import java.sql.SQLException;
  * disqualified         boolean             Was this player the cause of abnormal termination?
  *
  */
-public class Score
+public class Score extends Entity
 {
-    private int id;
     private int submission_id;
     private int game_id;
     private int score;
@@ -240,8 +239,8 @@ public class Score
      *
      * @return nice data.
      */
-    public boolean Disqualified() { return this.disqualified; }
-    public boolean NoScore() { return this.no_score; }
+    public boolean Disqualified() { return this.check_boolfield("disqualified"); }
+    public boolean NoScore() { return this.check_boolfield("no_score"); }
     public int Score() { return this.score; }
     public int SubmissionKey () { return this.submission_id; }
 

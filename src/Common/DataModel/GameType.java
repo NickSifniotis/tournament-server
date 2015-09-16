@@ -29,9 +29,8 @@ import java.util.List;
  * max_players      int
  *
  */
-public class GameType
+public class GameType extends Entity
 {
-    private int id;
     private String name;
     private String engine_class;
     private String viewer_class;
@@ -221,7 +220,6 @@ public class GameType
      *
      * @return lots of interesting data
      */
-    public int PrimaryKey () { return this.id; }
     public String Name () { return this.name; }
     public int MinPlayers () { return this.min_players; }
     public int MaxPlayers () { return this.max_players; }
