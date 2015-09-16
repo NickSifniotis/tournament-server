@@ -615,5 +615,50 @@ public class Game extends Entity
         {
             Game g = new Game (game_id);
             g.Supercede();
-        }    }
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 16/09/2015
+     *
+     * Return whatever scores have been associated with this game, as an array.
+     *
+     * @return the score objects
+     */
+    public Score[] GetScores()
+    {
+        List<Score> holding = new LinkedList<>();
+
+        String query = "SELECT * FROM score WHERE game_id = " + this.id;
+        Connection connection = DBManager.connect();
+        ResultSet set = DBManager.ExecuteQuery(query, connection);
+
+        if (set != null)
+        {
+            try
+            {
+                while (set.next())
+                    holding.add(new Score(set));
+            }
+            catch (Exception e)
+            {
+                String er = "Game.GetScores - SQL error retrieving score data. " + e;
+                LogManager.Log(LogType.ERROR, er);
+                DBManager.disconnect(connection);
+            }
+
+            DBManager.disconnect(set);          // disconnect by result
+        }
+        else
+        {
+            String er = "Game.GetScores - No data error retrieving score data.";
+            LogManager.Log(LogType.ERROR, er);
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        Score[] res = new Score[holding.size()];
+        return holding.toArray (res);
+    }
 }

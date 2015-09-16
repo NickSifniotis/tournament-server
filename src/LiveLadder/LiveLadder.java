@@ -9,9 +9,9 @@ package LiveLadder;
  */
 
 import Common.DataModel.Game;
-import Common.DataModel.PlayerSubmission;
 import Common.DataModel.PointStructure;
-import Common.DataModel.Tournament;
+import LiveLadder.DataModelInterfaces.TeamDetails;
+import LiveLadder.DataModelInterfaces.Tournament;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -160,15 +160,11 @@ public class LiveLadder extends Application
         if (this.tournament == null)
             return;
 
-        PlayerSubmission[] players = PlayerSubmission.LoadAll(this.tournament, true);
-        TeamDetails[] teams = new TeamDetails[players.length];
+        TeamDetails[] teams = TeamDetails.LoadAll(this.tournament.PrimaryKey());
         HashMap<Integer, TeamDetails> teams_indexed = new HashMap<>();
 
-        for (int i = 0; i < players.length; i ++)
-        {
-            teams[i] = new TeamDetails(players[i]);
-            teams_indexed.putIfAbsent(players[i].PrimaryKey(), teams[i]);
-        }
+        for (TeamDetails team: teams)
+            teams_indexed.putIfAbsent(team.PrimaryKey(), team);
 
 
         // get the games for this tournament.

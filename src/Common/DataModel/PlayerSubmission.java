@@ -234,12 +234,12 @@ public class PlayerSubmission extends Entity
      *
      * Returns an array of PlayerSubmission objects
      *
-     * @param t - the tournament to return submissions for. Will return all submissions if t is null
+     * @param t_id - the tournament to return submissions for. Will return all submissions if t is 0
      * @return - the playersubmission set
      */
-    public static PlayerSubmission [] LoadAll (Tournament t)
+    public static PlayerSubmission [] LoadAll (int t_id)
     {
-        return LoadAll(t, false);
+        return LoadAll(t_id, false);
     }
 
 
@@ -249,15 +249,15 @@ public class PlayerSubmission extends Entity
      *
      * Returns an array of PlayerSubmission objets from the database.
      *
-     * @param t - the tournament to return submissions for. Returns from all if this is null.
+     * @param t_id - the tournament to return submissions for. Returns from all if this is 0.
      * @param active_only - whether or not to return active players only, or all of them.
      *
      * @return - the PlayerSubmission[] array
      */
-    public static PlayerSubmission [] LoadAll (Tournament t, boolean active_only)
+    public static PlayerSubmission [] LoadAll (int t_id, boolean active_only)
     {
         String query = "SELECT * FROM submission WHERE 1";
-        query += (t == null) ? "" : " AND tournament_id = " + t.PrimaryKey();
+        query += (t_id == 0) ? "" : " AND tournament_id = " + t_id;
         query += (active_only) ? " AND retired = 0" : "";
 
         Connection connection = DBManager.connect();

@@ -1,8 +1,10 @@
-package LiveLadder;
+package LiveLadder.DataModelInterfaces;
 
 import Common.DataModel.PlayerSubmission;
+import LiveLadder.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+
 
 /**
  * Created by nsifniotis on 11/09/15.
@@ -10,9 +12,12 @@ import javafx.scene.layout.GridPane;
  * Objects of class TeamDetails contain all the information pertaining to a
  * team submission with respect to the LiveLadder.
  *
+ * Implementation of the PlayerSubmission contract with respect to LiveLadder
+ *
  */
 public class TeamDetails implements Comparable<TeamDetails>
 {
+    private int id;
     private int points;
     private int score_for;
     private int score_against;
@@ -31,6 +36,7 @@ public class TeamDetails implements Comparable<TeamDetails>
      */
     public TeamDetails (PlayerSubmission p)
     {
+        this.id = p.PrimaryKey();
         this.my_labels = new Label[LadderColumnStructure.values().length];
         for (int i = 0; i < this.my_labels.length; i++)
         {
@@ -65,6 +71,7 @@ public class TeamDetails implements Comparable<TeamDetails>
      * @return various bits of data
      *
      */
+    public int PrimaryKey() { return this.id; }
     public int Points () { return this.points; }
     public double Percentage ()
     {
@@ -104,8 +111,6 @@ public class TeamDetails implements Comparable<TeamDetails>
      * 12/09/2015
      *
      * Hopefully, this method will add the team details to the main layout.
-     * And remove any old instances of the team details that might be floating around somewhere.
-     * This could be fuck ugly.
      *
      * @param grid - the main layout grid
      * @param position - which row to inject values into
@@ -158,15 +163,21 @@ public class TeamDetails implements Comparable<TeamDetails>
 
     /**
      * Nick Sifniotis u5809912
-     * 12/9/2015
+     * 16/09/2015
      *
-     * Resets the scores so the refresh isn't cumulative.
+     * Returns all current players for the tournament.
      *
+     * @param tournament_id - the tournament that is being loaded
+     * @return teamdetails objects for every live player.
      */
-    public void Reset()
+    public static TeamDetails[] LoadAll (int tournament_id)
     {
-        this.score_for = 0;
-        this.score_against = 0;
-        this.playing_now = false;
+        Common.DataModel.PlayerSubmission[] players = Common.DataModel.PlayerSubmission.LoadAll(tournament_id, true);
+        TeamDetails [] res = new TeamDetails[players.length];
+
+        for (int i = 0; i < players.length; i++)
+            res [i] = new TeamDetails(players[i]);
+
+        return res;
     }
 }

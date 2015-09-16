@@ -72,7 +72,7 @@ public class Scores
      *
      * @param game_id - the game to search for
      */
-    public Scores (int game_id, int num_players) throws Exception
+    public Scores (int game_id) throws Exception
     {
         // I am not even going to assert that game_id != 0 here
         // don't get me started on num_players

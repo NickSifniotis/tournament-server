@@ -2,7 +2,7 @@ package Common.DataModel;
 
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import LiveLadder.TeamDetails;
+import LiveLadder.DataModelInterfaces.TeamDetails;
 
 import java.util.HashMap;
 
@@ -61,15 +61,15 @@ public class PointStructure extends Entity
      * Score this game. Compute points and pass them on to the TeamStructures that own them.
      * Add the ScoresFor and ScoreAgainst as well.
      *
-     * @param g - the game whos results are being analysed
+     * @param g_id - the game whos results are being analysed
      * @param teams - a hashmap (key = submission prikey) of all the players in this tournament
      */
-    public void ScoreGame (Game g, HashMap<Integer, TeamDetails> teams)
+    public void ScoreGame (int g_id, HashMap<Integer, TeamDetails> teams)
     {
         Scores game_scores;
         try
         {
-            game_scores = new Scores(g.PrimaryKey(), num_players);
+            game_scores = new Scores(g_id);
         }
         catch(Exception e)
         {

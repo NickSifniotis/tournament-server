@@ -1,12 +1,11 @@
 package LiveLadder;
 
 
-import Common.DataModel.Tournament;
+import LiveLadder.DataModelInterfaces.Tournament;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.File;
