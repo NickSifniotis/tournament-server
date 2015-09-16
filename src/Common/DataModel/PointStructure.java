@@ -1,114 +1,184 @@
 package Common.DataModel;
 
+import Common.DBManager;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import LiveLadder.DataModelInterfaces.TeamDetails;
 
-import java.util.HashMap;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Created by nsifniotis on 12/09/15.
+ * Created by nsifniotis on 17/09/15.
  *
- * This class holds the points model used by the tournament scoring system.
- * That is to say, how many points you get for coming first, or second, or third
- * or whatever. Also what to do in the event of a draw.
+ * The data model object for the table 'point structure'
  *
- * It contains methods that will score a game and add the data directly into the TeamDetails
- * objects. This allows the LiveLadder to palm off the scoring task to this object.
  *
+ * id               prikey autoinc          W TM, R LL
+ * tournament_id    int                     W TM, R LL
+ * position         int                     W TM, R LL
+ * points           int                     W TM, R LL
  */
 public class PointStructure extends Entity
 {
-    private int num_players;
-    private int [] points;
+    private int tournament_id;
+    private int position;
+    private int points;
 
-
-    @Override
-    protected String table_name() {
-        return "point_structure";
-    }
 
     /**
      * Nick Sifniotis u5809912
-     * 12/09/2015
+     * 17/09/2015
      *
-     * Create the ladder's point scoring system per the database records.
-     * If no tournament ID is given, have a sook.
-     *
-     * @param tournament - the tournament who's point scoring structure to load.
+     * Create a new blank record and save it immediately.
+     * 
      */
-    public PointStructure (Tournament tournament)
+    public PointStructure()
     {
-        this.num_players = tournament.NumPlayers();
+        load_state();
+        save_state();
+    }
 
-        if (tournament.PrimaryKey() > 0)
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Constructor for this object, build from database record
+     *
+     * @param input - the database record.
+     */
+    public PointStructure(ResultSet input)
+    {
+        try
         {
-            String query = "SELECT * FROM point_structure WHERE tournament_id = " + tournament.PrimaryKey();
+            this.load_state(input);
+        }
+        catch (Exception e)
+        {
+            String error = "PointStructure.constructor (resultset) - SQL error encountered: " + e;
+            LogManager.Log(LogType.ERROR, error);
+        }
+    }
 
 
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Default blank state.
+     */
+    private void load_state ()
+    {
+        this.id = 0;
+        this.tournament_id = 0;
+        this.position = 0;
+        this.points = 0;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Loads this records data from the resultset provided.
+     *
+     * @param input - the database record
+     * @throws SQLException if something goes wrong
+     */
+    private void load_state (ResultSet input) throws SQLException
+    {
+        this.id = input.getInt("id");
+        this.tournament_id = input.getInt("tournament_id");
+        this.position = input.getInt("position");
+        this.points = input.getInt("points");
+    }
+
+
+    private void save_state ()
+    {
+        //@TODO since table_name and entity exist it would be worth refactoring the fuck
+        //@TODO out of load and save states. Put the engine in entity and use overridden fnctions
+        //@TODO to assign values to variables and create the SQL queries.
+        // is this already in the database?
+        boolean exists = false;
+        String query;
+
+        if (this.id > 0)
+        {
+            query = "SELECT * FROM " + table_name() + " WHERE id = " + id;
+            Connection connection = DBManager.connect();
+            ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+            if (res != null)
+            {
+                exists = true;
+                DBManager.disconnect(res);          // disconnect by result
+            }
+            else
+            {
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+        }
+
+        if (exists)
+        {
+            query = "UPDATE " + table_name() + " SET tournament_id = " + this.tournament_id
+                    + ", position = " + this.position
+                    + ", points = " + this.points
+                    + " WHERE id = " + this.id;
+
+            DBManager.Execute(query);
         }
         else
         {
+            query = "INSERT INTO " + table_name() + " (tournament_id, position, points)"
+                    + " VALUES (" + this.tournament_id
+                    + ", " + this.position
+                    + ", " + this.points
+                    + ")";
 
+            // we do want to know what the primary key of this new record is.
+            this.id = DBManager.ExecuteReturnKey(query);
         }
     }
 
 
     /**
      * Nick Sifniotis u5809912
-     * 12/09/2015
+     * 17/09/2015
      *
-     * Score this game. Compute points and pass them on to the TeamStructures that own them.
-     * Add the ScoresFor and ScoreAgainst as well.
+     * Accessor functions.
      *
-     * @param g_id - the game whos results are being analysed
-     * @param teams - a hashmap (key = submission prikey) of all the players in this tournament
+     * @return data
      */
-    public void ScoreGame (int g_id, HashMap<Integer, TeamDetails> teams)
-    {/*
-        Scores game_scores;
-        try
-        {
-            game_scores = new Scores(g_id);
-        }
-        catch(Exception e)
-        {
-            String error = "PointStructure.ScoreGame - Error trying to score game " + g.PrimaryKey() + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
-
-            return;
-        }
-
-        PlayerSubmission[] players = g.GetPlayers();
-        for (PlayerSubmission p : players)
-        {
-            int pri_key = p.PrimaryKey();
-            TeamDetails deets = teams.get(pri_key);
-
-            // by shifting the try/catch block inside this loop,
-            // one missing score will not be enough to take down the entire game record.
-            try
-            {
-                deets.AddScores(game_scores.ScoreFor(pri_key), game_scores.ScoreAgainst(pri_key));
-
-                if (g.InProgress())
-                    deets.SetPlayingNow();
-            }
-            catch (Exception e)
-            {
-                // a lot of these try/catch blocks are being used to catch impossible situations.
-                // this is one of those.
-
-                // 14/09/2015 - this 'impossible situation' was triggered a number of times last night
-                // and I wasted two hours trying to debug it
-
-                String error = "PointStructure.ScoreGame - Error trying to scorefor/against game " + g.PrimaryKey() + ": " + e;
-                LogManager.Log(LogType.ERROR, error);
-            }
-        }
+    public int TournamentKey() { return this.tournament_id; }
+    public int Position() { return this.position; }
+    public int Points() { return this.points; }
 
 
-        // use the points system to calculate points and things.
-        */
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Setter functions for this object.
+     *
+     * @param t_id various data
+     */
+    public void SetTournamentKey(int t_id) { this.tournament_id = t_id; this.save_state(); }
+    public void SetPosition(int i) { this.position = i; this.save_state(); }
+    public void SetPoints(int i) { this.points = i; this.save_state(); }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * @return the database table name for objects of this class.
+     */
+    @Override
+    protected String table_name()
+    {
+        return "point_structure";
     }
 }
