@@ -568,7 +568,9 @@ public class Game extends Entity
     public static void ResetAll(int fixture_position)
     {
         // get a list of game_ids for which this fixture slot is playing
-        String query = "SELECT * FROM game_player WHERE fixture_slot_id = " + fixture_position;
+        // but only un-superceded games. Obviously. We are not replicating dead games here.
+        String query = "SELECT gp.* FROM game_player gp, game g WHERE g.id = gf.game_id"
+                        + " AND g.superceded = 0 AND gf.fixture_slot_id = " + fixture_position;
 
         Connection connection = DBManager.connect();
         ResultSet res = DBManager.ExecuteQuery(query, connection);
