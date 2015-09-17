@@ -1,5 +1,6 @@
 package Common.Email;
 
+import Common.DataModel.Tournament;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
@@ -23,26 +24,35 @@ import java.util.Properties;
  *
  * Emailer class that sends standard emails out to students regarding their submissions.
  *
+ * This class is intentionally not concurrent - though it bloody well could be, given how long it takes
+ * to send one of those damned emails out. But it would be impossible to send out as attachments the very
+ * same submission files that the marshall is lining up to delete ..
+ *
  */
 public class Emailer
 {
-    //@TODO: Implement this shit
-    //@TODO: I am certain that more parameters will be needed in that list of arguments
-    public static void SendEmail (EmailTypes type, String destination_address)
+    public static void SendEmail (EmailTypes type, String destination_address, int tournament_id)
     {
-        SendEmail(type, destination_address, null);
+        SendEmail(type, destination_address, tournament_id, null);
     }
 
 
-    public static void SendEmail (EmailTypes type, String destination_address, String attachment)
+    public static void SendEmail (EmailTypes type, String destination_address, int tournament_id, String attachment)
     {
+        Tournament tourney = new Tournament(tournament_id);
+        String tourney_name = tourney.Name();
+        String tourney_slots = String.valueOf(tourney.NumSlots());
         String body = "";
 
         try
         {
             List<String> lines = Files.readAllLines(type.Template());
             for (String l: lines)
+            {
+                l = l.replace("{TOURNAMENT.NAME}", tourney_name);
+                l = l.replace("{TOURNAMENT.SLOTS}", tourney_slots);
                 body += l + "\n";
+            }
         }
         catch (Exception e)
         {

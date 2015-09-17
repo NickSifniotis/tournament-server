@@ -14,8 +14,8 @@ public class testeer
 {
     public static void main(String[] args)
     {
-        //Emailer.SendEmail(EmailTypes.DISQUALIFIED, "u5809912@anu.edu.au", SystemState.game_log_path + "33.txt");
-
+        Emailer.SendEmail(EmailTypes.NO_SLOTS_AVAILABLE, "u5809912@anu.edu.au", 1);
+/*
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("VUvpKkoJtGpGTS8tK7qkaX3dT")
@@ -32,6 +32,6 @@ public class testeer
         catch (Exception e)
         {
             e.printStackTrace();
-        }
+        }*/
     }
 }

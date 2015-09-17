@@ -70,4 +70,26 @@ public enum EmailTypes
 
         return "";
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * I'm looking that these methods I'm writing, and I'm thinking 'new database entity ..'
+     *
+     * @return true if this email template requires the attachment of a student submission
+     */
+    public boolean AttachSubmission()
+    {
+        switch (this)
+        {
+            case NO_VALID_EMAIL:
+            case NO_METADATA:
+            case FAILED_VALIDATION:
+                return true;
+        }
+
+        return false;
+    }
 }

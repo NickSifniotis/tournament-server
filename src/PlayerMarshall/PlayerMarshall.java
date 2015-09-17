@@ -88,7 +88,7 @@ public class PlayerMarshall extends Application
         // the zeroth barrier - no metadata, no proceeding.
         if (metadata.team_name.equals(""))
         {
-            SubmissionFailure(submission, EmailTypes.NO_METADATA, "");
+            SubmissionFailure(submission, EmailTypes.NO_METADATA, "", tournament);
             return;
         }
 
@@ -100,7 +100,7 @@ public class PlayerMarshall extends Application
         {
             if (!tournament.AllowSubmit())
             {
-                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email);
+                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email, tournament);
                 return;
             }
 
@@ -110,7 +110,7 @@ public class PlayerMarshall extends Application
             }
             catch (Exception e)
             {
-                SubmissionFailure(submission, EmailTypes.NO_SLOTS_AVAILABLE, metadata.team_email);
+                SubmissionFailure(submission, EmailTypes.NO_SLOTS_AVAILABLE, metadata.team_email, tournament);
                 return;
             }
         }
@@ -120,12 +120,12 @@ public class PlayerMarshall extends Application
             {
                 if (tournament.Running())
                 {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, metadata.team_email);
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, metadata.team_email, tournament);
                     return;
                 }
                 else
                 {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, metadata.team_email);
+                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, metadata.team_email, tournament);
                     return;
                 }
             }
@@ -135,7 +135,7 @@ public class PlayerMarshall extends Application
         // the second barrier - is this submission a valid one?
         if (!verifier.VerifySubmission(extracted_submission))
         {
-            SubmissionFailure(submission, EmailTypes.FAILED_VALIDATION, metadata.team_email);
+            SubmissionFailure(submission, EmailTypes.FAILED_VALIDATION, metadata.team_email, tournament);
             return;
         }
 
@@ -247,7 +247,7 @@ public class PlayerMarshall extends Application
         componentLayout.setBottom(statusBar);
         componentLayout.setTop(centrePane);
 
-        primaryStage.setTitle("Player Marshall - TournamentKey Server");
+        primaryStage.setTitle("Player Marshall");
         primaryStage.setScene(new Scene(componentLayout, 400, 575));
         primaryStage.show();
 
@@ -271,7 +271,7 @@ public class PlayerMarshall extends Application
      * @param reason - why it failed
      * @param destination_address - who to send the dirty email to.
      */
-    private static void SubmissionFailure (File submission, EmailTypes reason, String destination_address)
+    private static void SubmissionFailure (File submission, EmailTypes reason, String destination_address, Tournament t)
     {
         LogMessage("Failed to add submission. Reason: " + reason.name());
 
@@ -281,7 +281,10 @@ public class PlayerMarshall extends Application
             reason = EmailTypes.NO_VALID_EMAIL;
         }
 
-        Emailer.SendEmail(reason, destination_address);
+        if (reason.AttachSubmission())
+            Emailer.SendEmail(reason, destination_address, t.PrimaryKey(), submission.getAbsolutePath());
+        else
+            Emailer.SendEmail(reason, destination_address, t.PrimaryKey());
 
         try
         {
@@ -330,5 +333,7 @@ public class PlayerMarshall extends Application
         log_label.setText(text);
 
         last_log_message = msg;
+
+        LogManager.Log(LogType.TOURNAMENT, msg);
     }
 }

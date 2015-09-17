@@ -311,6 +311,37 @@ public class Tournament extends Entity
     public boolean UsesNullMoves () { return this.check_boolfield("use_null_moves"); }
     public boolean GameOn () { return this.check_boolfield("game_on"); }
     public int NumPlayers () { return this.num_players; }
+    public int NumSlots ()
+    {
+        int result = 0;
+
+        String query = "SELECT COUNT(*) AS slot_count FROM fixture_slot WHERE tournament_id = " + id;
+        Connection connection = DBManager.connect();
+        ResultSet res = DBManager.ExecuteQuery(query, connection);
+
+        if (res != null)
+        {
+            try
+            {
+                res.next();
+                result = res.getInt("slot_count");
+            }
+            catch (Exception e)
+            {
+                String error = "Tournament.NumSlots - error in SQL query " + e;
+                LogManager.Log(LogType.ERROR, error);
+                DBManager.disconnect(connection);   // disconnect by connection
+            }
+
+            DBManager.disconnect(res);          // disconnect by result
+        }
+        else
+        {
+            DBManager.disconnect(connection);   // disconnect by connection
+        }
+
+        return result;
+    }
 
 
     @Override
