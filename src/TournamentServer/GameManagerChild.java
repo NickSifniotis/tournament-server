@@ -153,6 +153,11 @@ public class GameManagerChild extends Thread
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }
+
+        // and send out EMAILS ABOUT IT
+        for (PlayerManager p: players)
+            Emailer.SendEmail(EmailTypes.GAME_OVER, p.Email(),
+                this.game.TournamentKey(), LogManager.GameLogFilename(this.game.PrimaryKey()));
     }
 
 
