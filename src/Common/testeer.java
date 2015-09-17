@@ -2,15 +2,36 @@ package Common;
 
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
+import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Created by nsifniotis on 16/09/15.
+ *
+ * hahahahaha omg twitter!
  */
 public class testeer
 {
     public static void main(String[] args)
     {
+        //Emailer.SendEmail(EmailTypes.DISQUALIFIED, "u5809912@anu.edu.au", SystemState.game_log_path + "33.txt");
 
-        Emailer.SendEmail(EmailTypes.NO_METADATA, "u5809912@anu.edu.au");
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+        cb.setDebugEnabled(true)
+                .setOAuthConsumerKey("VUvpKkoJtGpGTS8tK7qkaX3dT")
+                .setOAuthConsumerSecret("jpN4a8JxiGZNjZGyFoy7MaIZlkubH17sUfzUmii45Si53UO8tK")
+                .setOAuthAccessToken("3588649154-8XasvhTp1mVLnuWm15AFB67R6UqhkvRY43v4BDw")
+                .setOAuthAccessTokenSecret("Y0ba6KAQ49CaWWynFYSIpsBxl9p9iwvddNbu7vZjJVkG2");
+        TwitterFactory tf = new TwitterFactory(cb.build());
+        Twitter twitter = tf.getInstance();
+
+        try
+        {
+            Status status = twitter.updateStatus("Tournament Server here. Stoked to be posting on Twitter.");
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 }

@@ -2,7 +2,6 @@ package Common.Email;
 
 import Common.SystemState;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -36,9 +35,9 @@ public enum EmailTypes
             case NO_SLOTS_AVAILABLE:
                 return Paths.get(SystemState.Email.templates_folder + "no_metadata.html");
             case FAILED_VALIDATION:
-                return Paths.get(SystemState.Email.templates_folder + "no_metadata.html");
+                return Paths.get(SystemState.Email.templates_folder + "failed_valid.html");
             case DISQUALIFIED:
-                return Paths.get(SystemState.Email.templates_folder + "no_metadata.html");
+                return Paths.get(SystemState.Email.templates_folder + "disqualification.html");
         }
 
         return null;
