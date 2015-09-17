@@ -9,6 +9,9 @@ import java.io.File;
  * to ensure they are using safe Haskell or not trying to hack each others
  * code or download solutions from the internet ....
  *
+ * @TODO: Alter this interface, and the BlokusPlayer implementation of it,
+ * @TODO: to specifically exclude calls to the player's makeMove method
+ * @TODO: outside of the controlled GetMove method - it may not be safe code to execute.
  */
 public interface IVerification
 {

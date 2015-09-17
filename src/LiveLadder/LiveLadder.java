@@ -49,6 +49,8 @@ public class LiveLadder extends Application
     public void start(Stage primaryStage)
     {
         LadderColumnStructure.Initialise();
+        LadderColumnStructure.PERCENTAGE.Disable();
+        LadderColumnStructure.DIFFERENTIAL.Disable();
 
         main_layout = new BorderPane();
         HBox bottom_row = new HBox ();
