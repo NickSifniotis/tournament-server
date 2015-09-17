@@ -11,6 +11,6 @@ public class testeer
     public static void main(String[] args)
     {
 
-        Emailer.SendEmail(EmailTypes.DISQUALIFIED, "u5809912@anu.edu.au");
+        Emailer.SendEmail(EmailTypes.NO_METADATA, "u5809912@anu.edu.au");
     }
 }

@@ -1,11 +1,19 @@
 package Common.Email;
 
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
+import Common.SystemState;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -22,37 +30,36 @@ public class Emailer
     public static void SendEmail (EmailTypes type, String destination_address)
     {
         String subject = "test email";
-        String host = "smtp-mail.outlook.com";
-        int port = 587;
-        String userName = "blokus_tournament@hotmail.com";
-        String password = "b64094bf";
-        String body = "Your player has been successfully registered for the 2015 Blokus tournament. WOW";
-
-
-        // sets SMTP server properties
-        Properties properties = new Properties();
-        properties.put("mail.transport.protocol", "smtp");
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.port", port);
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.socketFactory.fallback", "true");
-        properties.put("mail.user", userName);
-        properties.put("mail.password", password);
-
+        String body = "";
 
         try
         {
+            List<String> lines = Files.readAllLines(Paths.get(type.Template().getAbsolutePath()));
+            for (String l: lines)
+                body += l + "\n";
+        }
+        catch (Exception e)
+        {
+            // this should never happen!
+            String error = "Emailer.SendEmail - error when attemption to load email template " + type.Template() + ": " + e;
+            LogManager.Log(LogType.ERROR, error);
 
+            return;
+        }
+
+
+        Properties properties = GetSMTPProperties();
+
+        try
+        {
             Session mailSession = Session.getDefaultInstance(properties);
-            mailSession.setDebug(true);
             Transport transport = mailSession.getTransport();
 
             // creates a new e-mail message
             MimeMessage msg = new MimeMessage(mailSession);
 
 
-            msg.setFrom(new InternetAddress(userName));
+            msg.setFrom(new InternetAddress(SystemState.Email.userName));
             InternetAddress[] toAddresses = {new InternetAddress(destination_address)};
             msg.setRecipients(Message.RecipientType.TO, toAddresses);
             msg.setSubject(subject);
@@ -70,7 +77,8 @@ public class Emailer
             msg.setContent(multipart);
 
             // sends the e-mail
-            transport.connect(host, port, userName, password);
+            transport.connect(SystemState.Email.host, SystemState.Email.port,
+                    SystemState.Email.userName, SystemState.Email.password);
 
             transport.sendMessage(msg,
                     msg.getRecipients(Message.RecipientType.TO));
@@ -83,6 +91,27 @@ public class Emailer
         }
 
 
-        return;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * @return a structure containing the properties needed to send an email
+     */
+    private static Properties GetSMTPProperties()
+    {
+        Properties properties = new Properties();
+        properties.put("mail.transport.protocol", "smtp");
+        properties.put("mail.smtp.host", SystemState.Email.host);
+        properties.put("mail.smtp.port", SystemState.Email.port);
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.socketFactory.fallback", "true");
+        properties.put("mail.user", SystemState.Email.userName);
+        properties.put("mail.password", SystemState.Email.password);
+
+        return properties;
     }
 }

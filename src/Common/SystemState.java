@@ -9,6 +9,17 @@ package Common;
  */
 public class SystemState
 {
+    public static class Email
+    {
+        public static final String userName = "blokus_tournament@hotmail.com";;
+        public static final String password = "b64094bf";
+        public static final String host = "smtp-mail.outlook.com";
+        public static final int port = 587;
+
+        public static final String templates_folder = "email_templates/";
+
+    }
+
     public static final boolean DEBUG = true;
 
     public static final boolean SQL_LOGS = false;
