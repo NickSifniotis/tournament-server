@@ -4,14 +4,15 @@ import Common.Logs.LogManager;
 import Common.Logs.LogType;
 import Common.SystemState;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -29,12 +30,18 @@ public class Emailer
     //@TODO: I am certain that more parameters will be needed in that list of arguments
     public static void SendEmail (EmailTypes type, String destination_address)
     {
+        SendEmail(type, destination_address, null);
+    }
+
+
+    public static void SendEmail (EmailTypes type, String destination_address, String attachment)
+    {
         String subject = "test email";
         String body = "";
 
         try
         {
-            List<String> lines = Files.readAllLines(Paths.get(type.Template().getAbsolutePath()));
+            List<String> lines = Files.readAllLines(type.Template());
             for (String l: lines)
                 body += l + "\n";
         }
@@ -57,8 +64,6 @@ public class Emailer
 
             // creates a new e-mail message
             MimeMessage msg = new MimeMessage(mailSession);
-
-
             msg.setFrom(new InternetAddress(SystemState.Email.userName));
             InternetAddress[] toAddresses = {new InternetAddress(destination_address)};
             msg.setRecipients(Message.RecipientType.TO, toAddresses);
@@ -73,13 +78,21 @@ public class Emailer
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
 
+            if (attachment != null)
+            {
+                messageBodyPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(attachment);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(attachment);
+                multipart.addBodyPart(messageBodyPart);
+            }
+
             // sets the multi-part as e-mail's content
             msg.setContent(multipart);
 
             // sends the e-mail
             transport.connect(SystemState.Email.host, SystemState.Email.port,
                     SystemState.Email.userName, SystemState.Email.password);
-
             transport.sendMessage(msg,
                     msg.getRecipients(Message.RecipientType.TO));
             transport.close();
