@@ -90,6 +90,20 @@ public class LogManager
         {
             System.out.println ("ERROR APPENDING TO GAME LOG FILE.\nTHE ENTIRE PROGRAM IS FUCKED RUN FOR THE HILLS.");
         }
+    }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * After every game, the game log is emailed out to all it's participants.
+     *
+     * @param game_id - the game whos log we need to dispatch
+     * @return - the full path to the log for that game
+     */
+    public static String GameLogFilename (int game_id)
+    {
+        return LogType.GAME.LogPath() + game_id + ".txt";
     }
 }

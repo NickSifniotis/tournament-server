@@ -1,6 +1,8 @@
 package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
+import Common.Email.EmailTypes;
+import Common.Email.Emailer;
 import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.Scores;
 import Common.Logs.LogManager;
@@ -136,9 +138,9 @@ public class GameManagerChild extends Thread
             // fuck you cheats
             if (!engine.IsLegitimateMove(game_state, move))
             {
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
+                LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
                 LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
-                game_scores.Disqualify(current_player);
+                Disqualify(current_player);
 
                 finished = true;
                 return;
@@ -151,6 +153,26 @@ public class GameManagerChild extends Thread
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 17/09/2015
+     *
+     * Disqualify a player.
+     *
+     * @param player_id - the player whom to disqualify
+     */
+    private void Disqualify (int player_id)
+    {
+        for (int i = 0; i < players.length; i ++)
+            Emailer.SendEmail(((i == player_id) ? EmailTypes.DISQUALIFIED : EmailTypes.ABNORMAL),
+                    players[player_id].Email(),
+                    this.game.TournamentKey(),
+                    LogManager.GameLogFilename(this.game.PrimaryKey()));
+
+        game_scores.Disqualify(player_id);
     }
 
 

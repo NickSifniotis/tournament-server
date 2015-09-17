@@ -108,5 +108,6 @@ public class PlayerManager
      */
     public int PrimaryKey () { return this.submission.PrimaryKey(); }
     public String Name() { return this.submission.Name(); }
+    public String Email() { return this.submission.Email(); }
     public void EndGame(boolean value) throws Exception { this.submission.EndGame(value); }
 }

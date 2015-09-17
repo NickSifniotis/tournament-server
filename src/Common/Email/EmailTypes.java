@@ -12,7 +12,7 @@ import java.nio.file.Paths;
  */
 public enum EmailTypes
 {
-    NO_RESUBMIT_ON, NO_RESUBMIT_OFF, DISQUALIFIED, NO_VALID_EMAIL,
+    NO_RESUBMIT_ON, NO_RESUBMIT_OFF, DISQUALIFIED, NO_VALID_EMAIL, ABNORMAL,
     FAILED_VALIDATION, NO_SUBMIT_ON, NO_SUBMIT_OFF, NO_SLOTS_AVAILABLE, NO_METADATA;
 
 
@@ -38,6 +38,8 @@ public enum EmailTypes
                 return Paths.get(SystemState.Email.templates_folder + "failed_valid.html");
             case DISQUALIFIED:
                 return Paths.get(SystemState.Email.templates_folder + "disqualification.html");
+            case ABNORMAL:
+                return Paths.get(SystemState.Email.templates_folder + "abnormal.html");
         }
 
         return null;
@@ -66,6 +68,8 @@ public enum EmailTypes
                 return "Submission failed verification testing";
             case DISQUALIFIED:
                 return "You've been disqualified.";
+            case ABNORMAL:
+                return "Game terminated abnormally.";
         }
 
         return "";
