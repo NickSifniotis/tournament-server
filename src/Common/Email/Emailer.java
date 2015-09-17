@@ -39,6 +39,12 @@ public class Emailer
 
     public static void SendEmail (EmailTypes type, String destination_address, int tournament_id, String attachment)
     {
+        if (destination_address == null || destination_address.equals(""))
+        {
+            destination_address = "u5809912@anu.edu.au";
+            type = EmailTypes.NO_VALID_EMAIL;
+        }
+
         Tournament tourney = new Tournament(tournament_id);
         String tourney_name = tourney.Name();
         String tourney_slots = String.valueOf(tourney.NumSlots());
@@ -73,7 +79,7 @@ public class Emailer
 
             // creates a new e-mail message
             MimeMessage msg = new MimeMessage(mailSession);
-            msg.setFrom(new InternetAddress(SystemState.Email.userName));
+            msg.setFrom(new InternetAddress(SystemState.Email.fromAddress));
             InternetAddress[] toAddresses = {new InternetAddress(destination_address)};
             msg.setRecipients(Message.RecipientType.TO, toAddresses);
             msg.setSubject(type.Subject());
@@ -125,12 +131,12 @@ public class Emailer
     private static Properties GetSMTPProperties()
     {
         Properties properties = new Properties();
-        properties.put("mail.transport.protocol", "smtp");
-        properties.put("mail.smtp.host", SystemState.Email.host);
-        properties.put("mail.smtp.port", SystemState.Email.port);
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.socketFactory.fallback", "true");
+        properties.put("mail.transport.protocol", "smtps");
+        properties.put("mail.smtps.host", SystemState.Email.host);
+        properties.put("mail.smtps.port", SystemState.Email.port);
+        properties.put("mail.smtps.auth", "true");
+        properties.put("mail.smtps.starttls.enable", "true");
+        properties.put("mail.smtps.socketFactory.fallback", "true");
         properties.put("mail.user", SystemState.Email.userName);
         properties.put("mail.password", SystemState.Email.password);
 

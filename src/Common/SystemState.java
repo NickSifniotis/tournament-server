@@ -11,10 +11,17 @@ public class SystemState
 {
     public static class Email
     {
-        public static final String userName = "blokus_tournament@hotmail.com";;
+       // public static final String userName = "blokus_tournament@hotmail.com";
+       // public static final String password = "b64094bf";
+       // public static final String host = "smtp-mail.outlook.com";
+       // public static final int port = 587;
+
+        public static final String userName = "chasedaw";
         public static final String password = "b64094bf";
-        public static final String host = "smtp-mail.outlook.com";
-        public static final int port = 587;
+        public static final String host = "vmcp17.digitalpacific.com.au";
+        public static final int port = 465;
+
+        public static final String fromAddress = "u5809912@anu.edu.au";
 
         public static final String templates_folder = "email_templates/";
 

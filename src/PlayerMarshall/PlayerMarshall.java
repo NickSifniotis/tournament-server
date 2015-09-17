@@ -275,12 +275,6 @@ public class PlayerMarshall extends Application
     {
         LogMessage("Failed to add submission. Reason: " + reason.name());
 
-        if (destination_address == null || destination_address.equals(""))
-        {
-            destination_address = "u5809912@anu.edu.au";
-            reason = EmailTypes.NO_VALID_EMAIL;
-        }
-
         if (reason.AttachSubmission())
             Emailer.SendEmail(reason, destination_address, t.PrimaryKey(), submission.getAbsolutePath());
         else

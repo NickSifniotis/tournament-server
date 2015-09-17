@@ -14,8 +14,8 @@ public class testeer
 {
     public static void main(String[] args)
     {
-        Emailer.SendEmail(EmailTypes.NO_SLOTS_AVAILABLE, "u5809912@anu.edu.au", 1);
-/*
+     //   Emailer.SendEmail(EmailTypes.NO_SLOTS_AVAILABLE, "u5809912@anu.edu.au", 1);
+
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
                 .setOAuthConsumerKey("VUvpKkoJtGpGTS8tK7qkaX3dT")
@@ -27,11 +27,11 @@ public class testeer
 
         try
         {
-            Status status = twitter.updateStatus("Tournament Server here. Stoked to be posting on Twitter.");
+            Status status = twitter.updateStatus("Tournament Server again. Testing to see whether the feed to Nick's facebook is working.");
         }
         catch (Exception e)
         {
             e.printStackTrace();
-        }*/
+        }
     }
 }

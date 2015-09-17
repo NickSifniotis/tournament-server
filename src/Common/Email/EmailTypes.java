@@ -33,7 +33,7 @@ public enum EmailTypes
             case NO_SUBMIT_ON:
                 return Paths.get(SystemState.Email.templates_folder + "no_submit_on.html");
             case NO_SLOTS_AVAILABLE:
-                return Paths.get(SystemState.Email.templates_folder + "no_metadata.html");
+                return Paths.get(SystemState.Email.templates_folder + "no_slots.html");
             case FAILED_VALIDATION:
                 return Paths.get(SystemState.Email.templates_folder + "failed_valid.html");
             case DISQUALIFIED:
