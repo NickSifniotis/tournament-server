@@ -43,4 +43,32 @@ public enum EmailTypes
 
         return null;
     }
+
+
+    public String Subject()
+    {
+        switch (this)
+        {
+            case NO_VALID_EMAIL:
+                return "Invalid Email on Submission";
+            case NO_METADATA:
+                return "Submission rejected";
+            case NO_RESUBMIT_OFF:
+                return "Submission rejected";
+            case NO_RESUBMIT_ON:
+                return "Submission rejected";
+            case NO_SUBMIT_OFF:
+                return "Submission rejected";
+            case NO_SUBMIT_ON:
+                return "Submission rejected";
+            case NO_SLOTS_AVAILABLE:
+                return "No room left in tournament";
+            case FAILED_VALIDATION:
+                return "Submission failed verification testing";
+            case DISQUALIFIED:
+                return "You've been disqualified.";
+        }
+
+        return "";
+    }
 }

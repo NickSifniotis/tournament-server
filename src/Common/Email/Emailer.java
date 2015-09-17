@@ -36,7 +36,6 @@ public class Emailer
 
     public static void SendEmail (EmailTypes type, String destination_address, String attachment)
     {
-        String subject = "test email";
         String body = "";
 
         try
@@ -67,7 +66,7 @@ public class Emailer
             msg.setFrom(new InternetAddress(SystemState.Email.userName));
             InternetAddress[] toAddresses = {new InternetAddress(destination_address)};
             msg.setRecipients(Message.RecipientType.TO, toAddresses);
-            msg.setSubject(subject);
+            msg.setSubject(type.Subject());
             msg.setSentDate(new Date());
 
             // creates message part
