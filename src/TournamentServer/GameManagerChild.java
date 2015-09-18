@@ -26,6 +26,7 @@ public class GameManagerChild extends Thread
     private Scores game_scores;
     private Game game;
     private IGameEngine engine;
+    private boolean use_nulls;
     private PlayerManager[] players;
 
 
@@ -39,11 +40,12 @@ public class GameManagerChild extends Thread
      * @param engine - the game engine that will be used to drive it
      * @param players - the players who will be competing in this game.
      */
-    public GameManagerChild (Game game, IGameEngine engine, PlayerManager[] players)
+    public GameManagerChild (Game game, IGameEngine engine, PlayerManager[] players, boolean use_nulls)
     {
         this.game = game;
         this.engine = engine;
         this.players = players;
+        this.use_nulls = use_nulls;
 
         this.game_scores = new Scores(game.PrimaryKey(), players);
 
@@ -109,41 +111,64 @@ public class GameManagerChild extends Thread
                 // these exceptions indicate that the player failed to return a move for some reason.
                 // they have nothing to say about the validity of the move that was returned. That
                 // is a separate test...
-//@TODO: Add 'null move' rule option to tournament, implement. The null move function belongs in IPlayer
+                if (this.use_nulls)
+                {
+                    move = players[current_player].NullMove();
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " threw a PlayerMoveException. Skipping turn.");
+                }
+                else
+                {
+                    // log what the fuck has happened as well.
+                    LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with player " + current_player + "'s move: " + e);
+                    LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for throwing a PlayerMoveException.");
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - failed to return a move.");
 
-                // log what the fuck has happened as well.
-                LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with player " + current_player + "'s move: " + e);
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for throwing a PlayerMoveException.");
-                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - failed to return a move.");
+                    game_scores.Disqualify(current_player);
 
-                game_scores.Disqualify(current_player);
-
-                finished = true;
-                return;
+                    finished = true;
+                    return;
+                }
             }
 
             // why would move be null? It's only null if nextMove chucks an exception
             // who knows. If there's a way to screw up, you can be sure Java will find it
             if (move == null)
             {
-                LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is null.");
-                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a null move.");
-                game_scores.Disqualify(current_player);
+                if (this.use_nulls)
+                {
+                    move = players[current_player].NullMove();
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " returned a null move. Skipping turn.");
+                }
+                else
+                {
+                    LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is null.");
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a null move.");
+                    game_scores.Disqualify(current_player);
 
-                finished = true;
-                return;
+                    finished = true;
+                    return;
+                }
+
             }
 
             // this is more like it
             // fuck you cheats
             if (!engine.IsLegitimateMove(game_state, move))
             {
-                LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
-                LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
-                Disqualify(current_player);
+                if (this.use_nulls)
+                {
+                    move = players[current_player].NullMove();
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " returned an illegal move: " + move + ". Skipping turn.");
+                }
+                else
+                {
+                    LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
+                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
+                    Disqualify(current_player);
 
-                finished = true;
-                return;
+                    finished = true;
+                    return;
+                }
             }
 
 

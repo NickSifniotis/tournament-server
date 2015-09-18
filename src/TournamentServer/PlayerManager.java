@@ -85,7 +85,7 @@ public class PlayerManager
 
         if (playerThread.isAlive())
         {
-            playerThread.interrupt();
+            playerThread.stop();            // fuck you, I need this
             if (System.currentTimeMillis() - turnStartTime >= player_timeout)
                 throw new TimeoutException();
         }
@@ -110,4 +110,5 @@ public class PlayerManager
     public String Name() { return this.submission.Name(); }
     public String Email() { return this.submission.Email(); }
     public void EndGame(boolean value) throws Exception { this.submission.EndGame(value); }
+    public Object NullMove() { return this.my_player.NullMove(); }
 }

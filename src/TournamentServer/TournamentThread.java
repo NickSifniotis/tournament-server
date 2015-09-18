@@ -263,7 +263,7 @@ public class TournamentThread extends Thread
             return false;
         }
 
-        thread_pool[thread] = new GameManagerChild(game, tournament.GameEngine(), player_managers);
+        thread_pool[thread] = new GameManagerChild(game, tournament.GameEngine(), player_managers, tournament.UseNullMoves());
         thread_pool[thread].start();
 
         LogManager.Log (LogType.TOURNAMENT, "Game started!");

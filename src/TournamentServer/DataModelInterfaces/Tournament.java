@@ -79,6 +79,7 @@ public class Tournament
     public IGameEngine GameEngine() { return data_object.GameEngine(); }
     public int Timeout() { return data_object.Timeout(); }
     public int NumPlayers() { return data_object.NumPlayers(); }
+    public boolean UseNullMoves() { return data_object.UsesNullMoves(); }
 
 
     public void ResetTournament () { data_object.ResetTournament(); }
