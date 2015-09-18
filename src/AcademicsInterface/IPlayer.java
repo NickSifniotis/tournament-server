@@ -16,8 +16,6 @@ package AcademicsInterface;
  * The point is that the tourney simulator does use Java and so there needs to be some sort of plugin
  * interfacey type thing that connects the player submissions to the tourney system.
  *
- * Luckily it's only one function. But lord knows how convoluted it's going to need to be if they
- * are working in Haskell or whatever.
  */
 public interface IPlayer {
 
@@ -27,7 +25,7 @@ public interface IPlayer {
      *
      * Create whatever is necessary to link the player submission to the tournament.
      *
-     * @param - the path/file name of the code, the classname, and the method within the class
+     * @param path_name  - the path/file name of the code, the classname, and the method within the class
      * @return  true if the player has loaded successfully, false if there was a problem connecting
      * to the submission
      */
@@ -47,4 +45,22 @@ public interface IPlayer {
      * @return the move that the player wishes to make
      */
     Object GetMove (Object game_state);
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 18/09/2015
+     *
+     * The student submission failed to return a valid move.
+     * But we don't want to abort the game and ruin things for everyone else.
+     * So instead, we skip the players turn. This method returns the
+     * 'null / skip move' turn for this game.
+     *
+     * The use of this method is strictly optional and is a tournament rule that
+     * can be configured in the tournament manager. In games like Kalaha where there
+     * is no skip turn move, just return a null.
+     *
+     * @return an object that represents a 'no move' move.
+     */
+    Object NullMove ();
 }

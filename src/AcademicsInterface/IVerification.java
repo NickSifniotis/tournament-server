@@ -9,9 +9,13 @@ import java.io.File;
  * to ensure they are using safe Haskell or not trying to hack each others
  * code or download solutions from the internet ....
  *
- * @TODO: Alter this interface, and the BlokusPlayer implementation of it,
- * @TODO: to specifically exclude calls to the player's makeMove method
- * @TODO: outside of the controlled GetMove method - it may not be safe code to execute.
+ *
+ * **** WARNING **** DO NOT INVOKE THE STUDENTS CODE FROM WITHIN THIS INTERFACE ****
+ *
+ * None of these methods are protected by the tournament server's timeout system.
+ * A malicious student could cause the system to hang or crash if their
+ * code is invoked from within any of these methods.
+ *
  */
 public interface IVerification
 {
@@ -22,6 +26,14 @@ public interface IVerification
      * This method accepts a raw submission from the Gitlab server and
      * does whatever it needs to do to extract the relevant code / files
      * that form the student submission.
+     *
+     *
+     * **** WARNING **** DO NOT INVOKE THE STUDENTS CODE FROM WITHIN THIS METHOD ****
+     *
+     * This method is not protected by the tournament server's timeout system.
+     * A malicious student could cause the system to hang or crash if their
+     * code is invoked from within this method.
+     *
      *
      * @param player_submission - the raw data from Gitlab
      * @return a file object that holds the student's code
@@ -40,6 +52,14 @@ public interface IVerification
      * if this method fails to extract the data, it will fail elegantly. Just return
      * the blank metadata object.
      *
+     *
+     * **** WARNING **** DO NOT INVOKE THE STUDENTS CODE FROM WITHIN THIS METHOD ****
+     *
+     * This method is not protected by the tournament server's timeout system.
+     * A malicious student could cause the system to hang or crash if their
+     * code is invoked from within this method.
+     *
+     *
      * @param player_submission - the raw data from Gitlab
      * @return - a SubmissionMetadata object populated with data.
      */
@@ -55,6 +75,14 @@ public interface IVerification
      * Return TRUE if the submission is acceptable and it will be added to the game
      * Return FALSE otherwise, and the submission will be deleted, and the students
      * emailed a stern warning.
+     *
+     *
+     * **** WARNING **** DO NOT INVOKE THE STUDENTS CODE FROM WITHIN THIS METHOD ****
+     *
+     * This method is not protected by the tournament server's timeout system.
+     * A malicious student could cause the system to hang or crash if their
+     * code is invoked from within this method.
+     *
      *
      * @param extracted_submission - the student's submission after extraction from
      *                             the ExtractSubmission method.
