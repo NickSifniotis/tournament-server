@@ -29,7 +29,7 @@ public class SystemState
 
     public static final boolean DEBUG = true;
 
-    public static final boolean SQL_LOGS = false;
+    public static final boolean SQL_LOGS = true;
     public static final boolean THREAD_LOGS = true;
     public static final boolean ERROR_LOGS = true;
 

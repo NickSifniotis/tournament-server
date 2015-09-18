@@ -1,7 +1,5 @@
 package TournamentServer.DataModelInterfaces;
 
-import Common.DataModel.*;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,11 +37,10 @@ public class Game
      */
     public static Game[] LoadAll(int[] tournaments)
     {
-        Common.DataModel.Game[] all = Common.DataModel.Game.LoadAll(tournaments, true);
+        Common.DataModel.Game[] all = Common.DataModel.Game.LoadAll(tournaments, true, false);
         List<Game> holding = new LinkedList<>();
         for (Common.DataModel.Game g: all)
-            if (!g.Superceded())
-                holding.add (new Game(g));
+            holding.add (new Game(g));
 
         Game[] res = new Game[holding.size()];
         return holding.toArray(res);

@@ -149,18 +149,22 @@ public class Game extends Entity
      * If playable_only is true, return only those games that can be played now.
      * That test is simply Game.played == false && Game.in_progress == false.
      *
+     * Note that this function will never return a superceded game.
+     *
      * @param tournaments - the tournaments to query, or null for all tournaments.
      * @param playable_only - true if we are only interested in playable games.
+     * @param started_only - true if we are only interested in unplayable games
      *
      * @return an array of Game objects that match the criteria. They are ordered
      *          by round_number so that earlier games are always played before later ones.
      */
-    public static Game [] LoadAll (int[] tournaments, boolean playable_only)
+    public static Game [] LoadAll (int[] tournaments, boolean playable_only, boolean started_only)
     {
         List<Game> res = new ArrayList<>();
 
         String tournament_clause = "";
         String exclusion_clause = (playable_only) ? " AND g.played = 0 AND g.in_progress = 0" : "";
+        exclusion_clause = (started_only) ? " AND (g.played = 1 OR g.in_progress = 1)" : exclusion_clause;
         String query;
 
         // if we have been given a set of tournaments to poll from, build the appropriate SQL.
@@ -173,7 +177,7 @@ public class Game extends Entity
             tournament_clause += ")";
         }
 
-        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
+        query = "SELECT g.* FROM game g WHERE superceded = 0" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
         Connection connection = DBManager.connect();
         ResultSet records = DBManager.ExecuteQuery(query, connection);
 

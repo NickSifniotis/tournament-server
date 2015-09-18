@@ -70,7 +70,7 @@ public enum LadderColumnStructure
 
     public void Disable ()
     {
-        enabled[this.ordinal()] = true;
+        enabled[this.ordinal()] = false;
     }
 
 

@@ -27,7 +27,7 @@ import java.util.HashMap;
 
 public class LiveLadder extends Application
 {
-    private Tournament tournament;
+    private int tournament_id = 0;
     private BorderPane main_layout;
     private Label tournament_name;
 
@@ -49,8 +49,8 @@ public class LiveLadder extends Application
     public void start(Stage primaryStage)
     {
         LadderColumnStructure.Initialise();
-        LadderColumnStructure.PERCENTAGE.Disable();
-        LadderColumnStructure.DIFFERENTIAL.Disable();
+       // LadderColumnStructure.PERCENTAGE.Disable();
+       // LadderColumnStructure.DIFFERENTIAL.Disable();
 
         main_layout = new BorderPane();
         HBox bottom_row = new HBox ();
@@ -97,7 +97,7 @@ public class LiveLadder extends Application
      */
     private void handleSelectButton()
     {
-        TournamentSelector window = new TournamentSelector(this, this.tournament);
+        TournamentSelector window = new TournamentSelector(this);
     }
 
 
@@ -142,8 +142,8 @@ public class LiveLadder extends Application
      */
     public void set_tournament (Tournament t)
     {
-        this.tournament = t;
-        this.tournament_name.setText(this.tournament.Name());
+        this.tournament_id = t.PrimaryKey();
+        this.tournament_name.setText(t.Name());
         this.refresh_main_grid();
     }
 
@@ -158,10 +158,12 @@ public class LiveLadder extends Application
      */
     private void refresh_scores(GridPane grid)
     {
-        if (this.tournament == null)
-            return;
+        if (tournament_id < 1)
+                return;
 
-        TeamDetails[] teams = TeamDetails.LoadAll(this.tournament.PrimaryKey());
+        Tournament tournament = new Tournament(tournament_id);
+
+        TeamDetails[] teams = TeamDetails.LoadAll(tournament.PrimaryKey());
         HashMap<Integer, TeamDetails> teams_indexed = new HashMap<>();
 
         for (TeamDetails team: teams)
@@ -177,9 +179,10 @@ public class LiveLadder extends Application
 
         // that's it!
         Arrays.sort(teams);
+        int position = 1;
         for (int i = 0; i < teams.length; i ++)
             if (!teams[i].Retired())
-                teams[i].AddToGrid(grid, i + 1);
+                teams[i].AddToGrid(grid, position++);
     }
 
 }

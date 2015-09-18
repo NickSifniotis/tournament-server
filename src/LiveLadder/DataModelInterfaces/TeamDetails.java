@@ -80,7 +80,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         if (score_against == 0)
             return 0;
 
-        return (double) score_for / score_against;
+        return (double) score_for / score_against * 100;
     }
     public int Differential () {return this.score_for - this.score_against; }
     public boolean Retired() { return this.retired; }
@@ -151,7 +151,7 @@ public class TeamDetails implements Comparable<TeamDetails>
 
         this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
-        this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.valueOf(this.Percentage()));
+        this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.format("%.1f", this.Percentage()));
         this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.Differential()));
 
         if (this.playing_now)

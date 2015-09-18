@@ -32,7 +32,7 @@ public class TournamentSelector
      * @param parent - the LiveLadder that owns this widget.
      *
      */
-    public TournamentSelector (LiveLadder parent, Tournament current_selection)
+    public TournamentSelector (LiveLadder parent)
     {
         Button select_button = new Button ("Select");
         Button cancel_button = new Button ("Cancel");
@@ -46,7 +46,7 @@ public class TournamentSelector
         row.getChildren().addAll(this.selector, select_button, cancel_button);
 
         this.parent = parent;
-        this.refresh_list(current_selection);
+        this.refresh_list();
 
         this.scene = new Scene(row);
         File f = new File("src/LiveLadder/liveladder.css");
@@ -66,17 +66,13 @@ public class TournamentSelector
      *
      * Populate the choice control with the tournaments in the database.
      */
-    private void refresh_list (Tournament current_selection)
+    private void refresh_list ()
     {
         Tournament [] tournaments = Tournament.LoadAll();
 
         this.selector.getItems().clear();
         for (Tournament t: tournaments)
             this.selector.getItems().add(t);
-
-        if (current_selection != null) //@TODO: This selection is not working
-            this.selector.getSelectionModel().select(current_selection);
-
     }
 
 

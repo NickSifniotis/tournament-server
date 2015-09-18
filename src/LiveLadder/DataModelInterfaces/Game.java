@@ -31,7 +31,7 @@ public class Game
      * Nick Sifniotis u5809912
      * 16/09/2015
      *
-     * Returns a list of all games for the given tournament that are alive and aven't
+     * Returns a list of all games for the given tournament that are alive and haven't
      * been superceded by better players.
      *
      * @param tournament_id - the tournament to query
@@ -41,13 +41,12 @@ public class Game
     public static Game[] LoadAll (int tournament_id)
     {
         int [] tourneys = { tournament_id };
-        Common.DataModel.Game[] games = Common.DataModel.Game.LoadAll(tourneys, false);
+        Common.DataModel.Game[] games = Common.DataModel.Game.LoadAll(tourneys, false, true);
 
         // filter out rubbish games
         List<Game> holding = new LinkedList<>();
         for (Common.DataModel.Game game: games)
-            if (!game.Superceded() && game.Started())
-                holding.add(new Game(game));
+            holding.add(new Game(game));
 
         Game[] res = new Game[holding.size()];
         return holding.toArray(res);
@@ -89,18 +88,9 @@ public class Game
      * Nick Sifniotis u5809912
      * 17/09/2015
      *
-     * Distribute the points to teams, if this game is over.
+     * Returns the Scores structure
      *
-     * @param teams - the team manifest
+     * @return the scores
      */
-    public void DistributePoints (HashMap<Integer,TeamDetails> teams)
-    {
-        // we'd get some truly spasmodic ladder movements if this wasnt the case
-        if (source_game.InProgress())
-            return;
-
-        PointStructure points = new PointStructure(source_game.TournamentId());
-
-        points.DistributePoints(teams, source_scores);
-    }
+    public Score[] GetScores() { return this.source_scores; }
 }

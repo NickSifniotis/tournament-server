@@ -38,6 +38,9 @@ public class PlayerSubmission extends Entity
     private String name;
     private String email;
     private String avatar_file;
+    private boolean playing;
+    private boolean disqualified;
+    private boolean retired;
 
 
     @Override
@@ -153,6 +156,9 @@ public class PlayerSubmission extends Entity
         this.email = input.getString("team_email");
         this.avatar_file = input.getString("team_avatar");
         this.tournament_id = input.getInt ("tournament_id");
+        this.retired = (input.getInt("retired") == 1);
+        this.disqualified = (input.getInt("disqualified") == 1);
+        this.playing = (input.getInt ("playing") == 1);
     }
 
 
@@ -172,6 +178,9 @@ public class PlayerSubmission extends Entity
         name = "";
         email = "";
         avatar_file = "";
+        playing = false;
+        disqualified = false;
+        retired = false;
     }
 
 
@@ -304,6 +313,7 @@ public class PlayerSubmission extends Entity
     public void Retire()
     {
         String query = "UPDATE submission SET retired = 1 WHERE id = " + this.id;
+        this.retired = true;
         DBManager.Execute(query);
     }
 
@@ -363,9 +373,12 @@ public class PlayerSubmission extends Entity
     public String Email () { return this.email; }
     public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
     public int TournamentKey() { return this.tournament_id; }
-    public boolean Playing() { return this.check_boolfield("playing"); }
-    public boolean Retired() { return this.check_boolfield("retired"); }
-    public boolean Disqualified() { return this.check_boolfield("disqualified"); }
+    public boolean LivePlaying() { return this.check_boolfield("playing"); }
+    public boolean LiveRetired() { return this.check_boolfield("retired"); }
+    public boolean LiveDisqualified() { return this.check_boolfield("disqualified"); }
+    public boolean Retired() { return this.retired; }
+    public boolean Disqualified() { return this.disqualified; }
+    public boolean Playing() { return this.playing; }
     public boolean ReadyToPlay () { return !(Playing() | Retired() | Disqualified()); }
     public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
     public int FixtureSlotAllocation ()

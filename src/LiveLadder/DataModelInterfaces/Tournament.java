@@ -18,10 +18,26 @@ import java.util.HashMap;
 public class Tournament
 {
     private Common.DataModel.Tournament data_object;
+    private PointStructure point_structure;
 
     public Tournament (Common.DataModel.Tournament item)
     {
         data_object = item;
+        point_structure = new PointStructure(item.PrimaryKey());
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 18/09/2015
+     *
+     * Construct a tournament by ID
+     *
+     * @param tournament_id - the tournament to construct
+     */
+    public Tournament (int tournament_id)
+    {
+        this(new Common.DataModel.Tournament(tournament_id));
     }
 
 
@@ -89,6 +105,6 @@ public class Tournament
         game.DistributeScores(teams);
 
         // handle the points distribution second
-        game.DistributePoints(teams);
+        point_structure.DistributePoints(teams, game.GetScores());
     }
 }
