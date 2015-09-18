@@ -526,7 +526,7 @@ public class PlayerSubmission extends Entity
      */
     public void EndingGame (boolean disqualified) throws Exception
     {
-        if (!Playing())
+        if (!LivePlaying())
             throw new Exception ("This player does not seem to be playing any game.");
 
         String query = (disqualified) ? "UPDATE submission SET playing = " + DBManager.BoolValue(false)

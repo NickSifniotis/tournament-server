@@ -244,8 +244,8 @@ public class Score extends Entity implements Comparable<Score>
      *
      * @return nice data.
      */
-    public boolean Disqualified() { return this.check_boolfield("disqualified"); }
-    public boolean NoScore() { return this.check_boolfield("no_score"); }
+    public boolean Disqualified() { return this.disqualified; }
+    public boolean NoScore() { return this.no_score; }
     public int Score() { return this.score; }
     public int SubmissionKey () { return this.submission_id; }
 

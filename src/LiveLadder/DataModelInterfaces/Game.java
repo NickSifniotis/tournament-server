@@ -67,20 +67,19 @@ public class Game
         for (int i = 0; i < source_scores.length; i++)
             team_keys[i] = source_scores[i].SubmissionKey();
 
-        try
-        {
-            for (int i : team_keys)
-                for (Score s : source_scores)
+        for (int i : team_keys)
+            for (Score s : source_scores)
+                try
+                {
                     if (s.SubmissionKey() == i)
                         teams.get(i).AddScores(s.Score(), 0);
                     else
                         teams.get(i).AddScores(0, s.Score());
-        }
-        catch (Exception e)
-        {
-            String error = "DistributeScores (Liveladder Game) error: " + e;
-            LogManager.Log(LogType.ERROR, error);
-        }
+                }
+                catch (Exception e)
+                {
+                    // do nothing. We are ignoring players that aren't in the HashMap.
+                }
     }
 
 
@@ -93,4 +92,5 @@ public class Game
      * @return the scores
      */
     public Score[] GetScores() { return this.source_scores; }
+    public boolean InProgress() { return this.source_game.InProgress(); }
 }

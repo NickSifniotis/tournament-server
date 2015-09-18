@@ -3,6 +3,7 @@ package LiveLadder.DataModelInterfaces;
 import Common.DataModel.PlayerSubmission;
 import LiveLadder.*;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
 
@@ -23,6 +24,7 @@ public class TeamDetails implements Comparable<TeamDetails>
     private int score_against;
     private boolean playing_now;
     private boolean retired;
+    private boolean disqualified;
 
     private Label [] my_labels;
 
@@ -39,6 +41,7 @@ public class TeamDetails implements Comparable<TeamDetails>
     {
         this.id = p.PrimaryKey();
         this.retired = p.Retired();
+        this.playing_now = p.Playing();
         this.my_labels = new Label[LadderColumnStructure.values().length];
         for (int i = 0; i < this.my_labels.length; i++)
         {
@@ -51,6 +54,13 @@ public class TeamDetails implements Comparable<TeamDetails>
             this.my_labels[LadderColumnStructure.NAME.ordinal()].setText(p.Name());
         else
             this.my_labels[LadderColumnStructure.NAME.ordinal()].setText("Unnamed Team #" + p.PrimaryKey());
+
+        if (this.playing_now)
+            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setGraphic(new ImageView(Resources.play_image));
+
+        if (p.Disqualified())
+            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setGraphic(new ImageView(Resources.disq_image));
+
 
         if (p.Avatar() != null)
         {
@@ -188,7 +198,7 @@ public class TeamDetails implements Comparable<TeamDetails>
      */
     public static TeamDetails[] LoadAll (int tournament_id)
     {
-        Common.DataModel.PlayerSubmission[] players = Common.DataModel.PlayerSubmission.LoadAll(tournament_id, false);
+        Common.DataModel.PlayerSubmission[] players = Common.DataModel.PlayerSubmission.LoadAll(tournament_id, true);
         TeamDetails [] res = new TeamDetails[players.length];
 
         for (int i = 0; i < players.length; i++)

@@ -32,7 +32,8 @@ public class LiveLadder extends Application
     private Label tournament_name;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         launch(args);
     }
 
@@ -48,9 +49,11 @@ public class LiveLadder extends Application
     @Override
     public void start(Stage primaryStage)
     {
+        Resources.initialise();
+
         LadderColumnStructure.Initialise();
-       // LadderColumnStructure.PERCENTAGE.Disable();
-       // LadderColumnStructure.DIFFERENTIAL.Disable();
+        LadderColumnStructure.PERCENTAGE.Disable();
+        LadderColumnStructure.DIFFERENTIAL.Disable();
 
         main_layout = new BorderPane();
         HBox bottom_row = new HBox ();
@@ -181,8 +184,7 @@ public class LiveLadder extends Application
         Arrays.sort(teams);
         int position = 1;
         for (int i = 0; i < teams.length; i ++)
-            if (!teams[i].Retired())
-                teams[i].AddToGrid(grid, position++);
+            teams[i].AddToGrid(grid, position++);
     }
 
 }

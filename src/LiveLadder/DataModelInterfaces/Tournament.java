@@ -105,6 +105,7 @@ public class Tournament
         game.DistributeScores(teams);
 
         // handle the points distribution second
-        point_structure.DistributePoints(teams, game.GetScores());
+        if (!game.InProgress())
+            point_structure.DistributePoints(teams, game.GetScores());
     }
 }

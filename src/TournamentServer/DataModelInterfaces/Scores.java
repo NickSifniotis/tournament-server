@@ -1,7 +1,5 @@
 package TournamentServer.DataModelInterfaces;
 
-import Common.DBManager;
-import Common.DataModel.Game;
 import Common.DataModel.Score;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;

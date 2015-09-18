@@ -33,7 +33,7 @@ public class Tournament extends Entity
     private boolean allow_submit;
     private boolean allow_submit_on;
     private boolean use_null_moves;
-    private GameType game;
+    private int game_type_id;
     private int num_players;
     private String player_interface_class;
     private String verification_class;
@@ -194,11 +194,10 @@ public class Tournament extends Entity
         this.allow_resubmit_on = (input.getInt("allow_resubmit_on") == 1);
         this.game_on = (input.getInt("game_on") == 1);
         this.verification_class = input.getString("verification_class");
-        this.player_interface_class = input.getString ("player_interface_class");
+        this.player_interface_class = input.getString("player_interface_class");
         this.timeout = input.getInt("timeout");
         this.num_players = input.getInt("num_players");
-        this.game = new GameType(input.getInt ("game_id"));
-
+        this.game_type_id = input.getInt("game_id");
         this.points = null;
     }
 
@@ -221,7 +220,7 @@ public class Tournament extends Entity
         this.player_interface_class = "";
         this.num_players = 0;
         this.timeout = 0;
-        this.game = null;           // anywhere in which game is used, check for null.
+        this.game_type_id = -1;           // anywhere in which game is used, check for null.
 
         this.points = null;
     }
@@ -260,7 +259,7 @@ public class Tournament extends Entity
         if (exists)
         {
             query = "UPDATE tournament SET name = '" + this.name
-                    + "', game_id = '" + this.game.PrimaryKey()
+                    + "', game_id = '" + this.game_type_id
                     + ", player_interface_class = '" + this.player_interface_class
                     + "', verification_class = '" + this.verification_class
                     + ", allow_resubmit = " + DBManager.BoolValue(this.allow_resubmit)
@@ -278,7 +277,7 @@ public class Tournament extends Entity
                     + " allow_resubmit, allow_resubmit_on, game_on, num_players, timeout)"
                     + " VALUES ("
                     + "'" + this.name + "'"
-                    + ", " + this.game.PrimaryKey()
+                    + ", " + this.game_type_id
                     + "'" + this.player_interface_class + "'"
                     + "'" + this.verification_class + "'"
                     + ", " + DBManager.BoolValue(this.allow_resubmit)
@@ -361,10 +360,10 @@ public class Tournament extends Entity
      */
     public IGameEngine GameEngine()
     {
-        if (this.game == null)
+        if (this.game_type_id == -1)
             return null;
 
-        return this.game.GameEngine();
+        return (new GameType(game_type_id)).GameEngine();
     }
 
 
@@ -379,10 +378,10 @@ public class Tournament extends Entity
      */
     public IViewer Viewer()
     {
-        if (this.game == null)
+        if (this.game_type_id == -1)
             return null;
 
-        return this.game.Viewer();
+        return (new GameType(game_type_id)).Viewer();
     }
 
 
