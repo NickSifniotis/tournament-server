@@ -6,9 +6,11 @@ import Common.Email.EmailTypes;
 import Common.Email.Emailer;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import Common.SystemState;
 import PlayerMarshall.DataModelInterfaces.Game;
 import PlayerMarshall.DataModelInterfaces.PlayerSubmission;
 import PlayerMarshall.DataModelInterfaces.Tournament;
+import com.sun.xml.internal.ws.api.addressing.WSEndpointReference;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -16,6 +18,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -23,8 +26,12 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 
 /**
@@ -60,6 +67,46 @@ public class PlayerMarshall extends Application
             LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
+    }
+
+
+
+    public static void SetAvatar (PlayerSubmission player, SubmissionMetadata metadata)
+    {
+        Path destination = Paths.get(SystemState.pictures_folder + player.PrimaryKey() +".pic");
+
+        try
+        {
+            URL website = new URL(metadata.team_picture);
+            Files.copy(website.openStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerMarshall - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
+            LogManager.Log(LogType.ERROR, error);
+            return;
+        }
+
+        // try loading the image file, to make sure that it is an image and not some shitty thing.
+        try
+        {
+            Image test = new Image("file:" + destination);
+        }
+        catch (Exception e)
+        {
+            String error = "PlayerMarshall - load avatar - some sort of error creating the image. " + e;
+            LogManager.Log(LogType.ERROR, error);
+
+            try
+            {
+                Files.deleteIfExists(destination);
+            }
+            catch (Exception e)
+            {
+                error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e;
+                LogManager.Log (LogType.ERROR, error);
+            }
+        }
     }
 
 
@@ -144,6 +191,12 @@ public class PlayerMarshall extends Application
         PlayerSubmission new_submission = new PlayerSubmission();
         new_submission.SetData(metadata, tournament.PrimaryKey());
 
+
+        // attempt to load up the team's picture
+        if (!metadata.team_picture.equals(""))
+        {
+            SetAvatar(new_submission, metadata);
+        }
 
         // move the extracted source to the marshalling folder.
         // copy the submission over to the marshalling folder.

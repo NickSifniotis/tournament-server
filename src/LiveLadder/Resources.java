@@ -16,7 +16,7 @@ public class Resources
 
     public static void initialise()
     {
-        play_image = new Image("file:images/play.png");
+        play_image = new Image("file:images/play");
         disq_image = new Image("file:images/stop.gif");
     }
 }
