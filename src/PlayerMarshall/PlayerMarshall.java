@@ -101,9 +101,9 @@ public class PlayerMarshall extends Application
             {
                 Files.deleteIfExists(destination);
             }
-            catch (Exception e)
+            catch (Exception e2)
             {
-                error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e;
+                error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e2;
                 LogManager.Log (LogType.ERROR, error);
             }
         }

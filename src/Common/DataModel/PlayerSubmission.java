@@ -25,7 +25,7 @@ import java.util.List;
  * tournament_id        int             PM writable, TS LL readable
  * team_name            varchar         PM writable, TS LL readable
  * team_email           varchar         PM writable, TS LL readable
- * team_avatar          varchar         PM writable, TS LL readable
+ * team_avatar          boolean         PM writable, TS LL readable
  * playing              boolean         TS writable, LL readable        def 0
  * disqualified         boolean         TS writable, LL readable        def 0
  * retired              boolean         PM writable, TS LL readable     def 0
@@ -37,7 +37,7 @@ public class PlayerSubmission extends Entity
 
     private String name;
     private String email;
-    private String avatar_file;
+    private boolean uses_avatar;
     private boolean playing;
     private boolean disqualified;
     private boolean retired;
@@ -154,7 +154,7 @@ public class PlayerSubmission extends Entity
         this.id = input.getInt ("id");
         this.name = input.getString("team_name");
         this.email = input.getString("team_email");
-        this.avatar_file = input.getString("team_avatar");
+        this.uses_avatar = (input.getInt("team_avatar") == 1);
         this.tournament_id = input.getInt ("tournament_id");
         this.retired = (input.getInt("retired") == 1);
         this.disqualified = (input.getInt("disqualified") == 1);
@@ -177,7 +177,7 @@ public class PlayerSubmission extends Entity
         tournament_id = 0;
         name = "";
         email = "";
-        avatar_file = "";
+        uses_avatar = false;
         playing = false;
         disqualified = false;
         retired = false;
@@ -216,8 +216,8 @@ public class PlayerSubmission extends Entity
         {
             query = "UPDATE submission SET team_name = '" + this.name
                     + "', team_email = '" + this.email
-                    + "', team_avatar = '" + ""  //@TODO fix this this.avatar_file
-                    + "', tournament_id = " + this.tournament_id
+                    + "', team_avatar = " + DBManager.BoolValue(this.uses_avatar)
+                    + ", tournament_id = " + this.tournament_id
                     + " WHERE id = " + this.id;
 
             DBManager.Execute(query);
@@ -228,7 +228,7 @@ public class PlayerSubmission extends Entity
                     + ", tournament_id) VALUES ("
                     + "'" + this.name + "'"
                     + ", '" + this.email + "'"
-                    + ", '" + this.avatar_file + "'"
+                    + ", " + DBManager.BoolValue(this.uses_avatar)
                     + ", " + this.tournament_id + ")";
 
             // we do want to know what the primary key of this new record is.
@@ -371,7 +371,8 @@ public class PlayerSubmission extends Entity
      */
     public String Name () { return this.name; }
     public String Email () { return this.email; }
-    public File Avatar () { return new File (this.avatar_file); } // @TODO: Avatar path
+    public boolean UsesAvatar () { return this.uses_avatar; }
+    public String Avatar() { return SystemState.pictures_folder + this.id + ".pic"; }
     public int TournamentKey() { return this.tournament_id; }
     public boolean LivePlaying() { return this.check_boolfield("playing"); }
     public boolean LiveRetired() { return this.check_boolfield("retired"); }
