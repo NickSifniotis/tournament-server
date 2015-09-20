@@ -12,11 +12,13 @@ public class Resources
 {
     public static Image play_image;
     public static Image disq_image;
+    public static Image nopic_image;
 
 
     public static void initialise()
     {
         play_image = new Image("file:images/play");
-        disq_image = new Image("file:images/stop.gif");
+        disq_image = new Image("file:images/stop");
+        nopic_image = new Image("file:images/no_picture");
     }
 }

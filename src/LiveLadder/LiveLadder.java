@@ -18,6 +18,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -30,6 +31,7 @@ public class LiveLadder extends Application
     private int tournament_id = 0;
     private BorderPane main_layout;
     private Label tournament_name;
+    private ScrollPane scroller;
 
 
     public static void main(String[] args)
@@ -68,7 +70,13 @@ public class LiveLadder extends Application
         this.tournament_name.getStyleClass().add("tournament_header_text");
         top_row.getChildren().add(tournament_name);
 
+        scroller = new ScrollPane();
+        scroller.setFitToWidth(true);
+        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+
         main_layout.setTop(tournament_name);
+        main_layout.setCenter(scroller);
         main_layout.setBottom(bottom_row);
 
         Scene scene = new Scene (main_layout, 800, 600);
@@ -129,9 +137,8 @@ public class LiveLadder extends Application
         new_grid.getColumnConstraints().add(columnConstraints);
 
         LadderColumnStructure.SetupHeaders(new_grid);
-
         this.refresh_scores(new_grid);
-        main_layout.setCenter(new_grid);
+        scroller.setContent(new_grid);
     }
 
 

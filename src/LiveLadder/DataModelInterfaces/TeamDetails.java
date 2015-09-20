@@ -1,8 +1,11 @@
 package LiveLadder.DataModelInterfaces;
 
 import Common.DataModel.PlayerSubmission;
+import Common.Logs.LogManager;
+import Common.Logs.LogType;
 import LiveLadder.*;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 
@@ -62,14 +65,19 @@ public class TeamDetails implements Comparable<TeamDetails>
             this.my_labels[LadderColumnStructure.STATUS.ordinal()].setGraphic(new ImageView(Resources.disq_image));
 
 
-        if (p.Avatar() != null)
+        // add the team pictures to the ladder
+        try
         {
-            // @TODO: Display the picture
+            ImageView pic_view = new ImageView((p.UsesAvatar()) ? new Image("file:" + p.Avatar()) : Resources.nopic_image);
+            pic_view.setFitHeight(50);
+            pic_view.setPreserveRatio(true);
+            pic_view.setSmooth(true);
+            this.my_labels[LadderColumnStructure.PIC.ordinal()].setGraphic(pic_view);
         }
-        else
+        catch (Exception e)
         {
-            //@TODO: Display no picture
-            //this.my_labels[LadderColumnStructure.PIC.ordinal()]
+            String error = "Picture error. UsesAv = " + p.UsesAvatar() + " and path is " + p.Avatar() + ": " + e;
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
@@ -163,11 +171,6 @@ public class TeamDetails implements Comparable<TeamDetails>
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
         this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.format("%.1f", this.Percentage()));
         this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.Differential()));
-
-        if (this.playing_now)
-            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setText("Playing");
-        else
-            this.my_labels[LadderColumnStructure.STATUS.ordinal()].setText("");
     }
 
 
