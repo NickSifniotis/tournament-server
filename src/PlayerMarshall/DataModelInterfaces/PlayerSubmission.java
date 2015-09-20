@@ -118,8 +118,19 @@ public class PlayerSubmission
     {
         this.data_object.setName(metadata.team_name);
         this.data_object.setEmail(metadata.team_email);
-        this.data_object.setAvatar("");     //@TODO: more avatar work
         this.data_object.setTournamentKey(tournament_id);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 20/09/2015
+     *
+     * Record the fact that this team has a picture they'd like to associate with their submission.
+     */
+    public void SetUsesAvatar()
+    {
+        this.data_object.setAvatar(true);
     }
 
 

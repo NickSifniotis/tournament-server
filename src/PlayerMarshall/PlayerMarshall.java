@@ -106,7 +106,12 @@ public class PlayerMarshall extends Application
                 error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e2;
                 LogManager.Log (LogType.ERROR, error);
             }
+
+            return;
         }
+
+        // if we've made it this far, the picture has been downloaded, saved and tested correctly.
+        player.SetUsesAvatar();
     }
 
 

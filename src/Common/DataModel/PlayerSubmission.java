@@ -440,9 +440,9 @@ public class PlayerSubmission extends Entity
         DBManager.Execute(query);
     }
 
-    public void setAvatar (String s)
+    public void setAvatar (boolean s)
     {
-        String query = "UPDATE submission SET team_avatar = '" + s + "' WHERE id = " + this.id;
+        String query = "UPDATE submission SET team_avatar = '" + DBManager.BoolValue(s) + "' WHERE id = " + this.id;
         DBManager.Execute(query);
     }
 

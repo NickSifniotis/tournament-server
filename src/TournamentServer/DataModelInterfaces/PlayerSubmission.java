@@ -33,7 +33,8 @@ public class PlayerSubmission
     public int PrimaryKey() { return data_object.PrimaryKey(); }
     public String Name() { return data_object.Name(); }
     public String Email() { return data_object.Email(); }
-    public File Picture() { return data_object.Avatar(); }
+    public boolean HasPicture() { return data_object.UsesAvatar(); }
+    public String Picture() { return data_object.Avatar(); }
     public boolean Playing() { return data_object.Playing(); }
     public boolean Retired() { return data_object.Retired();}
     public boolean Disqualified() { return data_object.Disqualified(); }
