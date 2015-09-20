@@ -90,7 +90,7 @@ public class LiveLadder extends Application
 
 
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(500),
+                Duration.millis(1000),
                 ae -> this.refresh_main_grid()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();

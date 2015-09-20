@@ -19,10 +19,12 @@ public class Tournament
 {
     private Common.DataModel.Tournament data_object;
     private PointStructure point_structure;
+    private boolean is_on;
 
     public Tournament (Common.DataModel.Tournament item)
     {
         data_object = item;
+        is_on = item.GameOn();
         point_structure = new PointStructure(item.PrimaryKey());
     }
 
@@ -51,7 +53,7 @@ public class Tournament
      */
     public int PrimaryKey() { return data_object.PrimaryKey(); }
     public String Name() { return data_object.Name(); }
-    public boolean IsOn() { return data_object.GameOn(); }
+    public boolean IsOn() { return is_on; }
 
 
     /**
@@ -86,7 +88,7 @@ public class Tournament
     @Override
     public String toString ()
     {
-        String status = (data_object.GameOn()) ? "ON" : "OFF";
+        String status = (is_on) ? "ON" : "OFF";
         return data_object.Name() + " (" + status + ")";
     }
 

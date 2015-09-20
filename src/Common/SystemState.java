@@ -1,6 +1,8 @@
 package Common;
 
 
+import javafx.scene.image.Image;
+
 /**
  * Created by nsifniotis on 31/08/15.
  *
@@ -27,6 +29,13 @@ public class SystemState
 
     }
 
+    public static class Resources
+    {
+        public static Image server_start;
+        public static Image server_stop;
+        public static Image server_reset;
+    }
+
     public static final boolean DEBUG = true;
 
     public static final boolean SQL_LOGS = true;
@@ -48,4 +57,12 @@ public class SystemState
     public static final String game_log_path = "logs/games/";
 
     public static final int DEFAULT_TIMEOUT = 1800;     // half an hour is long enough
+
+
+    public static void Initialise()
+    {
+        Resources.server_reset = new Image ("file:images/reset");
+        Resources.server_start = new Image ("file:images/server_start");
+        Resources.server_stop = new Image ("file:images/server_stop");
+    }
 }
