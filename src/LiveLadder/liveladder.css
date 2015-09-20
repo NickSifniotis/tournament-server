@@ -5,17 +5,9 @@
     -fx-padding: 8;
 }
 
-.player_row1
+.player_row
 {
-    -fx-font: 12px "Sans Serif";
-    -fx-background-color: #CCFF99;
-    -fx-padding: 8;
-}
-
-.player_row2
-{
-    -fx-font: 12px "Sans Serif";
-    -fx-background-color: #BBEE99;
+    -fx-font: 14px "Sans Serif";
     -fx-padding: 8;
 }
 
@@ -42,4 +34,14 @@
 {
     -fx-padding: 8;
     -fx-spacing: 10;
+}
+
+.tourney_off_row_1
+{
+    -fx-background-color: #CCCCB2;
+}
+
+.tourney_off_row_2
+{
+    -fx-background-color: #D6D6C2;
 }

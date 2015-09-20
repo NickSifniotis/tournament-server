@@ -25,9 +25,6 @@ public class TeamDetails implements Comparable<TeamDetails>
     private int points;
     private int score_for;
     private int score_against;
-    private boolean playing_now;
-    private boolean retired;
-    private boolean disqualified;
 
     private Label [] my_labels;
 
@@ -43,13 +40,12 @@ public class TeamDetails implements Comparable<TeamDetails>
     public TeamDetails (PlayerSubmission p)
     {
         this.id = p.PrimaryKey();
-        this.retired = p.Retired();
-        this.playing_now = p.Playing();
         this.my_labels = new Label[LadderColumnStructure.values().length];
         for (int i = 0; i < this.my_labels.length; i++)
         {
             this.my_labels[i] = new Label();
             this.my_labels[i].setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            this.my_labels[i].getStyleClass().add("player_row");
         }
 
         // how's this for gracefully handling a no name situation
@@ -58,7 +54,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         else
             this.my_labels[LadderColumnStructure.NAME.ordinal()].setText("Unnamed Team #" + p.PrimaryKey());
 
-        if (this.playing_now)
+        if (p.Playing())
             this.my_labels[LadderColumnStructure.STATUS.ordinal()].setGraphic(new ImageView(Resources.play_image));
 
         if (p.Disqualified())
@@ -79,6 +75,8 @@ public class TeamDetails implements Comparable<TeamDetails>
             String error = "Picture error. UsesAv = " + p.UsesAvatar() + " and path is " + p.Avatar() + ": " + e;
             LogManager.Log(LogType.ERROR, error);
         }
+
+        AddScores(0, 0);
     }
 
 
@@ -92,16 +90,19 @@ public class TeamDetails implements Comparable<TeamDetails>
      *
      */
     public int PrimaryKey() { return this.id; }
-    public int Points () { return this.points; }
-    public double Percentage ()
+
+    private double percentage ()
     {
         if (score_against == 0)
             return 0;
 
         return (double) score_for / score_against * 100;
     }
-    public int Differential () {return this.score_for - this.score_against; }
-    public boolean Retired() { return this.retired; }
+
+    private int differential ()
+    {
+        return this.score_for - this.score_against;
+    }
 
 
     /**
@@ -123,7 +124,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         if (this.points < o.points)
             return 1;
 
-        return Integer.compare(o.Differential(), this.Differential());   // craftily swapping them around to maintain reverse ordering.
+        return Integer.compare(o.score_for, this.score_for);   // craftily swapping them around to maintain reverse ordering.
     }
 
 
@@ -135,18 +136,14 @@ public class TeamDetails implements Comparable<TeamDetails>
      *
      * @param grid - the main layout grid
      * @param position - which row to inject values into
+     * @param style  - the hex colour this row needs to be
      */
-    public void AddToGrid (GridPane grid, int position)
+    public void AddToGrid (GridPane grid, int position, String style)
     {
         this.my_labels[LadderColumnStructure.POSITION.ordinal()].setText(String.valueOf(position));
         for (int i = 0; i < LadderColumnStructure.values().length; i ++)
         {
-            this.my_labels[i].getStyleClass().clear();
-            if (position % 2 == 0)
-                this.my_labels[i].getStyleClass().add ("player_row2");
-            else
-                this.my_labels[i].getStyleClass().add ("player_row1");
-
+            this.my_labels[i].setStyle("-fx-background-color: " + style + ";");
             if (LadderColumnStructure.Enabled(i))
                 grid.add (this.my_labels[i], i, position);
         }
@@ -169,8 +166,8 @@ public class TeamDetails implements Comparable<TeamDetails>
 
         this.my_labels[LadderColumnStructure.SCORE_AGAINST.ordinal()].setText(String.valueOf(this.score_against));
         this.my_labels[LadderColumnStructure.SCORE_FOR.ordinal()].setText(String.valueOf(this.score_for));
-        this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.format("%.1f", this.Percentage()));
-        this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.Differential()));
+        this.my_labels[LadderColumnStructure.PERCENTAGE.ordinal()].setText(String.format("%.1f", this.percentage()));
+        this.my_labels[LadderColumnStructure.DIFFERENTIAL.ordinal()].setText(String.valueOf(this.differential()));
     }
 
 

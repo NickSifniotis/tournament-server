@@ -29,7 +29,6 @@ import java.util.HashMap;
 public class LiveLadder extends Application
 {
     private int tournament_id = 0;
-    private BorderPane main_layout;
     private Label tournament_name;
     private ScrollPane scroller;
 
@@ -57,7 +56,7 @@ public class LiveLadder extends Application
         LadderColumnStructure.PERCENTAGE.Disable();
         LadderColumnStructure.DIFFERENTIAL.Disable();
 
-        main_layout = new BorderPane();
+        BorderPane main_layout = new BorderPane();
         HBox bottom_row = new HBox ();
         Button select_button = new Button ("Select Tournament");
         select_button.setOnAction(e -> handleSelectButton());
@@ -190,8 +189,19 @@ public class LiveLadder extends Application
         // that's it!
         Arrays.sort(teams);
         int position = 1;
-        for (int i = 0; i < teams.length; i ++)
-            teams[i].AddToGrid(grid, position++);
+        String style;
+        for (TeamDetails team: teams)
+        {
+            if (tournament.IsOn())
+                style = "#FFCC00";
+            else
+                if (position % 2 == 0)
+                    style = "#D6D6C2";
+                else
+                    style = "#CCCCB2";
+
+            team.AddToGrid(grid, position++, style);
+        }
     }
 
 }

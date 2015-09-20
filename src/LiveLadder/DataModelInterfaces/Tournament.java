@@ -51,6 +51,7 @@ public class Tournament
      */
     public int PrimaryKey() { return data_object.PrimaryKey(); }
     public String Name() { return data_object.Name(); }
+    public boolean IsOn() { return data_object.GameOn(); }
 
 
     /**
