@@ -114,12 +114,13 @@ public class Initialiser
         if (Files.exists(dir))
         {
             File folder = new File (directory);
-            String[] listOfFiles = folder.list();
+            File[] listOfFiles = folder.listFiles();
 
             try
             {
-                for (String f : listOfFiles)
-                    Files.delete(Paths.get(f));
+                for (File f : listOfFiles)
+                    if (!f.isDirectory())
+                        Files.delete(Paths.get(f.getAbsolutePath()));
             }
             catch (Exception e)
             {
