@@ -49,6 +49,7 @@ public class SystemState
     public static final String input_folder = "submissions/";
     public static final String marshalling_folder = "marshalling/";
     public static final String pictures_folder = "marshalling/pictures/";
+    public static final String database_folder = "database/";
 
     // locations of log files
     public static final String error_log_path = "logs/system/errors/";

@@ -1,0 +1,141 @@
+package Setup;
+
+import Common.DBManager;
+import Common.SystemState;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+/**
+ * Created by nsifniotis on 22/09/15.
+ *
+ * Contains methods for creating the database tables that this system uses.
+ *
+ */
+public class Initialiser
+{
+    /**
+     * Nick Sifniotis u5809912
+     * 22/09/2015
+     *
+     * Reboot the entire damn system.
+     *
+     * @param args - no args.
+     */
+    public static void main(String[] args)
+    {
+        CreateFileSystem();
+        CreateTables();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 22/09/2015
+     *
+     * Drop and reconstruct all the database tables that the system uses...
+     */
+    public static void CreateTables()
+    {
+        DBManager.Execute("DROP TABLE IF EXISTS game");
+        DBManager.Execute("CREATE TABLE game (id integer primary key, tournament_id integer, "
+                + "round_number integer, game_number integer, played boolean, "
+                + "in_progress boolean, superceded boolean)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS game_player");
+        DBManager.Execute("CREATE TABLE game_player (id integer primary key, position integer, "
+                + "game_id integer, fixture_slot_id integer)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS fixture_slot");
+        DBManager.Execute("CREATE TABLE fixture_slot (id integer primary key, tournament_id integer, "
+                + "submission_id integer)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS tournament");
+        DBManager.Execute("CREATE TABLE tournament (id integer primary key, game_id integer, name text, "
+                + "player_interface_class text, verification_class text, num_players integer, "
+                + "timeout integer, allow_resubmit boolean, allow_resubmit_on boolean, use_null_moves boolean,"
+                + "allow_submit boolean, allow_submit_on boolean, game_on boolean)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS submission");
+        DBManager.Execute("CREATE TABLE submission (id integer primary key, tournament_id integer, "
+                + "team_name text, team_email text, team_avatar boolean, playing boolean, retired boolean, "
+                + "disqualified boolean)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS game_type");
+        DBManager.Execute("CREATE TABLE game_type (id integer primary key, name text, engine_class text, "
+                + "viewer_class text, min_players integer, max_players integer, uses_viewer boolean)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS point_structure");
+        DBManager.Execute("CREATE TABLE point_structure (id integer primary key, tournament_id integer, "
+                + "position integer, points integer)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS score");
+        DBManager.Execute("CREATE TABLE score (id integer primary key, submission_id integer, "
+                + "game_id integer, score integer, no_score boolean, disqualified boolean)");
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 22/09/2015
+     *
+     * Creates the filesystem for use by the tournament.
+     *
+     * Also wipes the slate clean and deletes the contents of the system's directory structure.
+     *
+     * Between this and CreateTables() the entire system is completely reset.
+     */
+    public static void CreateFileSystem()
+    {
+        process_directory(SystemState.database_folder);
+        process_directory(SystemState.engines_folder);
+        process_directory(SystemState.interfaces_folder);
+        process_directory(SystemState.marshalling_folder);
+        process_directory(SystemState.pictures_folder);
+        process_directory(SystemState.game_log_path);
+        process_directory(SystemState.error_log_path);
+        process_directory(SystemState.sql_log_path);
+        process_directory(SystemState.tournament_log_path);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 22/09/2015
+     *
+     * Processes a single directory within the system structure.
+     * @param directory - the directory to process
+     */
+    private static void process_directory(String directory)
+    {
+        Path dir = Paths.get(directory);
+        if (Files.exists(dir))
+        {
+            File folder = new File (directory);
+            String[] listOfFiles = folder.list();
+
+            try
+            {
+                for (String f : listOfFiles)
+                    Files.delete(Paths.get(f));
+            }
+            catch (Exception e)
+            {
+                System.out.println ("Unable to delete file: " + e);
+            }
+        }
+        else
+        {
+            try
+            {
+                Files.createDirectory(dir);
+            }
+            catch (Exception e)
+            {
+                System.out.println ("Unable to create directory for the database: " + e);
+            }
+        }
+    }
+}

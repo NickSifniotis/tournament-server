@@ -14,9 +14,9 @@ import java.sql.*;
  */
 public class DBManager {
 
-    private static String db_username = "nick";
-    private static String db_password = "b64094bf";
-    private static String db_database = "tournament";
+   // private static String db_username = "nick";
+   // private static String db_password = "b64094bf";
+    private static String db_database = "tournaments.db";
 
 
     /**
@@ -156,9 +156,11 @@ public class DBManager {
         Connection connection = null;
         try
         {
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/"
-                    + db_database + "?user=" + db_username + "&password=" + db_password);
+           // Class.forName("com.mysql.jdbc.Driver");
+           // connection = DriverManager.getConnection("jdbc:mysql://localhost/"
+           //         + db_database + "?user=" + db_username + "&password=" + db_password);
+            Class.forName("org.sqlite.JDBC");
+            connection = DriverManager.getConnection("jdbc:sqlite:" + SystemState.database_folder + db_database);
         }
         catch (Exception e)
         {
