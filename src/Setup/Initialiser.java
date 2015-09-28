@@ -42,7 +42,7 @@ public class Initialiser
         DBManager.Execute("DROP TABLE IF EXISTS game");
         DBManager.Execute("CREATE TABLE game (id integer primary key, tournament_id integer, "
                 + "round_number integer, game_number integer, played boolean, "
-                + "in_progress boolean, superceded boolean)");
+                + "in_progress boolean)");
 
         DBManager.Execute("DROP TABLE IF EXISTS game_player");
         DBManager.Execute("CREATE TABLE game_player (id integer primary key, position integer, "
@@ -55,8 +55,8 @@ public class Initialiser
         DBManager.Execute("DROP TABLE IF EXISTS tournament");
         DBManager.Execute("CREATE TABLE tournament (id integer primary key, game_id integer, name text, "
                 + "player_interface_class text, verification_class text, num_players integer, "
-                + "timeout integer, allow_resubmit boolean, allow_resubmit_on boolean, use_null_moves boolean,"
-                + "allow_submit boolean, allow_submit_on boolean, game_on boolean)");
+                + "timeout integer, allow_resubmit boolean, use_null_moves boolean,"
+                + "allow_submit boolean, game_on boolean, twitter_config_id integer)");
 
         DBManager.Execute("DROP TABLE IF EXISTS submission");
         DBManager.Execute("CREATE TABLE submission (id integer primary key, tournament_id integer, "
