@@ -153,4 +153,30 @@ public class Repository
 
         return newb;
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * Saves this game type.
+     *
+     * @param id - the game type record to save
+     */
+    public static void SaveGameType (int id)
+    {
+        GameType game = (GameType) game_types.get(id);
+        if (game == null)
+            return;         // should never happen
+
+        String query = "UPDATE game_type SET name = '" + game.name
+                + "', min_players = " + game.min_players
+                + ", max_players = " + game.max_players
+                + ", engine_class = '" + game.engine_class
+                + "', viewer_class = '" + game.viewer_class
+                + "', uses_viewer = " + DBManager.BoolValue(game.uses_viewer)
+                + " WHERE id = " + game.id;
+
+        DBManager.Execute(query);
+    }
 }

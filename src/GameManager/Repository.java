@@ -12,7 +12,7 @@ import GameManager.Data.GameType;
  */
 public class Repository
 {
-    public GameType GetGameType (int id)
+    public static GameType GetGameType (int id)
     {
         Common.DataModelObject.GameType game = Common.Repository.GetGameType(id);
 
@@ -31,7 +31,7 @@ public class Repository
      *
      * @return them all in a nice array
      */
-    public GameType[] GetGameTypes()
+    public static GameType[] GetGameTypes()
     {
         Common.DataModelObject.GameType[] games = Common.Repository.GetGameTypes();
         GameType[] res = new GameType[games.length];
@@ -51,8 +51,22 @@ public class Repository
      *
      * @return a new game type object that represents a new game ...
      */
-    public GameType NewGameType()
+    public static GameType NewGameType()
     {
         return new GameType(Common.Repository.NewGameType());
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * Dump this data into the database.
+     *
+     * @param game - the game to save.
+     */
+    public static void SaveGameType (GameType game)
+    {
+        Common.Repository.SaveGameType(game.ID());
     }
 }

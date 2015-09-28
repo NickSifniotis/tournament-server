@@ -4,7 +4,7 @@ import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import GameManager.DataModelInterfaces.GameType;
+import GameManager.Data.GameType;
 import GameManager.GUI.MainPanel;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -102,7 +102,6 @@ public class GameManager extends Application
         btnNew.setOnAction(e -> this.newButtonClicked());
         my_panel.btnChoose.setOnAction(e -> this.selectJARButtonClicked());
         my_panel.btnTest.setOnAction(e -> this.testJARButtonClicked());
-        my_panel.btnReset.setOnAction(e-> this.resetButtonClicked());
         my_panel.btnSave.setOnAction(e -> this.saveButtonClicked());
         btnEdit.setOnAction(e -> this.editButtonClicked());
     }
@@ -135,7 +134,7 @@ public class GameManager extends Application
         this.game_chooser.setValue(null);
         this.game_chooser.getItems().clear();
 
-        GameType[] games = GameType.LoadAll();
+        GameType[] games = Repository.GetGameTypes();
 
         // update the status footer
         this.num_games_status.setText("Num Games: " + games.length);
@@ -145,14 +144,22 @@ public class GameManager extends Application
     }
 
 
-    private void setState (GameManagerStates new_State) {
-        this.curr_state = new_State;
-        this.my_panel.updateState(new_State);
+    /**
+     * Nick Sifniotis u5809912
+     * Date unknown
+     *
+     * Advances the GUI to the next state.
+     *
+     * @param new_state - the state to advance to
+     */
+    private void setState (GameManagerStates new_state)
+    {
+        this.curr_state = new_state;
+        this.my_panel.updateState(new_state);
 
-        switch (new_State)
+        switch (new_state)
         {
             case UNLOADED:
-
                 this.update_chooser();
                 break;
             case EDITING:
@@ -164,9 +171,17 @@ public class GameManager extends Application
         }
     }
 
+
+    /**
+     * Nick Sifniotis u5809912
+     * Dates unknown - prior to 28/09/2015
+     *
+     * The following methods are all event handlers attached to the buttons
+     * on the GUI
+     */
     public void newButtonClicked ()
     {
-        this.curr_gametype = new GameType();
+        this.curr_gametype = Repository.NewGameType();
         this.game_chooser.setValue(null);
         this.setState(GameManagerStates.EDITING);
     }
@@ -289,17 +304,6 @@ public class GameManager extends Application
         }
     }
 
-
-    public void resetButtonClicked ()
-    {
-        curr_gametype = new GameType();
-        selected_JAR = null;
-
-        setState(GameManagerStates.EDITING);
-        this.my_panel.updateFields(curr_gametype, null);
-    }
-
-
     public void saveButtonClicked ()
     {
         // conduct some rudimentary tests before adding this thing to the database ..
@@ -387,6 +391,7 @@ public class GameManager extends Application
         {
             Files.deleteIfExists(Paths.get(curr_gametype.SourceFilename()));
             Files.copy(this.selected_JAR.toPath(), Paths.get(curr_gametype.SourceFilename()));
+            Repository.SaveGameType(curr_gametype);
         }
         catch (Exception e)
         {
@@ -398,7 +403,6 @@ public class GameManager extends Application
 
         this.setState(GameManagerStates.UNLOADED);
     }
-
 
     public void editButtonClicked()
     {

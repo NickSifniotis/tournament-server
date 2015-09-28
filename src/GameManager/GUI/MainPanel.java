@@ -1,6 +1,6 @@
 package GameManager.GUI;
 
-import GameManager.DataModelInterfaces.GameType;
+import GameManager.Data.GameType;
 import GameManager.GameManagerStates;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
@@ -27,7 +27,6 @@ public class MainPanel
     public Label lJARstate;
 
     public Button btnSave;
-    public Button btnReset;
     public Button btnTest;
     public Button btnChoose;
 
@@ -57,7 +56,6 @@ public class MainPanel
 
         btnTest = new Button("Test JAR");
         btnSave = new Button("Save");
-        btnReset = new Button("Reset");
         btnChoose = new Button("Select JAR ..");
 
         Separator row4 = new Separator();
@@ -89,7 +87,7 @@ public class MainPanel
         rows[7].getChildren().addAll (cbV);
 
         rows[8] = new HBox();
-        rows[8].getChildren().addAll (btnTest, btnSave, btnReset);
+        rows[8].getChildren().addAll (btnTest, btnSave);
 
         my_panel = new VBox();
         my_panel.setSpacing(5);
@@ -124,7 +122,7 @@ public class MainPanel
                 btnSave.setDisable(false);
 
                 // lock these mofos in particular
-                // once successfully tested, eleminate the possibililty that the user will change them!
+                // once successfully tested, eliminate the possibility that the user will change them!
                 tGE.setDisable(true);
                 tV.setDisable(true);
                 break;
@@ -136,8 +134,8 @@ public class MainPanel
         tName.setText (game.Name());
         tMin.setText ("" + game.MinPlayers());
         tMax.setText ("" + game.MaxPlayers());
-        tGE.setText (game.GameEngineClass());
-        tV.setText (game.ViewerClass());
+        tGE.setText (game.EngineClassName());
+        tV.setText (game.ViewerClassName());
 
         if (curr_jar != null)
             lJARstate.setText ("JAR file loaded - click the button to change it.");
