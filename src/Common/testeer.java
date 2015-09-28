@@ -23,7 +23,7 @@ public class testeer
                 .setOAuthAccessToken("3588649154-8XasvhTp1mVLnuWm15AFB67R6UqhkvRY43v4BDw")
                 .setOAuthAccessTokenSecret("Y0ba6KAQ49CaWWynFYSIpsBxl9p9iwvddNbu7vZjJVkG2");
         TwitterFactory tf = new TwitterFactory(cb.build());
-        Twitter twitter = tf.getInstance();
+        TwitterService twitter = tf.getInstance();
 
         try
         {
