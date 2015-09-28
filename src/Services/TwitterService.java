@@ -1,6 +1,7 @@
 package Services;
 
 import Services.Messages.Message;
+import Services.Messages.TwitterMessage;
 import Services.Twitter.TwitterConfig;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -46,7 +47,11 @@ public class TwitterService extends Service
     @Override
     void handle_message (Message message)
     {
+        if (!(message instanceof TwitterMessage))
+            return;
 
+        TwitterMessage twit = (TwitterMessage) message;
+        send_tweet(twit.tweet);
     }
 
 
