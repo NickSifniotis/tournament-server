@@ -1,17 +1,17 @@
 package Common;
 
 
+import Common.DataModelObject.Entities;
 import Common.DataModelObject.Entity;
+import Common.DataModelObject.GameType;
 import Common.DataModelObject.TwitterConfig;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
-import twitter4j.Twitter;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+
 
 /**
  * Created by nsifniotis on 28/09/15.
@@ -27,6 +27,7 @@ import java.util.List;
 public class Repository
 {
     private static HashMap<Integer, Entity> twitter_configs;
+    private static HashMap<Integer, Entity> game_types;
 
 
     /**
@@ -37,7 +38,8 @@ public class Repository
      */
     public static void Initialise()
     {
-        twitter_configs = load_from_table("twitter_config", TwitterConfig.class);
+        game_types = load_from_table(Entities.GAME_TYPE);
+        twitter_configs = load_from_table(Entities.TWITTER_CONFIG);
     }
 
 
@@ -51,13 +53,12 @@ public class Repository
      * turns them all into objects of the given class type. The only restriction
      * is that the class type must be a descendant of entity.
      *
-     * @param table - the table in the DB to load.
-     * @param type - the type of class to be constructing.
+     * @param entity - what sort of entity we are building here
      * @return a hashmap of objects from the database.
      */
-    private static HashMap<Integer, Entity> load_from_table(String table, Class type)
+    private static HashMap<Integer, Entity> load_from_table(Entities entity)
     {
-        String query = "SELECT * FROM " + table;
+        String query = "SELECT * FROM " + entity.TableName();
         Connection connection = DBManager.connect();
         HashMap <Integer, Entity> holding = new HashMap<>();
 
@@ -66,14 +67,14 @@ public class Repository
         {
             while (results.next())
             {
-                Entity temp_entity = (Entity)type.newInstance();
+                Entity temp_entity = (Entity) entity.Class().newInstance();
                 temp_entity.LoadFromRecord (results);
                 holding.putIfAbsent (temp_entity.id, temp_entity);
             }
         }
         catch (Exception e)
         {
-            String error = "Error while loading data from table " + table + ": " + e;
+            String error = "Error while loading data from table " + entity.TableName() + ": " + e;
             LogManager.Log (LogType.ERROR, error);
         }
         finally
@@ -95,4 +96,61 @@ public class Repository
      * @return the object.
      */
     public static TwitterConfig GetTwitterConfig (int id) { return (TwitterConfig) twitter_configs.get(id); }
+    public static GameType GetGameType (int id) { return (GameType) game_types.get(id); }
+
+    public static GameType[] GetGameTypes ()
+    {
+        GameType[] res = (GameType[]) game_types.values().toArray();
+        Arrays.sort(res);
+        return res;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * Methods for creating new instances of data model objects.
+     * They are stored as blanks in the database; the new prikey is
+     * immediately retrieved and used to store in the hashmap.
+     *
+     * @return a new instance of the type wanted.
+     */
+    public static GameType NewGameType()
+    {
+        GameType newb = (GameType) new_entity(Entities.GAME_TYPE);
+        game_types.putIfAbsent(newb.id, newb);
+
+        return newb;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * Will create, save and return a new instance of whatever entity is.
+     *
+     * @param entity - the sort of new thing to create
+     * @return the new thing
+     */
+    private static Entity new_entity (Entities entity)
+    {
+        String query = "INSERT INTO " + entity.TableName();
+        int id = DBManager.ExecuteReturnKey(query);
+
+        Entity newb = null;
+        try
+        {
+            newb = (Entity) entity.Class().newInstance();
+            newb.id = id;
+        }
+        catch (Exception e)
+        {
+            String error = "Error instantiating new " + entity.Class().getName() + ": " + e;;
+            LogManager.Log(LogType.ERROR, error);
+        }
+
+        return newb;
+    }
 }
