@@ -74,6 +74,10 @@ public class Initialiser
         DBManager.Execute("DROP TABLE IF EXISTS score");
         DBManager.Execute("CREATE TABLE score (id integer primary key, submission_id integer, "
                 + "game_id integer, score integer, no_score boolean, disqualified boolean)");
+
+        DBManager.Execute("DROP TABLE IF EXISTS twitter_configuration");
+        DBManager.Execute("CREATE TABLE twitter_configuration (id integer primary key, account_name string, "
+                + "consumer_key string, consumer_secret string, access_token string, access_token_secret string)");
     }
 
 
