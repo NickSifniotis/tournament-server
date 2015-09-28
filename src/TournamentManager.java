@@ -39,6 +39,9 @@ public class TournamentManager extends Application
     @Override
     public void start(Stage primaryStage)
     {
+        Common.Repository.Initialise();
+
+
         Button game_manager_btn = new Button("Open Game Manager");
         game_manager_btn.setOnAction(e -> launch_game_manager());
 

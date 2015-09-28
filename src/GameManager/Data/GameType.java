@@ -52,4 +52,14 @@ public class GameType
     public void SetUsesViewer (boolean uses) { this.data_source.uses_viewer = uses; }
     public void SetMinPlayers (int min) { this.data_source.min_players = min; }
     public void SetMaxPlayers (int max) { this.data_source.max_players = max; }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * @return a string representation of this game type
+     */
+    @Override
+    public String toString () { return this.data_source.name; }
 }

@@ -100,7 +100,11 @@ public class Repository
 
     public static GameType[] GetGameTypes ()
     {
-        GameType[] res = (GameType[]) game_types.values().toArray();
+        Object[] holding = game_types.values().toArray();
+        GameType[] res = new GameType[holding.length];
+        for (int i = 0; i < holding.length; i ++)
+            res [i] = (GameType) holding[i];
+
         Arrays.sort(res);
         return res;
     }
@@ -136,7 +140,7 @@ public class Repository
      */
     private static Entity new_entity (Entities entity)
     {
-        String query = "INSERT INTO " + entity.TableName();
+        String query = "INSERT INTO " + entity.TableName() + " DEFAULT VALUES;";
         int id = DBManager.ExecuteReturnKey(query);
 
         Entity newb = null;
@@ -160,7 +164,7 @@ public class Repository
      * 28/09/2015
      *
      * Saves this game type.
-     *
+     * @TODO: It's fucking saving null strings as 'null'
      * @param id - the game type record to save
      */
     public static void SaveGameType (int id)

@@ -39,7 +39,7 @@ public enum Entities
                 res = "score";
                 break;
             case TWITTER_CONFIG:
-                res = "twitter_config";
+                res = "twitter_configuration";
                 break;
         }
         return res;

@@ -56,6 +56,9 @@ public class GameManager extends Application
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        Common.Repository.Initialise();
+
+
         my_panel = new MainPanel();
         num_games_status = new Label ("Num Games: 0");
         game_chooser = new ChoiceBox();
@@ -181,9 +184,11 @@ public class GameManager extends Application
      */
     public void newButtonClicked ()
     {
+        System.out.println ("in new button!");
         this.curr_gametype = Repository.NewGameType();
         this.game_chooser.setValue(null);
         this.setState(GameManagerStates.EDITING);
+        System.out.println ("out of new button!");
     }
 
 
@@ -231,7 +236,8 @@ public class GameManager extends Application
             engine_class = this.my_panel.tGE.getText();
             viewer_class = this.my_panel.tV.getText();
 
-            if (engine_class.equals("") || (viewer_class.equals("") && viewer_state)) {
+            if ((engine_class == null || engine_class.equals("")) || ((viewer_class == null || viewer_class.equals("")) && viewer_state))
+            {
                 error = true;
                 error_message = "Class names missing.";
             }

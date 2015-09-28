@@ -134,8 +134,8 @@ public class MainPanel
         tName.setText (game.Name());
         tMin.setText ("" + game.MinPlayers());
         tMax.setText ("" + game.MaxPlayers());
-        tGE.setText (game.EngineClassName());
-        tV.setText (game.ViewerClassName());
+        tGE.setText ((game.EngineClassName() == null) ? "" : game.EngineClassName()); //@TODO more elegance plz
+        tV.setText ((game.ViewerClassName() == null) ? "" : game.ViewerClassName());
 
         if (curr_jar != null)
             lJARstate.setText ("JAR file loaded - click the button to change it.");
