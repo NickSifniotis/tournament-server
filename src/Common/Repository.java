@@ -5,9 +5,11 @@ import Common.DataModelObject.Entity;
 import Common.DataModelObject.TwitterConfig;
 import Common.Logs.LogManager;
 import Common.Logs.LogType;
+import twitter4j.Twitter;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ import java.util.List;
  */
 public class Repository
 {
-    private static TwitterConfig[] twitter_configs;
+    private static HashMap<Integer, Entity> twitter_configs;
 
 
     /**
@@ -35,7 +37,7 @@ public class Repository
      */
     public static void Initialise()
     {
-        twitter_configs = (TwitterConfig[]) load_from_table("twitter_config", TwitterConfig.class);
+        twitter_configs = load_from_table("twitter_config", TwitterConfig.class);
     }
 
 
@@ -51,13 +53,13 @@ public class Repository
      *
      * @param table - the table in the DB to load.
      * @param type - the type of class to be constructing.
-     * @return an array of objects from the database.
+     * @return a hashmap of objects from the database.
      */
-    private static Entity[] load_from_table(String table, Class type)
+    private static HashMap<Integer, Entity> load_from_table(String table, Class type)
     {
         String query = "SELECT * FROM " + table;
         Connection connection = DBManager.connect();
-        List<Entity> holding = new LinkedList<>();
+        HashMap <Integer, Entity> holding = new HashMap<>();
 
         ResultSet results = DBManager.ExecuteQuery(query, connection);
         try
@@ -66,7 +68,7 @@ public class Repository
             {
                 Entity temp_entity = (Entity)type.newInstance();
                 temp_entity.LoadFromRecord (results);
-                holding.add (temp_entity);
+                holding.putIfAbsent (temp_entity.id, temp_entity);
             }
         }
         catch (Exception e)
@@ -79,7 +81,18 @@ public class Repository
             DBManager.disconnect(results);
         }
 
-        Entity[] res = new Entity[holding.size()];
-        return holding.toArray(res);
+        return holding;
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 28/09/2015
+     *
+     * Accessor functions for the various data objects.
+     *
+     * @param id - the ID of the object to return.
+     * @return the object.
+     */
+    public static TwitterConfig GetTwitterConfig (int id) { return (TwitterConfig) twitter_configs.get(id); }
 }

@@ -2,7 +2,7 @@ package Services;
 
 import Services.Messages.Message;
 import Services.Messages.TwitterMessage;
-import Services.Twitter.TwitterConfig;
+import Services.Twitter.Data.TwitterConfig;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -67,10 +67,10 @@ public class TwitterService extends Service
     {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(false)
-                .setOAuthConsumerKey(config.consumer_key)
-                .setOAuthConsumerSecret(config.consumer_secret)
-                .setOAuthAccessToken(config.access_token)
-                .setOAuthAccessTokenSecret(config.access_token_secret);
+                .setOAuthConsumerKey(config.ConsumerKey())
+                .setOAuthConsumerSecret(config.ConsumerSecret())
+                .setOAuthAccessToken(config.AccessToken())
+                .setOAuthAccessTokenSecret(config.AccessTokenSecret());
                 /*
                 .setOAuthConsumerKey("VUvpKkoJtGpGTS8tK7qkaX3dT")
                 .setOAuthConsumerSecret("jpN4a8JxiGZNjZGyFoy7MaIZlkubH17sUfzUmii45Si53UO8tK")
