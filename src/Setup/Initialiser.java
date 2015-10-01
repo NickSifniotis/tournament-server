@@ -85,6 +85,10 @@ public class Initialiser
                 + "timeout integer, allow_resubmit boolean, use_null_moves boolean,"
                 + "allow_submit boolean, game_on boolean, twitter_config_id integer)");
 
+        DBManager.Execute("INSERT INTO tournament (game_id, name, player_interface_class, verification_class," +
+                "num_players, timeout, allow_resubmit, use_null_moves, allow_submit, game_on, twitter_config_id)" +
+                " VALUES (1, 'Test Tourney', 'BlokusPlayer', 'BlokusPlayer', 4, 10, 0, 1, 1, 0, 1)");
+
         DBManager.Execute("DROP TABLE IF EXISTS submission");
         DBManager.Execute("CREATE TABLE submission (id integer primary key, tournament_id integer, "
                 + "team_name text, team_email text, team_avatar boolean, playing boolean, retired boolean, "
@@ -98,13 +102,13 @@ public class Initialiser
         DBManager.Execute("CREATE TABLE point_structure (id integer primary key, tournament_id integer, "
                 + "position integer, points integer)");
 
-        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+        DBManager.Execute("INSERT INTO point_structure (tournament_id, position, points)" +
                 " VALUES (1, 0, 6)");
-        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+        DBManager.Execute("INSERT INTO point_structure (tournament_id, position, points)" +
                 " VALUES (1, 1, 4)");
-        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+        DBManager.Execute("INSERT INTO point_structure (tournament_id, position, points)" +
                 " VALUES (1, 2, 2)");
-        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+        DBManager.Execute("INSERT INTO point_structure (tournament_id, position, points)" +
                 " VALUES (1, 3, 0)");
 
         DBManager.Execute("DROP TABLE IF EXISTS score");
