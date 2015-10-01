@@ -26,7 +26,7 @@ public class Initialiser
      */
     public static void main(String[] args)
     {
-        CreateFileSystem();
+     //   CreateFileSystem();
         CreateTables();
     }
 
@@ -74,10 +74,10 @@ public class Initialiser
         DBManager.Execute("CREATE TABLE fixture_slot (id integer primary key, tournament_id integer, "
                 + "submission_id integer)");
 
-        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
-        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
-        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
-        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id, submission_id) VALUES (1, 0)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id, submission_id) VALUES (1, 0)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id, submission_id) VALUES (1, 0)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id, submission_id) VALUES (1, 0)");
 
         DBManager.Execute("DROP TABLE IF EXISTS tournament");
         DBManager.Execute("CREATE TABLE tournament (id integer primary key, game_id integer, name text, "

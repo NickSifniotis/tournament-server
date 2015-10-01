@@ -184,11 +184,9 @@ public class GameManager extends Application
      */
     public void newButtonClicked ()
     {
-        System.out.println ("in new button!");
         this.curr_gametype = Repository.NewGameType();
         this.game_chooser.setValue(null);
         this.setState(GameManagerStates.EDITING);
-        System.out.println ("out of new button!");
     }
 
 
@@ -246,7 +244,7 @@ public class GameManager extends Application
         // attempt to loaded the viewer class first.
         if (!error && viewer_state)
         {
-            String fullFileName = this.selected_JAR.getName();
+            String fullFileName = this.selected_JAR.getAbsolutePath();
 
             try
             {

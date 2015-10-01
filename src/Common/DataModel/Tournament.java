@@ -29,9 +29,7 @@ public class Tournament extends Entity
     private boolean game_on;
     private int timeout;
     private boolean allow_resubmit;
-    private boolean allow_resubmit_on;
     private boolean allow_submit;
-    private boolean allow_submit_on;
     private boolean use_null_moves;
     private int game_type_id;
     private int num_players;
@@ -191,13 +189,14 @@ public class Tournament extends Entity
         this.id = input.getInt("id");
         this.name = input.getString("name");
         this.allow_resubmit = (input.getInt("allow_resubmit") == 1);
-        this.allow_resubmit_on = (input.getInt("allow_resubmit_on") == 1);
         this.game_on = (input.getInt("game_on") == 1);
         this.verification_class = input.getString("verification_class");
         this.player_interface_class = input.getString("player_interface_class");
         this.timeout = input.getInt("timeout");
         this.num_players = input.getInt("num_players");
         this.game_type_id = input.getInt("game_id");
+        this.allow_submit = (input.getInt("allow_submit") == 1);
+        this.use_null_moves = (input.getInt("use_null_moves") == 1);
         this.points = null;
     }
 
@@ -214,7 +213,8 @@ public class Tournament extends Entity
         this.id = -1;
         this.name = "";
         this.allow_resubmit = false;
-        this.allow_resubmit_on = false;
+        this.allow_submit = false;
+        this.use_null_moves = false;
         this.game_on = false;
         this.verification_class = "";
         this.player_interface_class = "";
@@ -263,8 +263,9 @@ public class Tournament extends Entity
                     + ", player_interface_class = '" + this.player_interface_class
                     + "', verification_class = '" + this.verification_class
                     + ", allow_resubmit = " + DBManager.BoolValue(this.allow_resubmit)
-                    + ", allow_resubmit_on = " + DBManager.BoolValue(this.allow_resubmit_on)
+                    + ", allow_submit = " + DBManager.BoolValue(this.allow_submit)
                     + ", game_on = " + DBManager.BoolValue(this.game_on)
+                    + ", use_null_move = " + DBManager.BoolValue(this.use_null_moves)
                     + ", num_players = " + this.num_players
                     + ", timeout = '" + this.timeout
                     + " WHERE id = " + this.id;
@@ -274,17 +275,18 @@ public class Tournament extends Entity
         else
         {
             query = "INSERT INTO tournament (name, game_id, player_interface_class, verification_class,"
-                    + " allow_resubmit, allow_resubmit_on, game_on, num_players, timeout)"
+                    + " allow_resubmit, allow_submit, game_on, num_players, timeout, use_null_moves)"
                     + " VALUES ("
                     + "'" + this.name + "'"
                     + ", " + this.game_type_id
                     + "'" + this.player_interface_class + "'"
                     + "'" + this.verification_class + "'"
                     + ", " + DBManager.BoolValue(this.allow_resubmit)
-                    + ", " + DBManager.BoolValue(this.allow_resubmit_on)
+                    + ", " + DBManager.BoolValue(this.allow_submit)
                     + ", " + DBManager.BoolValue(this.game_on)
                     + ", " + this.num_players
                     + ", " + this.timeout
+                    + ", " + DBManager.BoolValue(this.use_null_moves)
                     + ")";
 
             // we do want to know what the primary key of this new record is.
