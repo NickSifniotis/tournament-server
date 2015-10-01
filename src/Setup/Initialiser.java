@@ -44,13 +44,40 @@ public class Initialiser
                 + "round_number integer, game_number integer, played boolean, "
                 + "in_progress boolean)");
 
+        DBManager.Execute("INSERT INTO game (tournament_id, round_number, game_number)" +
+                        " VALUES (1, 1, 1)");
+        DBManager.Execute("INSERT INTO game (tournament_id, round_number, game_number)" +
+                        " VALUES (1, 2, 1)");
+
         DBManager.Execute("DROP TABLE IF EXISTS game_player");
         DBManager.Execute("CREATE TABLE game_player (id integer primary key, position integer, "
                 + "game_id integer, fixture_slot_id integer)");
 
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (1, 1, 1)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (2, 1, 2)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (3, 1, 3)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (4, 1, 4)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (4, 1, 1)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (3, 1, 2)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (2, 1, 3)");
+        DBManager.Execute("INSERT INTO game_player (position, game_id, fixture_slot_id)" +
+                " VALUES (1, 1, 4)");
+
         DBManager.Execute("DROP TABLE IF EXISTS fixture_slot");
         DBManager.Execute("CREATE TABLE fixture_slot (id integer primary key, tournament_id integer, "
                 + "submission_id integer)");
+
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
+        DBManager.Execute("INSERT INTO fixture_slot (tournament_id) VALUES (1)");
 
         DBManager.Execute("DROP TABLE IF EXISTS tournament");
         DBManager.Execute("CREATE TABLE tournament (id integer primary key, game_id integer, name text, "
@@ -70,6 +97,15 @@ public class Initialiser
         DBManager.Execute("DROP TABLE IF EXISTS point_structure");
         DBManager.Execute("CREATE TABLE point_structure (id integer primary key, tournament_id integer, "
                 + "position integer, points integer)");
+
+        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+                " VALUES (1, 0, 6)");
+        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+                " VALUES (1, 1, 4)");
+        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+                " VALUES (1, 2, 2)");
+        DBManager.Execute("INSERT INTO TABLE point_structure (tournament_id, position, points)" +
+                " VALUES (1, 3, 0)");
 
         DBManager.Execute("DROP TABLE IF EXISTS score");
         DBManager.Execute("CREATE TABLE score (id integer primary key, submission_id integer, "
