@@ -23,7 +23,6 @@ import java.util.List;
  * tournament_id    integer fk              W Fix, PM R LL, TS
  * played           boolean                 W TS, R LL
  * in_progress      boolean                 W TS, R LL
- * superceded       boolean                 W PM, R TS, LL
  *
  */
 public class Game extends Entity
@@ -360,7 +359,6 @@ public class Game extends Entity
     public int GameNumber() { return this.game_number; }
     public boolean Started() { return this.check_boolfield("played") | this.check_boolfield("in_progress"); }
     public boolean InProgress() { return this.check_boolfield("in_progress"); }
-    public boolean Superceded() { return this.check_boolfield("superceded"); }
 
 
     /**
@@ -502,116 +500,6 @@ public class Game extends Entity
 
     /**
      * Nick Sifniotis u5809912
-     * 15/09/2015
-     *
-     * Hard reset of the game. If it is being played out, nothing will happen when EndGame is called.
-     */
-    public void Supercede()
-    {
-        // first, supercede this game itself.
-        String query = "UPDATE game SET superceded = 1 WHERE id = " + this.id;
-        DBManager.Execute(query);
-
-        // second, create a new, blank game record.
-        Game new_game = new Game(true);
-
-        // third, clone this game's records in game_player
-        query = "SELECT * FROM game_player WHERE game_id = " + id;
-        Connection connection = DBManager.connect();
-        ResultSet res = DBManager.ExecuteQuery(query, connection);
-        if (res != null)
-        {
-            try
-            {
-                while (res.next())
-                {
-                    String insert_query = "INSERT INTO game_player (position, fixture_slot_id, game_id) VALUES"
-                                            + " (" + res.getInt("position")
-                                            + ", " + res.getInt("fixture_slot_id")
-                                            + ", " + new_game.PrimaryKey()
-                                            + ")";
-                    DBManager.Execute (insert_query);
-                }
-            }
-            catch (Exception e)
-            {
-                String er = "Game.Supercede - SQL error retrieving game data. " + e;
-                LogManager.Log(LogType.ERROR, er);
-                DBManager.disconnect(connection);
-            }
-
-            DBManager.disconnect(res);          // disconnect by result
-        }
-        else
-        {
-            String er = "Game.Supercede - no data found in game_player for game_id " + id;
-            LogManager.Log(LogType.ERROR, er);
-            DBManager.disconnect(connection);   // disconnect by connection
-        }
-
-        // fourth, finally, populate this new game with the data from the old one.
-        new_game.SetRoundNumber(this.RoundNumber());
-        new_game.SetGameNumber(this.GameNumber());
-        new_game.SetTournamentKey(this.tournament_id);
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 15/09/2015
-     *
-     * Go through every game that this player is going to / has played in,
-     * and perform a hard reset.
-     *
-     * This method is called from PlayerMarshall, when a player is being replaced by a newer one.
-     *
-     * @param fixture_position - the fixture slot that is being reset.
-     */
-    public static void ResetAll(int fixture_position)
-    {
-        // get a list of game_ids for which this fixture slot is playing
-        // but only un-superceded games. Obviously. We are not replicating dead games here.
-        String query = "SELECT gp.* FROM game_player gp, game g WHERE g.id = gp.game_id"
-                        + " AND g.superceded = " + DBManager.BoolValue(false)
-                        + " AND gp.fixture_slot_id = " + fixture_position;
-
-        Connection connection = DBManager.connect();
-        ResultSet res = DBManager.ExecuteQuery(query, connection);
-        List <Integer> games_to_process = new LinkedList<>();
-
-        if (res != null)
-        {
-            try
-            {
-                while (res.next())
-                    games_to_process.add(res.getInt("game_id"));
-            }
-            catch (Exception e)
-            {
-                String er = "Game.ResetAll - SQL error retrieving game data. " + e;
-                LogManager.Log(LogType.ERROR, er);
-                DBManager.disconnect(connection);
-            }
-
-            DBManager.disconnect(res);          // disconnect by result
-        }
-        else
-        {
-            String er = "Game.ResetAll - No data error retrieving game data.";
-            LogManager.Log(LogType.ERROR, er);
-            DBManager.disconnect(connection);   // disconnect by connection
-        }
-
-        for (int game_id: games_to_process)
-        {
-            Game g = new Game (game_id);
-            g.Supercede();
-        }
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
      * 16/09/2015
      *
      * Return whatever scores have been associated with this game, as an array.
@@ -651,5 +539,22 @@ public class Game extends Entity
 
         Score[] res = new Score[holding.size()];
         return holding.toArray (res);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 03/10/2015
+     *
+     * Resets the game back to an unplayed state.
+     */
+    public void Reset()
+    {
+        String query = "UPDATE game SET played = " + DBManager.BoolValue(false)
+                + ", in_progress = " + DBManager.BoolValue(false) + " WHERE id = " + this.id;
+        DBManager.Execute(query);
+
+        query = "DELETE FROM score WHERE game_id = " + this.id;
+        DBManager.Execute(query);
     }
 }

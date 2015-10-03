@@ -29,6 +29,4 @@ public class Game
 
 
     public int PrimaryKey() { return data_object.PrimaryKey(); }
-
-    public static void SupercedeGames (int fixture_position) { Common.DataModel.Game.ResetAll(fixture_position);}
 }

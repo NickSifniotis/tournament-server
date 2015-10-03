@@ -125,6 +125,8 @@ public class PlayerMarshall extends Application
      * If this submission represents a new player, it will try to add it to the tournament fixture.
      * If it is a resubmit for an existing player, it will process that as per the tournament rules.
      *
+     * Note that this function assumes it will never be called whilst the tournament is running.
+     *
      * @param submission - the file that was found in the input folder
      * @param tournament - which tournament the file is assumed to belong to
      */
@@ -152,7 +154,7 @@ public class PlayerMarshall extends Application
         {
             if (!tournament.AllowSubmit())
             {
-                SubmissionFailure(submission, EmailTypes.NO_SUBMIT_ON, metadata.team_email, tournament);
+                SubmissionFailure(submission, EmailTypes.NO_SUBMIT, metadata.team_email, tournament);
                 return;
             }
 
@@ -170,16 +172,8 @@ public class PlayerMarshall extends Application
         {
             if (!tournament.AllowResubmit())
             {
-                if (tournament.Running())
-                {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_ON, metadata.team_email, tournament);
-                    return;
-                }
-                else
-                {
-                    SubmissionFailure(submission, EmailTypes.NO_RESUBMIT_OFF, metadata.team_email, tournament);
-                    return;
-                }
+                SubmissionFailure(submission, EmailTypes.NO_RESUBMIT, metadata.team_email, tournament);
+                return;
             }
         }
 
@@ -225,14 +219,10 @@ public class PlayerMarshall extends Application
             LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
             old_player.Retire();
             submission_slot = old_player.FixtureSlotAllocation();
-            Game.SupercedeGames(submission_slot);
         }
 
         // add the player to the tournament
         tournament.AssignSlotToPlayer(submission_slot, new_submission.PrimaryKey());
-
-        //@TODO: Avatar code goes here
-        //new_submission.setAvatar("");
     }
 
 

@@ -305,10 +305,8 @@ public class Tournament extends Entity
      */
     public String Name() { return this.name; }
     public int Timeout () { return this.timeout; }
-    public boolean AllowResubmitOff () { return this.check_boolfield("allow_resubmit"); }
-    public boolean AllowResubmitOn () { return this.check_boolfield("allow_resubmit_on"); }
-    public boolean AllowSubmitOff () { return this.check_boolfield("allow_submit"); }
-    public boolean AllowSubmitOn () { return this.check_boolfield("allow_submit_on"); }
+    public boolean AllowResubmit () { return this.check_boolfield("allow_resubmit"); }
+    public boolean AllowSubmit () { return this.check_boolfield("allow_submit"); }
     public boolean UsesNullMoves () { return this.check_boolfield("use_null_moves"); }
     public boolean GameOn () { return this.check_boolfield("game_on"); }
     public int NumPlayers () { return this.num_players; }
@@ -538,7 +536,7 @@ public class Tournament extends Entity
         int [] tourney_list = { this.id };
         Game [] games = Game.LoadAll(tourney_list, false, false);
         for (Game g: games)
-            g.Supercede();
+            g.Reset();
     }
 
 

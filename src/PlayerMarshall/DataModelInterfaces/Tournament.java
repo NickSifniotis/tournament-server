@@ -3,6 +3,9 @@ package PlayerMarshall.DataModelInterfaces;
 import AcademicsInterface.IVerification;
 import Common.SystemState;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by nsifniotis on 16/09/15.
  *
@@ -43,9 +46,8 @@ public class Tournament
     public int PrimaryKey() { return data_object.PrimaryKey(); }
     public String Name() { return data_object.Name(); }
     public String InputFolder() { return SystemState.input_folder + data_object.PrimaryKey() + "/"; }
-    public boolean Running() { return data_object.GameOn(); }
-    public boolean AllowResubmit() { return (data_object.GameOn()) ? data_object.AllowResubmitOn() : data_object.AllowResubmitOff(); }
-    public boolean AllowSubmit() { return (data_object.GameOn()) ? data_object.AllowSubmitOn() : data_object.AllowSubmitOff(); }
+    public boolean AllowResubmit() { return data_object.AllowResubmit(); }
+    public boolean AllowSubmit() { return data_object.AllowSubmit(); }
     public int AvailableSlot() throws Exception { return data_object.GetNextAvailableSlot(); }
     public IVerification Verification() { return data_object.Verification(); }
 
@@ -57,11 +59,13 @@ public class Tournament
     public static Tournament[] LoadAll()
     {
         Common.DataModel.Tournament[] tourneys = Common.DataModel.Tournament.LoadAll();
-        Tournament [] results = new Tournament[tourneys.length];
+        List<Tournament> results = new LinkedList<>();
 
         for (int i = 0; i < tourneys.length; i ++)
-            results [i] = new Tournament(tourneys[i]);
+            if (!tourneys[i].GameOn())
+                results.add (new Tournament(tourneys[i]));
 
-        return results;
+        Tournament[] holding = new Tournament[results.size()];
+        return results.toArray(holding);
     }
 }
