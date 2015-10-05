@@ -222,11 +222,14 @@ public class PlayerSubmission extends Entity
         }
         else
         {
-            query = "INSERT INTO submission (team_name, team_email, team_avatar"
-                    + ", tournament_id) VALUES ("
+            query = "INSERT INTO submission (team_name, team_email, team_avatar, retired"
+                    + ", disqualified, playing, tournament_id) VALUES ("
                     + "'" + this.name + "'"
                     + ", '" + this.email + "'"
                     + ", " + DBManager.BoolValue(this.uses_avatar)
+                    + ", " + DBManager.BoolValue(this.retired)
+                    + ", " + DBManager.BoolValue(this.disqualified)
+                    + ", " + DBManager.BoolValue(this.playing)
                     + ", " + this.tournament_id + ")";
 
             // we do want to know what the primary key of this new record is.

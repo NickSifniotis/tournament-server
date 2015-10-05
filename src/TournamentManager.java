@@ -11,6 +11,7 @@
  */
 
 import Common.DBManager;
+import Common.Emailer;
 import Common.LogManager;
 import GameManager.GameManager;
 import PlayerMarshall.PlayerMarshall;
@@ -60,6 +61,7 @@ public class TournamentManager extends Application
     {
         Common.Repository.Initialise();
         LogManager.StartService();
+        Emailer.StartService();
 
         primaryStage.setOnCloseRequest(e -> shutdown_request());
 
@@ -238,6 +240,7 @@ public class TournamentManager extends Application
         if (this.marshalling_status)
             this.shutdown_service(this.marshalling_service);
 
+        Emailer.EndService();
         LogManager.EndService();
     }
 

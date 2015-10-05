@@ -2,7 +2,7 @@ package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
 import Common.Email.EmailTypes;
-import Common.Email.Emailer;
+import Common.Emailer;
 import Common.LogManager;
 import Services.LogService;
 import TournamentServer.DataModelInterfaces.Game;

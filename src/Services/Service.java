@@ -86,6 +86,8 @@ public abstract class Service extends Thread
         boolean terminated = false;
         while (!terminated)
         {
+            do_service();
+
             Message message = message_queue.peek();
             if (message != null)
             {
@@ -105,7 +107,7 @@ public abstract class Service extends Thread
 
             try
             {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             }
             catch (InterruptedException e)
             {

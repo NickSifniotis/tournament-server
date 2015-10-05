@@ -1,14 +1,19 @@
-package Common.Email;
+package Services;
 
 import Common.DataModel.Tournament;
-import Services.LogService;
-import Services.Logs.LogType;
+import Common.Email.EmailTypes;
+import Common.LogManager;
 import Common.SystemState;
+import Services.Logs.LogType;
+import Services.Messages.EmailMessage;
+import Services.Messages.Message;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.*;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -18,34 +23,67 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
-
 /**
- * Created by nsifniotis on 9/09/15.
+ * Created by nsifniotis on 5/10/15.
  *
- * Emailer class that sends standard emails out to students regarding their submissions.
- *
- * This class is intentionally not concurrent - though it bloody well could be, given how long it takes
- * to send one of those damned emails out. But it would be impossible to send out as attachments the very
- * same submission files that the marshall is lining up to delete ..
+ * Service thread responsible for sending out emails
  *
  */
-public class Emailer
+public class EmailService extends Service
 {
-    public static void SendEmail (EmailTypes type, String destination_address, int tournament_id)
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Sends out the email held within the message.
+     *
+     * @param message - the message that they have to handle.
+     */
+    @Override
+    public void handle_message(Message message)
     {
-        SendEmail(type, destination_address, tournament_id, null);
+        if (!(message instanceof EmailMessage))
+            return;
+
+        EmailMessage msg = (EmailMessage) message;
+        SendEmail(msg);
     }
 
 
-    public static void SendEmail (EmailTypes type, String destination_address, int tournament_id, String attachment)
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Lazy service does nothing. Bad service :(
+     */
+    @Override
+    public void do_service()
     {
+        // i'm so lazy :'(
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Sends the email.
+     *
+     * @param email - the email to send
+     */
+    private void SendEmail (EmailMessage email)
+    {
+        String destination_address = email.Destination();
+        EmailTypes type = email.EmailType();
+        String attachment = email.Attachment();
+
         if (destination_address == null || destination_address.equals(""))
         {
-            destination_address = "u5809912@anu.edu.au";
+            destination_address = SystemState.Email.fromAddress;            // gotta send it somewhere aye
             type = EmailTypes.NO_VALID_EMAIL;
         }
 
-        Tournament tourney = new Tournament(tournament_id);
+        Tournament tourney = new Tournament(email.TournamentID());
         String tourney_name = tourney.Name();
         String tourney_slots = String.valueOf(tourney.NumSlots());
         String body = "";
@@ -64,11 +102,10 @@ public class Emailer
         {
             // this should never happen!
             String error = "Emailer.SendEmail - error when attemption to load email template " + type.Template() + ": " + e;
-         //   LogService.Log(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
 
             return;
         }
-
 
         Properties properties = GetSMTPProperties();
 
@@ -81,7 +118,7 @@ public class Emailer
             MimeMessage msg = new MimeMessage(mailSession);
             msg.setFrom(new InternetAddress(SystemState.Email.fromAddress));
             InternetAddress[] toAddresses = {new InternetAddress(destination_address)};
-            msg.setRecipients(Message.RecipientType.TO, toAddresses);
+            msg.setRecipients(javax.mail.Message.RecipientType.TO, toAddresses);
             msg.setSubject(type.Subject());
             msg.setSentDate(new Date());
 
@@ -109,7 +146,7 @@ public class Emailer
             transport.connect(SystemState.Email.host, SystemState.Email.port,
                     SystemState.Email.userName, SystemState.Email.password);
             transport.sendMessage(msg,
-                    msg.getRecipients(Message.RecipientType.TO));
+                    msg.getRecipients(javax.mail.Message.RecipientType.TO));
             transport.close();
         }
         catch (Exception e)
@@ -117,8 +154,6 @@ public class Emailer
             System.out.println (e.toString());
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -128,7 +163,7 @@ public class Emailer
      *
      * @return a structure containing the properties needed to send an email
      */
-    private static Properties GetSMTPProperties()
+    private Properties GetSMTPProperties()
     {
         Properties properties = new Properties();
         properties.put("mail.transport.protocol", "smtps");
