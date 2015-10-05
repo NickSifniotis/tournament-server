@@ -4,7 +4,7 @@ package Common;
 import Common.Email.EmailTypes;
 import Services.EmailService;
 import Services.Messages.EmailMessage;
-import Services.Messages.TerminateMessage;
+import Services.ServiceManager;
 
 /**
  * Created by nsifniotis on 9/09/15.
@@ -16,8 +16,8 @@ import Services.Messages.TerminateMessage;
  */
 public class Emailer
 {
-    private static EmailService service;
-    private static boolean service_active = false;
+    private static ServiceManager service;
+
 
     /**
      * Nick Sifniotis u5809912
@@ -27,15 +27,12 @@ public class Emailer
      */
     public static void StartService ()
     {
-        service = new EmailService();
-        service.start();
-        service_active = true;
+        service = new ServiceManager(EmailService.class);
     }
 
     public static void EndService ()
     {
-        service_active = false;
-        service.MessageQueue().add(new TerminateMessage());
+        service.StopService();
     }
 
 
@@ -44,7 +41,6 @@ public class Emailer
      * 05/10/2015
      *
      * Creates the email message and sends it to the service queue.
-     * If the service is inactive, do nothing.
      *
      */
     public static void SendEmail (EmailTypes type, String destination_address, int tournament_id)
@@ -54,7 +50,6 @@ public class Emailer
 
     public static void SendEmail (EmailTypes type, String destination_address, int tournament_id, String attachment)
     {
-        if (service_active)
-            service.MessageQueue().add(new EmailMessage(type, destination_address, tournament_id, attachment));
+        service.SendMessage(new EmailMessage(type, destination_address, tournament_id, attachment));
     }
 }

@@ -10,12 +10,12 @@
  *
  */
 
-import Common.DBManager;
 import Common.Emailer;
 import Common.LogManager;
 import GameManager.GameManager;
-import PlayerMarshall.PlayerMarshall;
-import Services.LogService;
+import PlayerMarshall.PlayerMarshallManager;
+import PlayerMarshall.PlayerMarshallService;
+import Services.Logs.LogType;
 import Services.Messages.TerminateMessage;
 import Services.Service;
 import TournamentServer.*;
@@ -35,8 +35,6 @@ public class TournamentManager extends Application
     private TournamentThread tourney_service = null;
     private BlockingQueue <Hermes> tourney_messager = null;
     private int tournament_status = 0;
-    private PlayerMarshall marshalling_service = null;
-    private boolean marshalling_status = false;
     private Button marshalling_btn;
     private BlockingQueue <String> holder;
 
@@ -59,8 +57,8 @@ public class TournamentManager extends Application
     @Override
     public void start(Stage primaryStage)
     {
-        Common.Repository.Initialise();
         LogManager.StartService();
+        Common.Repository.Initialise();
         Emailer.StartService();
 
         primaryStage.setOnCloseRequest(e -> shutdown_request());
@@ -116,8 +114,8 @@ public class TournamentManager extends Application
      */
     public void toggle_server()
     {
-        // cannot start the tournament server while the PlayerMarshall is running.
-        if (marshalling_status)
+        // cannot start the tournament server while the PlayerMarshallService is running.
+        if (PlayerMarshallManager.Alive())
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Unable to comply");
@@ -195,35 +193,23 @@ public class TournamentManager extends Application
             return;
         }
 
-        if (this.marshalling_status)
+        if (PlayerMarshallManager.Alive())
         {
             // it's on, so turn it off.
-            this.marshalling_service.MessageQueue().add(new TerminateMessage());
-            while (this.marshalling_service.Alive())
-            {
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (Exception e)
-                {
-                    // nah, still sleeping.
-                }
-            }
-            this.marshalling_service = null;
-            this.marshalling_status = false;
+            LogManager.Log(LogType.ERROR, "PM shutoff toggle reached");
+            PlayerMarshallManager.EndService();
 
-            this.marshalling_btn.setText ("Start Player Marshall");
+            this.marshalling_btn.setText("Start Player Marshall");
             this.tournament_service_btn.setDisable(false);
+
+            LogManager.Log(LogType.ERROR, "PM shutoff toggle executed");
         }
         else
         {
             this.tournament_service_btn.setDisable(true);
             this.marshalling_btn.setText("Stop Player Marshall");
 
-            this.marshalling_service = new PlayerMarshall();
-            this.marshalling_service.start();
-            this.marshalling_status = true;
+            PlayerMarshallManager.StartService();
         }
     }
 
@@ -237,35 +223,10 @@ public class TournamentManager extends Application
      */
     private void shutdown_request()
     {
-        if (this.marshalling_status)
-            this.shutdown_service(this.marshalling_service);
+        if (PlayerMarshallManager.Alive())
+            PlayerMarshallManager.EndService();
 
         Emailer.EndService();
         LogManager.EndService();
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 05/10/2015
-     *
-     * Gracefully shut down this service.
-     *
-     * @param service - the thing to stop
-     */
-    private void shutdown_service (Service service)
-    {
-        service.MessageQueue().add(new TerminateMessage());
-        while (service.Alive())
-        {
-            try
-            {
-                Thread.sleep(100);
-            }
-            catch (Exception e)
-            {
-                // nah, still sleeping.
-            }
-        }
     }
 }

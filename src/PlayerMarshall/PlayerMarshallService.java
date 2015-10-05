@@ -25,7 +25,7 @@ import java.nio.file.StandardCopyOption;
  * Refactored as a service on the 5th October 2015
  */
 
-public class PlayerMarshall extends Services.Service
+public class PlayerMarshallService extends Services.Service
 {
     /**
      * Nick Sifniotis u5809912
@@ -75,7 +75,7 @@ public class PlayerMarshall extends Services.Service
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles == null)
-            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
+            LogManager.Log(LogType.ERROR, "PlayerMarshallService.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
     }
@@ -101,7 +101,7 @@ public class PlayerMarshall extends Services.Service
         }
         catch (Exception e)
         {
-            String error = "PlayerMarshall - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
+            String error = "PlayerMarshallService - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
             LogManager.Log(LogType.ERROR, error);
             return;
         }
@@ -113,7 +113,7 @@ public class PlayerMarshall extends Services.Service
         }
         catch (Exception e)
         {
-            String error = "PlayerMarshall - load avatar - some sort of error creating the image. " + e;
+            String error = "PlayerMarshallService - load avatar - some sort of error creating the image. " + e;
             LogManager.Log(LogType.ERROR, error);
 
             try
@@ -228,7 +228,7 @@ public class PlayerMarshall extends Services.Service
         }
         catch (Exception e)
         {
-            String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
+            String error = "PlayerMarshallService.ProcessSingleSubmission - File IO error: " + e;
             LogManager.Log(LogType.ERROR, error);
         }
 
@@ -295,13 +295,13 @@ public class PlayerMarshall extends Services.Service
         {
             if (!submission.delete())
             {
-                String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file.";
+                String error = "PlayerMarshallService.ProcessNewSubmissions - Error deleting file.";
                 LogManager.Log(LogType.ERROR, error);
             }
         }
         catch (Exception e)
         {
-            String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
+            String error = "PlayerMarshallService.ProcessNewSubmissions - Error deleting file: " + e;
             LogManager.Log(LogType.ERROR, error);
         }
     }

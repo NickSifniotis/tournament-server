@@ -3,7 +3,7 @@ package Common;
 import Services.LogService;
 import Services.Logs.LogType;
 import Services.Messages.LogMessage;
-import Services.Messages.TerminateMessage;
+import Services.ServiceManager;
 
 /**
  * Created by nsifniotis on 5/10/15.
@@ -12,8 +12,7 @@ import Services.Messages.TerminateMessage;
  */
 public class LogManager
 {
-    private static LogService service;
-    private static boolean service_active = false;
+    private static ServiceManager service;
 
 
     /**
@@ -25,17 +24,14 @@ public class LogManager
      */
     public static void StartService()
     {
-        service = new LogService();
-        service.start();
-        service_active = true;
+        service = new ServiceManager(LogService.class);
         Log (LogType.TOURNAMENT, "Log service started!");
     }
 
     public static void EndService()
     {
         Log (LogType.TOURNAMENT, "Stopping log service. This will be the last message from me this session. Goodbye!");
-        service.MessageQueue().add(new TerminateMessage());
-        service_active = false;
+        service.StopService();
     }
 
 
@@ -51,13 +47,13 @@ public class LogManager
      */
     public static void Log (LogType type, String message)
     {
-        if (service_active)
-            service.MessageQueue().add(new LogMessage(type, message));
+        if (service != null)
+            service.SendMessage(new LogMessage(type, message));
     }
 
     public static void GameLog (int game_id, String message)
     {
-        if (service_active)
-            service.MessageQueue().add(new LogMessage(LogType.GAME, game_id, message));
+        if (service != null)
+            service.SendMessage(new LogMessage(LogType.GAME, game_id, message));
     }
 }

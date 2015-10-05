@@ -5,7 +5,7 @@ package PlayerMarshall.DataModelInterfaces;
 /**
  * Created by nsifniotis on 16/09/15.
  *
- * This class enforces the correct view of the underlying data model onto the PlayerMarshall class.
+ * This class enforces the correct view of the underlying data model onto the PlayerMarshallService class.
  *
  * It's the third layer.
  *
@@ -15,7 +15,7 @@ package PlayerMarshall.DataModelInterfaces;
  * for different fields in the database tables, the number of 'undocumented features' and
  * strange artifacts that these programs produce will be reduced.
  *
- * The PlayerMarshall 'view' of the PlayerSubmission entity is:
+ * The PlayerMarshallService 'view' of the PlayerSubmission entity is:
  * id                   RW   prikey int auto_inc
  * tournament_id        W    int
  * team_name            W    string

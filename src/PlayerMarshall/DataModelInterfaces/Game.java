@@ -3,7 +3,7 @@ package PlayerMarshall.DataModelInterfaces;
 /**
  * Created by nsifniotis on 16/09/15.
  *
- * Game data model view for the PlayerMarshall.
+ * Game data model view for the PlayerMarshallService.
  *
  * Contract that this class enforces is as follows:
  *
