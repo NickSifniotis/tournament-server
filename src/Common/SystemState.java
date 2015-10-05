@@ -35,7 +35,7 @@ public class SystemState
 
     public static class Database
     {
-        public static final String File = "tournament.db";
+        public static final String File = "tournaments.db";
     }
 
 

@@ -24,7 +24,6 @@ public class TournamentService extends Service
     private int thread_pool_target;
     private int running_threads;
     private boolean user_signalled_shutdown;
-    private boolean finished;
 
 
     /**
@@ -57,7 +56,6 @@ public class TournamentService extends Service
         this.thread_pool = new GameManagerChild[thread_pool_target];
         this.user_signalled_shutdown = false;
         this.running_threads = 0;
-        this.finished = false;
     }
 
 
@@ -311,15 +309,4 @@ public class TournamentService extends Service
 
         LogManager.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
     }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 10/9/2015
-     *
-     * Accessor functions
-     *
-     * @return the data that the user wants.
-     */
-    public boolean Finished () { return this.finished; }
 }

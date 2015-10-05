@@ -23,6 +23,8 @@ public class TournamentServer
     /**
      * Nick Sifniotis u5809912
      * 05/10/2015
+     * @TODO interesting all right. Solve this conundrum. The ServiceManager is not shutting
+     * the service down correctly. The only way to do it is with Stopservice
      *
      * This is an interesting one. Look at the way it stops the service - it's nothing like the others.
      * This is because the tournament server might be halfway through running a game.
@@ -31,7 +33,8 @@ public class TournamentServer
      */
     public static void StopService()
     {
-        service.SendMessage(new TSMessage(TSMessageType.END));
+       // service.SendMessage(new TSMessage(TSMessageType.END));
+        service.StopService();
     }
 
 
