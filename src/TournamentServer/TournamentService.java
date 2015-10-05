@@ -116,7 +116,7 @@ public class TournamentService extends Service
         this.launch_new_threads();
 
         if (this.user_signalled_shutdown && this.running_threads == 0)
-            this.interrupt();       // I guess that's one way to force a break.
+            this.alive = false;
     }
 
 

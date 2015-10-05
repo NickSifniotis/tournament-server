@@ -84,7 +84,7 @@ public abstract class Service extends Thread
     private void main_loop()
     {
         boolean terminated = false;
-        while (!terminated)
+        while (!terminated && alive)
         {
             do_service();
 
