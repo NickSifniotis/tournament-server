@@ -1,8 +1,8 @@
 package LiveLadder.DataModelInterfaces;
 
 import Common.DataModel.PlayerSubmission;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import LiveLadder.*;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -73,7 +73,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         catch (Exception e)
         {
             String error = "Picture error. UsesAv = " + p.UsesAvatar() + " and path is " + p.Avatar() + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
 
         AddScores(0, 0);

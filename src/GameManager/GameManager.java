@@ -2,8 +2,8 @@ package GameManager;
 
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import GameManager.Data.GameType;
 import GameManager.GUI.MainPanel;
 import javafx.application.Application;
@@ -402,7 +402,7 @@ public class GameManager extends Application
             // you know you're getting tired when you solve variable name clashes by adding an
             // extra letter to the name
             String eerror = "GameManager.saveButtonClicked - Error copying JAR file to sources: " + e;
-            LogManager.Log(LogType.ERROR, eerror);
+            LogService.Log(LogType.ERROR, eerror);
         }
 
         this.setState(GameManagerStates.UNLOADED);

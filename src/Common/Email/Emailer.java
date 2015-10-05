@@ -1,8 +1,8 @@
 package Common.Email;
 
 import Common.DataModel.Tournament;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import Common.SystemState;
 
 import javax.activation.DataHandler;
@@ -64,7 +64,7 @@ public class Emailer
         {
             // this should never happen!
             String error = "Emailer.SendEmail - error when attemption to load email template " + type.Template() + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
 
             return;
         }

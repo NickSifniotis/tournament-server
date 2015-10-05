@@ -1,8 +1,8 @@
 package TournamentServer.DataModelInterfaces;
 
 import Common.DataModel.Score;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import TournamentServer.PlayerManager;
 
 
@@ -73,7 +73,7 @@ public class Scores
      */
     public void Disqualify (int player_id)
     {
-        LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + player_id);
+        LogService.Log(LogType.TOURNAMENT, "Disqualifying player " + player_id);
 
         for (int i = 0; i < this.scores.length; i ++)
             this.scores[i].AbnormalTermination(i == player_id);

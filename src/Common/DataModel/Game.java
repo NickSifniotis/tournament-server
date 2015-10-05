@@ -1,8 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -86,7 +86,7 @@ public class Game extends Entity
         catch (Exception e)
         {
             String error = "Game.constructor (resultset): Error creating from resultset input: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
     }
 
@@ -120,7 +120,7 @@ public class Game extends Entity
                 catch (Exception e)
                 {
                     String error = "Game constructor (game_id) - SQL error retrieving player data. " + e;
-                    LogManager.Log(LogType.ERROR, error);
+                    LogService.Log(LogType.ERROR, error);
 
                     this.loadState();
                     DBManager.disconnect(connection);
@@ -176,7 +176,7 @@ public class Game extends Entity
             tournament_clause += ")";
         }
 
-        query = "SELECT g.* FROM game g WHERE superceded = 0" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
+        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
         Connection connection = DBManager.connect();
         ResultSet records = DBManager.ExecuteQuery(query, connection);
 
@@ -194,7 +194,7 @@ public class Game extends Entity
             catch (Exception e)
             {
                 String error = "Game.LoadAll (game_id) - SQL error retrieving game data. " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
                 DBManager.disconnect(connection);
             }
         }
@@ -277,7 +277,7 @@ public class Game extends Entity
             catch (Exception e)
             {
                 String error = "Game reloader - SQL error retrieving game data. " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
 
                 this.loadState();
                 DBManager.disconnect(connection);
@@ -396,7 +396,7 @@ public class Game extends Entity
             catch (Exception e)
             {
                 String er = "Game.GetPlayers - SQL error retrieving player data. " + e;
-                LogManager.Log(LogType.ERROR, er);
+                LogService.Log(LogType.ERROR, er);
                 error = true;
                 DBManager.disconnect(connection);
             }
@@ -406,7 +406,7 @@ public class Game extends Entity
         else
         {
             String er = "Game.GetPlayers - No data error retrieving player data.";
-            LogManager.Log(LogType.ERROR, er);
+            LogService.Log(LogType.ERROR, er);
 
             error = true;
             DBManager.disconnect(connection);   // disconnect by connection
@@ -524,7 +524,7 @@ public class Game extends Entity
             catch (Exception e)
             {
                 String er = "Game.GetScores - SQL error retrieving score data. " + e;
-                LogManager.Log(LogType.ERROR, er);
+                LogService.Log(LogType.ERROR, er);
                 DBManager.disconnect(connection);
             }
 
@@ -533,7 +533,7 @@ public class Game extends Entity
         else
         {
             String er = "Game.GetScores - No data error retrieving score data.";
-            LogManager.Log(LogType.ERROR, er);
+            LogService.Log(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
 

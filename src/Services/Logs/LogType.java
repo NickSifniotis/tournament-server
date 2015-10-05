@@ -1,11 +1,11 @@
-package Common.Logs;
+package Services.Logs;
 
 import Common.SystemState;
 
 /**
  * Created by nsifniotis on 13/09/15.
  *
- * An enumeration that holds the data needed for the LogManager to run.
+ * An enumeration that holds the data needed for the LogService to run.
  *
  * Good lord this server is unnecessarily featurific.
  *

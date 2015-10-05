@@ -3,10 +3,10 @@ package TournamentServer;
 import AcademicsInterface.IGameEngine;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
+import Services.LogService;
 import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.Scores;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.Logs.LogType;
 import TournamentServer.Exceptions.PlayerMoveException;
 
 /**
@@ -54,12 +54,12 @@ public class GameManagerChild extends Thread
             this.game.StartGame();
 
             for (int i = 0; i < players.length; i ++)
-                LogManager.GameLog(game.PrimaryKey(), "Player " + i + ": " + players[i].Name());
+                LogService.GameLog(game.PrimaryKey(), "Player " + i + ": " + players[i].Name());
         }
         catch (Exception e)
         {
             String error = "GameManagerChild.constructor - unable to start game " + this.game.PrimaryKey();
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
     }
 
@@ -114,14 +114,14 @@ public class GameManagerChild extends Thread
                 if (this.use_nulls)
                 {
                     move = players[current_player].NullMove();
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " threw a PlayerMoveException. Skipping turn.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " threw a PlayerMoveException. Skipping turn.");
                 }
                 else
                 {
                     // log what the fuck has happened as well.
-                    LogManager.Log (LogType.ERROR, "GameManagerChild.run game - something went wrong with player " + current_player + "'s move: " + e);
-                    LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for throwing a PlayerMoveException.");
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - failed to return a move.");
+                    LogService.Log(LogType.ERROR, "GameManagerChild.run game - something went wrong with player " + current_player + "'s move: " + e);
+                    LogService.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for throwing a PlayerMoveException.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - failed to return a move.");
 
                     game_scores.Disqualify(current_player);
 
@@ -137,12 +137,12 @@ public class GameManagerChild extends Thread
                 if (this.use_nulls)
                 {
                     move = players[current_player].NullMove();
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " returned a null move. Skipping turn.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " returned a null move. Skipping turn.");
                 }
                 else
                 {
-                    LogManager.Log (LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is null.");
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a null move.");
+                    LogService.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is null.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a null move.");
                     game_scores.Disqualify(current_player);
 
                     finished = true;
@@ -158,12 +158,12 @@ public class GameManagerChild extends Thread
                 if (this.use_nulls)
                 {
                     move = players[current_player].NullMove();
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " returned an illegal move: " + move + ". Skipping turn.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " returned an illegal move: " + move + ". Skipping turn.");
                 }
                 else
                 {
-                    LogManager.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
-                    LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
+                    LogService.Log(LogType.TOURNAMENT, "Disqualifying player " + current_player + " for returning a move that is not legit.");
+                    LogService.GameLog(game.PrimaryKey(), "Player " + current_player + " disqualified - returned a bad move: " + move);
                     Disqualify(current_player);
 
                     finished = true;
@@ -174,7 +174,7 @@ public class GameManagerChild extends Thread
 
             // the move passed the threefold barriers
             // progress the engine.
-            LogManager.GameLog(game.PrimaryKey(), engine.LogEntry(game_state, move));
+            LogService.GameLog(game.PrimaryKey(), engine.LogEntry(game_state, move));
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
         }
@@ -182,7 +182,7 @@ public class GameManagerChild extends Thread
         // and send out EMAILS ABOUT IT
         for (PlayerManager p: players)
             Emailer.SendEmail(EmailTypes.GAME_OVER, p.Email(),
-                this.game.TournamentKey(), LogManager.GameLogFilename(this.game.PrimaryKey()));
+                this.game.TournamentKey(), LogService.GameLogFilename(this.game.PrimaryKey()));
     }
 
 
@@ -200,7 +200,7 @@ public class GameManagerChild extends Thread
             Emailer.SendEmail(((i == player_id) ? EmailTypes.DISQUALIFIED : EmailTypes.ABNORMAL),
                     players[player_id].Email(),
                     this.game.TournamentKey(),
-                    LogManager.GameLogFilename(this.game.PrimaryKey()));
+                    LogService.GameLogFilename(this.game.PrimaryKey()));
 
         game_scores.Disqualify(player_id);
     }

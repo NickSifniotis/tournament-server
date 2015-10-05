@@ -1,8 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -66,7 +66,7 @@ public abstract class Entity
             catch (Exception e)
             {
                 String error = "PlayerSubmission.check_boolfield - SQL error retrieving field value " + field_name + ". " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
                 DBManager.disconnect(connection);
             }
         }

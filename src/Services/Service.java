@@ -13,6 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class Service extends Thread
 {
+    protected LogService log_service;
     private BlockingQueue<Message> message_queue;
     private boolean alive;
 
@@ -23,10 +24,16 @@ public abstract class Service extends Thread
      *
      * Constructor for this object. Create an empty message queue.
      */
-    public Service()
+    public Service(LogService logs)
     {
-        message_queue = new LinkedBlockingQueue<>();
-        alive = false;
+        this.log_service = logs;
+        this.message_queue = new LinkedBlockingQueue<>();
+        this.alive = false;
+
+        if (logs != null)
+        {
+            // @TODO send a creation message.
+        }
     }
 
 
@@ -114,5 +121,14 @@ public abstract class Service extends Thread
      *
      * @param message - the message that they have to handle.
      */
-    abstract void handle_message (Message message);
+    public abstract void handle_message (Message message);
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Do whatever this service does whenever it's active and nothing else is going on.
+     */
+    public abstract void do_service ();
 }

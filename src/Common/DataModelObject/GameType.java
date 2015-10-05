@@ -2,8 +2,8 @@ package Common.DataModelObject;
 
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import Common.SystemState;
 
 import java.net.URL;
@@ -80,7 +80,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.GameEngine - error creating class: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
 
             return null;
         }
@@ -111,7 +111,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.Viewer - error creating class: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
 
             return null;
         }

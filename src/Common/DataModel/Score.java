@@ -1,8 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,7 +68,7 @@ public class Score extends Entity implements Comparable<Score>
         catch (Exception e)
         {
             String error = "Score constructor (resultset) - SQL error retrieving score data. " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
 
             load_state();
         }
@@ -96,7 +96,7 @@ public class Score extends Entity implements Comparable<Score>
                 catch (Exception e)
                 {
                     String error = "Score constructor (score_id) - SQL error retrieving player data. " + e;
-                    LogManager.Log(LogType.ERROR, error);
+                    LogService.Log(LogType.ERROR, error);
 
                     this.load_state();
                     DBManager.disconnect(connection);

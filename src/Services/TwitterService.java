@@ -45,7 +45,7 @@ public class TwitterService extends Service
      * @param message - the message that they have to handle.
      */
     @Override
-    void handle_message (Message message)
+    public void handle_message (Message message)
     {
         if (!(message instanceof TwitterMessage))
             return;
@@ -87,5 +87,18 @@ public class TwitterService extends Service
         {
             e.printStackTrace();
         }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * The twitter service does f-all other than process messages.
+     */
+    @Override
+    public void do_service()
+    {
+        // do fuck all
     }
 }

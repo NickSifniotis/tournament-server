@@ -1,12 +1,10 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import Common.SystemState;
-import AcademicsInterface.SubmissionMetadata;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -124,7 +122,7 @@ public class PlayerSubmission extends Entity
                 catch (Exception e)
                 {
                     String error = "PlayerSubmission constructor (player_id) - SQL error retrieving player data. " + e;
-                    LogManager.Log(LogType.ERROR, error);
+                    LogService.Log(LogType.ERROR, error);
 
                     this.loadState();
                     DBManager.disconnect(connection);
@@ -284,7 +282,7 @@ public class PlayerSubmission extends Entity
             {
                 String error = "PlayerSubmission.LoadAll - Error executing SQL query: "
                         + query + ": " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
             DBManager.disconnect(res);          // disconnect by result
         }
@@ -354,7 +352,7 @@ public class PlayerSubmission extends Entity
         {
             String error = "PlayerSubmission.GetActiveWithTeamName - Error executing SQL query: "
                     + query + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
 
         return res;
@@ -403,7 +401,7 @@ public class PlayerSubmission extends Entity
             catch (Exception e)
             {
                 String er = "Game.ResetAll - SQL error retrieving player data. " + e;
-                LogManager.Log(LogType.ERROR, er);
+                LogService.Log(LogType.ERROR, er);
                 DBManager.disconnect(connection);
             }
 
@@ -412,10 +410,10 @@ public class PlayerSubmission extends Entity
         else
         {
             String er = "Game.ResetAll - No data error retrieving player data.";
-            LogManager.Log(LogType.ERROR, er);
+            LogService.Log(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
-        LogManager.Log(LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
+        LogService.Log(LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
         return fixture_position;
     }
 
@@ -490,7 +488,7 @@ public class PlayerSubmission extends Entity
             catch (Exception e)
             {
                 String error = "PlayerSubmission.CountRegisteredPlayers - SQL error retrieving player data. " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
                 DBManager.disconnect(connection);
             }
         }

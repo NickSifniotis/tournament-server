@@ -5,8 +5,8 @@ import Common.DataModelObject.Entities;
 import Common.DataModelObject.Entity;
 import Common.DataModelObject.GameType;
 import Common.DataModelObject.TwitterConfig;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.Arrays;
@@ -75,7 +75,7 @@ public class Repository
         catch (Exception e)
         {
             String error = "Error while loading data from table " + entity.TableName() + ": " + e;
-            LogManager.Log (LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
         finally
         {
@@ -152,7 +152,7 @@ public class Repository
         catch (Exception e)
         {
             String error = "Error instantiating new " + entity.Class().getName() + ": " + e;;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
 
         return newb;

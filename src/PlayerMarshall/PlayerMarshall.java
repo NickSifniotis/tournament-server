@@ -4,48 +4,73 @@ import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 import Common.SystemState;
-import PlayerMarshall.DataModelInterfaces.Game;
 import PlayerMarshall.DataModelInterfaces.PlayerSubmission;
 import PlayerMarshall.DataModelInterfaces.Tournament;
-import com.sun.xml.internal.ws.api.addressing.WSEndpointReference;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.application.Application;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import Services.Messages.LogMessage;
+import Services.Messages.Message;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.BlockingQueue;
 
 
 /**
  * Created by nsifniotis on 31/08/15.
  *
- * Main PlayerMarshall class
- * Functionality and GUI - not great design, Nick
+ * Refactored as a service on the 5th October 2015
  */
-public class PlayerMarshall extends Application
+
+public class PlayerMarshall extends Services.Service
 {
     private static String last_log_message;
-    private static Label log_label;
-    private static Label tourney_label;
-    private static Label player_label;
+    private BlockingQueue<Message> log_messenger;
+
+
+    public PlayerMarshall(BlockingQueue <Message> link)
+    {
+        super();
+        this.log_messenger = link;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Eventually, this function will handle a whole variety of different messages relating to
+     * player submissions.
+     *
+     * Right now, it handles nothing at all since the only message worth waiting for (terminate)
+     * is handled by the base class.
+     * @param message - the message that they have to handle.
+     */
+    @Override
+    public void handle_message (Message message)
+    {
+
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Check for new submissions, process them and such.
+     *
+     */
+    @Override
+    public void do_service()
+    {
+        this.ProcessNewSubmissions();
+    }
 
 
     /**
@@ -58,20 +83,28 @@ public class PlayerMarshall extends Application
      * @param t - the tournament who's players we seek
      * @return - the much-sought-after players
      */
-    public static File [] GetNewSubmissions (Tournament t)
+    public File [] GetNewSubmissions (Tournament t)
     {
         File folder = new File (t.InputFolder());
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles == null)
-            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
+            LogService.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
     }
 
 
-
-    public static void SetAvatar (PlayerSubmission player, SubmissionMetadata metadata)
+    /**
+     * Nick Sifniotis u5809912
+     * Prior to the 5th October 2015
+     *
+     * Downloads and saves the player's picture, if they have asked for one in the metadata.
+     *
+     * @param player - the player for whom to set the picture
+     * @param metadata - the player's metadata that contains the location of the picture to download.
+     */
+    private void SetAvatar (PlayerSubmission player, SubmissionMetadata metadata)
     {
         Path destination = Paths.get(SystemState.pictures_folder + player.PrimaryKey() +".pic");
 
@@ -83,7 +116,7 @@ public class PlayerMarshall extends Application
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
             return;
         }
 
@@ -95,7 +128,7 @@ public class PlayerMarshall extends Application
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - some sort of error creating the image. " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
 
             try
             {
@@ -104,7 +137,7 @@ public class PlayerMarshall extends Application
             catch (Exception e2)
             {
                 error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e2;
-                LogManager.Log (LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
 
             return;
@@ -130,7 +163,7 @@ public class PlayerMarshall extends Application
      * @param submission - the file that was found in the input folder
      * @param tournament - which tournament the file is assumed to belong to
      */
-    private static void ProcessSingleSubmission (File submission, Tournament tournament)
+    private void ProcessSingleSubmission (File submission, Tournament tournament)
     {
         IVerification verifier = tournament.Verification();
         File extracted_submission = verifier.ExtractSubmission(submission);
@@ -201,7 +234,7 @@ public class PlayerMarshall extends Application
         // copy the submission over to the marshalling folder.
         try
         {
-            LogManager.Log (LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
+            LogService.Log(LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
 
             Files.copy(extracted_submission.toPath(), Paths.get(new_submission.MarshalledSource()));
             Files.deleteIfExists(extracted_submission.toPath());
@@ -210,13 +243,13 @@ public class PlayerMarshall extends Application
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
 
         // If this is an existing player, and we have made it this far, retire the old player.
         if (old_player != null)
         {
-            LogManager.Log (LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
+            LogService.Log(LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
             old_player.Retire();
             submission_slot = old_player.FixtureSlotAllocation();
         }
@@ -236,7 +269,7 @@ public class PlayerMarshall extends Application
      * Called every few seconds by the main program loop.
      *
      */
-    public static void ProcessNewSubmissions ()
+    public void ProcessNewSubmissions ()
     {
         LogMessage("Waiting for new submissions ..");
 
@@ -251,60 +284,6 @@ public class PlayerMarshall extends Application
                 ProcessSingleSubmission(submission, tournament);
             }
         }
-
-        int registered_players = PlayerSubmission.CountRegisteredPlayers(0);
-
-        tourney_label.setText(String.valueOf(tourneys.length));
-        player_label.setText(String.valueOf(registered_players));
-    }
-
-
-    /**
-     * Nick Sifniotis
-     * 9/9/2015
-     *
-     * Sets up the PlayerMarshall GUI.
-     *
-     * @param primaryStage - the default stage (the main window?)
-     * @throws Exception
-     */
-    @Override
-    public void start(Stage primaryStage) throws Exception
-    {
-        BorderPane componentLayout = new BorderPane();
-
-        final HBox statusBar = new HBox();
-        statusBar.setPadding(new Insets(12, 15, 12, 15));
-        statusBar.setSpacing(10);
-
-        Label tourneyLbl = new Label("Tournaments:");
-        statusBar.getChildren().add(tourneyLbl);
-        tourney_label = new Label ("0");
-        statusBar.getChildren().add(tourney_label);
-        Label playersLbl = new Label ("Registered Players:");
-        statusBar.getChildren().add(playersLbl);
-        player_label = new Label ("0");
-        statusBar.getChildren().add (player_label);
-
-        FlowPane centrePane = new FlowPane();
-        log_label = new Label("Player Marshall 1.0\nSystem initialised.");
-        log_label.setWrapText(true);
-
-        centrePane.getChildren().add (log_label);
-
-        componentLayout.setBottom(statusBar);
-        componentLayout.setTop(centrePane);
-
-        primaryStage.setTitle("Player Marshall");
-        primaryStage.setScene(new Scene(componentLayout, 400, 575));
-        primaryStage.show();
-
-        Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(5000),
-                ae -> ProcessNewSubmissions()));
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
-
     }
 
 
@@ -319,7 +298,7 @@ public class PlayerMarshall extends Application
      * @param reason - why it failed
      * @param destination_address - who to send the dirty email to.
      */
-    private static void SubmissionFailure (File submission, EmailTypes reason, String destination_address, Tournament t)
+    private void SubmissionFailure (File submission, EmailTypes reason, String destination_address, Tournament t)
     {
         LogMessage("Failed to add submission. Reason: " + reason.name());
 
@@ -333,28 +312,14 @@ public class PlayerMarshall extends Application
             if (!submission.delete())
             {
                 String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file.";
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
         }
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
-    }
-
-
-    /**
-     * Nick Sifniotis
-     * 9/9/2015
-     *
-     * One of the least interesting PSVM methods I've come across.
-     *
-     * @param args - unused
-     */
-    public static void main(String[] args)
-    {
-        launch(args);
     }
 
 
@@ -366,16 +331,15 @@ public class PlayerMarshall extends Application
      *
      * @param msg - the message to display on the gui console
      */
-    public static void LogMessage (String msg)
+    public void LogMessage (String msg)
     {
         if (msg.equals (last_log_message))
             return;
 
-        String text = log_label.getText() + "\n" + msg;
-        log_label.setText(text);
+        this.log_messenger.add(new LogMessage(LogType.TOURNAMENT, msg));
 
         last_log_message = msg;
 
-        LogManager.Log(LogType.TOURNAMENT, msg);
+        LogService.Log(LogType.TOURNAMENT, msg);
     }
 }

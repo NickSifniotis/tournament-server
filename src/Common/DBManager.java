@@ -1,7 +1,7 @@
 package Common;
 
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 
 import java.sql.*;
 
@@ -43,11 +43,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "Within DBManager.Execute, error executing SQL query: " + query + ": " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
         }
 
-        LogManager.Log(LogType.SQL, "Executed query " + query);
+        LogService.Log(LogType.SQL, "Executed query " + query);
     }
 
 
@@ -76,7 +76,7 @@ public class DBManager {
                 if (affected_rows != 1)
                 {
                     String error = "DBManager.ExecuteReturnKey - Insert into database failed. Affected rows: " + affected_rows + ": " + query;
-                    LogManager.Log(LogType.ERROR, error);
+                    LogService.Log(LogType.ERROR, error);
                 }
                 else
                 {
@@ -98,11 +98,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteReturnKey - Error executing SQL query: " + query + ": " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
         }
 
-        LogManager.Log(LogType.SQL, "Insert a success, returning new prikey " + res + " on query " + query);
+        LogService.Log(LogType.SQL, "Insert a success, returning new prikey " + res + " on query " + query);
         return res;
     }
 
@@ -132,11 +132,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteQuery - Error executing SQL query. Query: " + query + " Exception: " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
             }
         }
 
-        LogManager.Log (LogType.SQL, "Executed query " + query);
+        LogService.Log(LogType.SQL, "Executed query " + query);
 
         return results;
     }
@@ -165,7 +165,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.Connect - Exception connecting to tournament database: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
 
         return connection;
@@ -189,7 +189,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
     }
 
@@ -206,7 +206,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
     }
 

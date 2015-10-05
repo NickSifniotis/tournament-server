@@ -1,10 +1,9 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Common.Logs.LogManager;
-import Common.Logs.LogType;
+import Services.LogService;
+import Services.Logs.LogType;
 
-import java.awt.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,7 +59,7 @@ public class PointStructure extends Entity implements Comparable<PointStructure>
         catch (Exception e)
         {
             String error = "PointStructure.constructor (resultset) - SQL error encountered: " + e;
-            LogManager.Log(LogType.ERROR, error);
+            LogService.Log(LogType.ERROR, error);
         }
     }
 
@@ -95,7 +94,7 @@ public class PointStructure extends Entity implements Comparable<PointStructure>
             catch (Exception e)
             {
                 String error = "PointStructure.LoadAll (t_id) - SQL error retrieving game data. " + e;
-                LogManager.Log(LogType.ERROR, error);
+                LogService.Log(LogType.ERROR, error);
                 DBManager.disconnect(connection);
             }
         }

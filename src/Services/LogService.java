@@ -1,6 +1,9 @@
-package Common.Logs;
+package Services;
 
 import Common.SystemState;
+import Services.Logs.LogType;
+import Services.Messages.LogMessage;
+import Services.Messages.Message;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -17,9 +20,59 @@ import java.util.Date;
  * The SQL logs alone are huge.
  *
  */
-public class LogManager
+public class LogService extends Service
 {
-    private static String [] logfiles = new String[LogType.values().length];
+    private String [] logfiles;
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Construct the logging service. Make sure that it knows it is its own logging service
+     * for the purpose of logging.
+     */
+    public LogService ()
+    {
+        super(null);
+        logfiles = new String[LogType.values().length];
+        this.log_service = this;                // lovely!
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Process log messages as they come in.
+     *
+     * @param message - the message that they have to handle.
+     */
+    @Override
+    public void handle_message(Message message)
+    {
+        if (!(message instanceof LogMessage))
+            return;
+
+        LogMessage msg = (LogMessage) message;
+        if (msg.LogType() == LogType.GAME)
+            this.GameLog(msg.Game(), msg.Message());
+        else
+            this.Log(msg.LogType(), msg.Message());
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Another lazy service that does nothing that it isn't asked to.
+     */
+    @Override
+    public void do_service()
+    {
+        // lazy
+    }
 
 
     /**
@@ -32,7 +85,7 @@ public class LogManager
      * @param type - which log the entry should be piped through to
      * @param entry - the entry to record.
      */
-    public static void Log (LogType type, String entry)
+    private void Log (LogType type, String entry)
     {
         // this test will also neatly return false if type == LogType.GAME
         if (!type.Logging())
@@ -76,7 +129,7 @@ public class LogManager
      * @param game_id - which game for to record the log entry.
      * @param entry - the entry to record.
      */
-    public static void GameLog (int game_id, String entry)
+    public void GameLog (int game_id, String entry)
     {
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(LogType.GAME.LogPath() + game_id + ".txt", true))))
         {
