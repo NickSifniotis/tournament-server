@@ -1,16 +1,12 @@
 package TournamentServer;
 
 import Common.LogManager;
-import Services.LogService;
 import Services.Logs.LogType;
-import Services.Messages.LogMessage;
-import TournamentServer.DataModelInterfaces.Game;
-import TournamentServer.DataModelInterfaces.PlayerSubmission;
-import TournamentServer.DataModelInterfaces.Scores;
-import TournamentServer.DataModelInterfaces.Tournament;
+import Services.Messages.Message;
+import Services.Messages.TSMessage;
+import Services.Service;
+import TournamentServer.DataModelInterfaces.*;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by nsifniotis on 9/09/15.
@@ -22,9 +18,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * all child threads have terminated - until all games have finished, in other words.
  *
  */
-public class TournamentThread extends Thread
+public class TournamentService extends Service
 {
-    private BlockingQueue<Hermes> winged_messenger;
     private GameManagerChild[] thread_pool;
     private int thread_pool_target;
     private int running_threads;
@@ -38,7 +33,7 @@ public class TournamentThread extends Thread
      *
      * Default constructor, build with minimal thread pool size.
      */
-    public TournamentThread ()
+    public TournamentService()
     {
         this(1);
     }
@@ -56,9 +51,8 @@ public class TournamentThread extends Thread
      *
      * @param thread_pool_target - how many games will be played simultaneously
      */
-    public TournamentThread (int thread_pool_target)
+    public TournamentService(int thread_pool_target)
     {
-        this.winged_messenger = new LinkedBlockingQueue<>();
         this.thread_pool_target = thread_pool_target;
         this.thread_pool = new GameManagerChild[thread_pool_target];
         this.user_signalled_shutdown = false;
@@ -69,91 +63,62 @@ public class TournamentThread extends Thread
 
     /**
      * Nick Sifniotis u5809912
-     * 9/9/2015
+     * 05/10/2015
      *
-     * Full credit to stackExchange for giving me this idea.
-     * The best way to pass commands from the console to the tournament server is
-     * through the use of something called a BlockingQueue.
+     * Handle a multitude of different messages that the tournament server
+     * needs to know how to handle.
      *
-     * @return our winged friend.
+     * @param message - the message that they have to handle.
      */
-    public BlockingQueue<Hermes> GetHermes()
+    @Override
+    public void handle_message(Message message)
     {
-        return this.winged_messenger;
+        if (!(message instanceof TSMessage))
+            return;
+
+        TSMessage msg = (TSMessage) message;
+
+        switch (msg.message)
+        {
+            case END:
+                user_signalled_shutdown = true;
+                break;
+            case KILL_GAME:
+                this.abort_game(msg.payload);
+                break;
+            case KILL_TOURNAMENT:
+                this.abort_tournament(msg.payload);
+                break;
+            case THREAD_POOL_RESIZE:
+                this.thread_pool_target = msg.payload;
+                if (this.thread_pool_target > this.thread_pool.length)
+                {
+                    GameManagerChild [] new_array = new GameManagerChild[this.thread_pool_target];
+                    System.arraycopy(thread_pool, 0, new_array, 0, thread_pool.length);
+                    thread_pool = new_array;
+                }
+                break;
+        }
     }
 
 
     /**
      * Nick Sifniotis u5809912
-     * 10/9/2015
+     * 05/10/2015
      *
-     * Concurrency is a major pain in my arse.
-     *
+     * Finally, one of these that does something!
      */
     @Override
-    public void run ()
+    public void do_service()
     {
-        finished = false;
+        // clear out any games from the pool that have finished.
+        this.clear_dead_threads();
 
-        while (!this.user_signalled_shutdown || this.running_threads > 0)
-        {
-            // clear out any games from the pool that have finished.
-            this.clear_dead_threads();
+        // start a new game, if there is room in the thread pool.
+        this.launch_new_threads();
 
-            // start a new game, if there is room in the thread pool.
-            this.launch_new_threads();
-
-            // have we received any messages from the gods?
-            Hermes message = winged_messenger.peek();
-            if (message != null)
-            {
-                // pop the message off the queue
-                try
-                {
-                    message = winged_messenger.take();
-                }
-                catch (Exception e)
-                { /* fuck off, I flat out have no idea what to do here. */ }
-
-                // deal with the message
-
-                switch (message.message)
-                {
-                    case END:
-                        user_signalled_shutdown = true;
-                        break;
-                    case KILL_GAME:
-                        this.abort_game(message.payload);
-                        break;
-                    case KILL_TOURNAMENT:
-                        this.abort_tournament(message.payload);
-                        break;
-                    case INC_THREAD_POOL:
-                        this.thread_pool_target ++;
-                        if (this.thread_pool_target > this.thread_pool.length)
-                        {
-                            GameManagerChild [] new_array = new GameManagerChild[this.thread_pool_target];
-                            System.arraycopy(thread_pool, 0, new_array, 0, thread_pool.length);
-                            thread_pool = new_array;
-                        }
-                        break;
-                    case DEC_THREAD_POOL:
-                        if (this.thread_pool_target > 1)
-                            this.thread_pool_target--;
-                        break;
-                }
-            }
-
-            // go to sleep
-            try
-            {
-                Thread.sleep(500);
-            }
-            catch (InterruptedException e)
-            { /* Ignore as we will try sleep again */}
-        }
-
-        finished = true;
+        if (this.user_signalled_shutdown && this.running_threads == 0)
+            this.interrupt();       // I guess that's one way to force a break.
     }
 
 

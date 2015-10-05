@@ -16,7 +16,7 @@ import Services.ServiceManager;
  */
 public class Emailer
 {
-    private static ServiceManager service;
+    private static ServiceManager service = new ServiceManager(EmailService.class);
 
 
     /**
@@ -25,12 +25,9 @@ public class Emailer
      *
      * StartService and EndService are controlled by the TournamentManager.
      */
-    public static void StartService ()
-    {
-        service = new ServiceManager(EmailService.class);
-    }
+    public static void StartService() { service.StartService(); }
 
-    public static void EndService ()
+    public static void EndService()
     {
         service.StopService();
     }

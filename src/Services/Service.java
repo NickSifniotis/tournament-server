@@ -21,7 +21,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public abstract class Service extends Thread
 {
     private BlockingQueue<Message> message_queue;
-    private boolean alive;
+    protected boolean alive;
 
 
     /**

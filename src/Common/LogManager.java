@@ -12,7 +12,7 @@ import Services.ServiceManager;
  */
 public class LogManager
 {
-    private static ServiceManager service;
+    private static ServiceManager service = new ServiceManager(LogService.class);
 
 
     /**
@@ -24,7 +24,7 @@ public class LogManager
      */
     public static void StartService()
     {
-        service = new ServiceManager(LogService.class);
+        service.StartService();
         Log (LogType.TOURNAMENT, "Log service started!");
     }
 
@@ -47,13 +47,11 @@ public class LogManager
      */
     public static void Log (LogType type, String message)
     {
-        if (service != null)
-            service.SendMessage(new LogMessage(type, message));
+        service.SendMessage(new LogMessage(type, message));
     }
 
     public static void GameLog (int game_id, String message)
     {
-        if (service != null)
-            service.SendMessage(new LogMessage(LogType.GAME, game_id, message));
+        service.SendMessage(new LogMessage(LogType.GAME, game_id, message));
     }
 }

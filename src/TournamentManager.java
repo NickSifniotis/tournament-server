@@ -14,10 +14,7 @@ import Common.Emailer;
 import Common.LogManager;
 import GameManager.GameManager;
 import PlayerMarshall.PlayerMarshallManager;
-import PlayerMarshall.PlayerMarshallService;
 import Services.Logs.LogType;
-import Services.Messages.TerminateMessage;
-import Services.Service;
 import TournamentServer.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -26,17 +23,11 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
-import java.util.concurrent.BlockingQueue;
-
 
 public class TournamentManager extends Application
 {
     private Button tournament_service_btn;
-    private TournamentThread tourney_service = null;
-    private BlockingQueue <Hermes> tourney_messager = null;
-    private int tournament_status = 0;
     private Button marshalling_btn;
-    private BlockingQueue <String> holder;
 
 
     public static void main(String[] args) {
@@ -114,7 +105,7 @@ public class TournamentManager extends Application
      */
     public void toggle_server()
     {
-        // cannot start the tournament server while the PlayerMarshallService is running.
+        // cannot start the tournament server while the PlayerMarshall service is running.
         if (PlayerMarshallManager.Alive())
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -125,49 +116,18 @@ public class TournamentManager extends Application
             return;
         }
 
-
-        if (tournament_status == 0)
+        if (!TournamentServer.Alive())
         {
-            // there is no service. So create one.
-            this.tourney_service = new TournamentThread();
-            this.tourney_messager = this.tourney_service.GetHermes();
-            this.tourney_service.start();
+            TournamentServer.StartService();
 
             this.tournament_service_btn.setText("Stop Tournament Server");
-            tournament_status = 1;          // service is on
-
-            // disable the marshalling button.
             this.marshalling_btn.setDisable(true);
         }
-        else if (tournament_status == 1)
+        else
         {
-            // switch it off
-            Hermes diediedie = new Hermes();
-            diediedie.message = Caduceus.END;
-            this.tourney_messager.add(diediedie);
+            TournamentServer.StopService();
 
-            // wait for the child to shut down.
-            this.tournament_service_btn.setText("Shutting down ..");
-            this.tournament_service_btn.setDisable(true);
-            while (!this.tourney_service.Finished())
-            {
-                try
-                {
-                    Thread.sleep(500);
-                }
-                catch (Exception e)
-                {
-                    // nah, still sleeping.
-                }
-            }
-
-            this.tourney_service = null;
-            this.tourney_messager = null;
             this.tournament_service_btn.setText("Start Tournament Server");
-            this.tournament_service_btn.setDisable(false);
-            tournament_status = 0;
-
-            // re-enable the marshalling button
             this.marshalling_btn.setDisable(false);
         }
     }
@@ -183,7 +143,7 @@ public class TournamentManager extends Application
      */
     public void toggle_marshalling_service()
     {
-        if (this.tournament_status == 1)
+        if (TournamentServer.Alive())
         {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Unable to comply");
@@ -196,13 +156,10 @@ public class TournamentManager extends Application
         if (PlayerMarshallManager.Alive())
         {
             // it's on, so turn it off.
-            LogManager.Log(LogType.ERROR, "PM shutoff toggle reached");
             PlayerMarshallManager.EndService();
 
             this.marshalling_btn.setText("Start Player Marshall");
             this.tournament_service_btn.setDisable(false);
-
-            LogManager.Log(LogType.ERROR, "PM shutoff toggle executed");
         }
         else
         {

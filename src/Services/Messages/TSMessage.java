@@ -1,4 +1,5 @@
-package TournamentServer;
+package Services.Messages;
+
 
 /**
  * Created by nsifniotis on 9/09/15.
@@ -9,8 +10,21 @@ package TournamentServer;
  * What sort of messages will these be? Who knows. It is in the hands of the gods.
  *
  */
-public class Hermes
+public class TSMessage extends Message
 {
-    public Caduceus message;
+    public TSMessageType message;
     public int payload;
+
+
+    public TSMessage(TSMessageType t, int p)
+    {
+        this.message = t;
+        this.payload = p;
+    }
+
+
+    public TSMessage(TSMessageType t)
+    {
+        this(t, 0);
+    }
 }

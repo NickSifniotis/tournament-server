@@ -11,7 +11,7 @@ import Services.ServiceManager;
  */
 public class PlayerMarshallManager
 {
-    private static ServiceManager service;
+    private static ServiceManager service = new ServiceManager(PlayerMarshallService.class);
 
 
     /**
@@ -22,7 +22,7 @@ public class PlayerMarshallManager
      */
     public static void StartService ()
     {
-        service = new ServiceManager(PlayerMarshallService.class);
+        service.StartService();
     }
 
     public static void EndService ()
@@ -30,5 +30,5 @@ public class PlayerMarshallManager
         service.StopService();
     }
 
-    public static boolean Alive() { return (service != null) && service.Alive(); }
+    public static boolean Alive() { return service.Alive(); }
 }

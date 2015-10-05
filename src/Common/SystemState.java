@@ -8,16 +8,13 @@ import javafx.scene.image.Image;
  *
  * System constants.
  *
+ * @TODO refactor this into some sort of fun tree hierarchy when you have time
+ *
  */
 public class SystemState
 {
     public static class Email
     {
-       // public static final String userName = "blokus_tournament@hotmail.com";
-       // public static final String password = "b64094bf";
-       // public static final String host = "smtp-mail.outlook.com";
-       // public static final int port = 587;
-
         public static final String userName = "chasedaw";
         public static final String password = "b64094bf";
         public static final String host = "vmcp17.digitalpacific.com.au";
@@ -35,6 +32,12 @@ public class SystemState
         public static Image server_stop;
         public static Image server_reset;
     }
+
+    public static class Database
+    {
+        public static final String File = "tournament.db";
+    }
+
 
     public static final boolean DEBUG = true;
 

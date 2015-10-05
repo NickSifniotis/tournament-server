@@ -1,67 +1,59 @@
 package TournamentServer;
 
-
-import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
+import Services.Messages.TSMessage;
+import Services.Messages.TSMessageType;
+import Services.ServiceManager;
 
 /**
- * Created by nsifniotis on 9/09/15.
+ * Created by nsifniotis on 6/10/15.
  *
- * The main application in this suite - at long last, it's written! And look,
- * it only needed twenty odd lines of code!
- *
+ * Service manager class for the Tournament Server service.
  */
 public class TournamentServer
 {
+    private static ServiceManager service = new ServiceManager(TournamentService.class);
 
-    private static void main_loop () {
-        // begin by firing up the child process that manages all the game work.
-        TournamentThread child = new TournamentThread();
-        BlockingQueue<Hermes> messenger = child.GetHermes();
-        Scanner in = new Scanner(System.in);
 
-        child.start();
-
-        boolean finished = false;
-        while (!finished) {
-            System.out.println("Command:");
-            String command = in.nextLine();
-
-            Hermes message = new Hermes();
-            switch (command)
-            {
-                case "Q":
-                    message.message = Caduceus.END;
-                    finished = true;
-                    break;
-                case "+":
-                    message.message = Caduceus.INC_THREAD_POOL;
-                    break;
-                case "-":
-                    message.message = Caduceus.DEC_THREAD_POOL;
-                    break;
-
-            }
-
-            messenger.add(message);
-        }
-
-        // yeah, but you gotta wait for the child process to terminate too.
-        while (!child.Finished())
-            try
-            {
-                Thread.sleep(500);
-            }
-            catch (Exception e)
-            {
-                // haha, do nothing
-            }
-
-        System.out.println ("Child thread terminated ..");
-    }
-
-    public static void main(String[] args)
+    public static void StartService()
     {
-        main_loop();
+        service.StartService();
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * This is an interesting one. Look at the way it stops the service - it's nothing like the others.
+     * This is because the tournament server might be halfway through running a game.
+     * It has to wait until the game finishes before it can shut itself down.
+     *
+     */
+    public static void StopService()
+    {
+        service.SendMessage(new TSMessage(TSMessageType.END));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Changes the number of games that the tournament server can run concurrently.
+     *
+     * @param new_size - the maximum number of games to run at the one time.
+     */
+    public void ResizeThreadPool(int new_size)
+    {
+        service.SendMessage(new TSMessage(TSMessageType.THREAD_POOL_RESIZE, new_size));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * @return true if ths service is active.
+     */
+    public static boolean Alive() { return service.Alive(); }
 }

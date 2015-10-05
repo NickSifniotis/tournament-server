@@ -1,9 +1,6 @@
 package Common;
 
-import Services.LogService;
 import Services.Logs.LogType;
-import Services.Messages.LogMessage;
-
 import java.sql.*;
 
 /**
@@ -170,11 +167,8 @@ public class DBManager
         Connection connection = null;
         try
         {
-           // Class.forName("com.mysql.jdbc.Driver");
-           // connection = DriverManager.getConnection("jdbc:mysql://localhost/"
-           //         + db_database + "?user=" + db_username + "&password=" + db_password);
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + SystemState.database_folder + db_database);
+            connection = DriverManager.getConnection("jdbc:sqlite:" + SystemState.database_folder + SystemState.Database.File);
         }
         catch (Exception e)
         {

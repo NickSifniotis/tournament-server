@@ -12,6 +12,7 @@ import Services.Messages.TerminateMessage;
  */
 public class ServiceManager
 {
+    private Class wut_sort_of_class;
     private Service service;
     private boolean service_active;
 
@@ -20,19 +21,32 @@ public class ServiceManager
      * Nick Sifniotis u5809912
      * 05/10/2015
      *
-     * Constructor - create a new service of type SC and start it.
-     * @param sc - the service class to create
+     * Constructor
+     *
+     * @param sc - the sort of service class that this service manager manages
      */
     public ServiceManager (Class sc)
+    {
+        this.wut_sort_of_class = sc;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * Starts the service safely.
+     */
+    public void StartService()
     {
         Service s;
         try
         {
-            s = (Service) sc.newInstance();
+            s = (Service) this.wut_sort_of_class.newInstance();
         }
         catch (Exception e)
         {
-            LogManager.Log (LogType.ERROR, "ServiceManager constructor: Unable to create new instance of class " + sc.getName());
+            LogManager.Log (LogType.ERROR, "ServiceManager StartService: Unable to create new instance of class " + this.wut_sort_of_class.getName());
             return;
         }
 
