@@ -75,7 +75,7 @@ public class Repository
         catch (Exception e)
         {
             String error = "Error while loading data from table " + entity.TableName() + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
         finally
         {
@@ -152,7 +152,7 @@ public class Repository
         catch (Exception e)
         {
             String error = "Error instantiating new " + entity.Class().getName() + ": " + e;;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
 
         return newb;

@@ -10,6 +10,7 @@
  *
  */
 
+import Common.DBManager;
 import GameManager.GameManager;
 import PlayerMarshall.PlayerMarshall;
 import Services.LogService;
@@ -59,6 +60,7 @@ public class TournamentManager extends Application
     {
         Common.Repository.Initialise();
         this.log_service = new LogService();
+        DBManager.SetLogs(this.log_service);
 
         primaryStage.setOnCloseRequest(e -> shutdown_request());
 
@@ -218,7 +220,7 @@ public class TournamentManager extends Application
             this.tournament_service_btn.setDisable(true);
             this.marshalling_btn.setText("Stop Player Marshall");
 
-            this.marshalling_service = new PlayerMarshall(this.log_service.MessageQueue());
+            this.marshalling_service = new PlayerMarshall(this.log_service);
             this.marshalling_service.start();
             this.marshalling_status = true;
         }

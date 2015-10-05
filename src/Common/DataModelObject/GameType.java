@@ -2,6 +2,7 @@ package Common.DataModelObject;
 
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
+import Common.DBManager;
 import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
@@ -80,7 +81,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.GameEngine - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }
@@ -111,7 +112,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.Viewer - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }

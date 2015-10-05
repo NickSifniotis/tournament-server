@@ -6,6 +6,7 @@ import Services.LogService;
 import Services.Logs.LogType;
 import GameManager.Data.GameType;
 import GameManager.GUI.MainPanel;
+import Services.Messages.LogMessage;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -42,6 +43,9 @@ public class GameManager extends Application
     private Label num_games_status;
     private File selected_JAR;
     private Stage my_stage;
+
+    private LogService logger;
+
 
     /**
      * Nick Sifniotis u5809912
@@ -112,14 +116,15 @@ public class GameManager extends Application
 
     /**
      * Nick Sifniotis u5809912
-     * 8/9/2015
+     * 05/10/2015
      *
-     * JavaFX PSVMs are not very interesting.
-     *
-     * @param args - we dont use args in this program.
+     * This GUI app cannot be run as a service.
+     * Therefore a link needs to be provided to access the system log service
+     * @param l - the log service.
      */
-    public static void main(String[] args) {
-        launch(args);
+    public void SetLogger (LogService l)
+    {
+        this.logger = l;
     }
 
 
@@ -402,7 +407,7 @@ public class GameManager extends Application
             // you know you're getting tired when you solve variable name clashes by adding an
             // extra letter to the name
             String eerror = "GameManager.saveButtonClicked - Error copying JAR file to sources: " + e;
-            LogService.Log(LogType.ERROR, eerror);
+            logger.MessageQueue().add(new LogMessage(LogType.ERROR, eerror));
         }
 
         this.setState(GameManagerStates.UNLOADED);

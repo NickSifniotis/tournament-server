@@ -75,7 +75,7 @@ public class Tournament extends Entity
                 catch (Exception e)
                 {
                     String error = "TournamentKey constructor (id) - SQL error retrieving tournament data. " + e;
-                    LogService.Log(LogType.ERROR, error);
+                    DBManager.LogService(LogType.ERROR, error);
                     this.load_state();
                     DBManager.disconnect(connection);
                 }
@@ -108,7 +108,7 @@ public class Tournament extends Entity
         catch (Exception e)
         {
             String error = "TournamentKey constructor (resultset) - SQL error: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             load_state();
         }
@@ -161,7 +161,7 @@ public class Tournament extends Entity
         catch (Exception e)
         {
             String error = "TournamentKey.LoadAll - Error executing SQL query: " + query + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
 
         DBManager.disconnect(con);
@@ -328,7 +328,7 @@ public class Tournament extends Entity
             catch (Exception e)
             {
                 String error = "Tournament.NumSlots - error in SQL query " + e;
-                LogService.Log(LogType.ERROR, error);
+                DBManager.LogService(LogType.ERROR, error);
                 DBManager.disconnect(connection);   // disconnect by connection
             }
 
@@ -416,7 +416,7 @@ public class Tournament extends Entity
         catch (Exception e)
         {
             String error = "TournamentKey.PlayerInterfaceClass - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }
@@ -458,7 +458,7 @@ public class Tournament extends Entity
         catch (Exception e)
         {
             String error = "TournamentKey.Verification - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }
@@ -514,7 +514,7 @@ public class Tournament extends Entity
      */
     public void AddPlayerToFixture (int slot_key, int player_id)
     {
-        LogService.Log(LogType.TOURNAMENT, "Adding player " + player_id + " to fixture slot " + slot_key);
+        DBManager.LogService(LogType.TOURNAMENT, "Adding player " + player_id + " to fixture slot " + slot_key);
 
         String query = "UPDATE fixture_slot SET submission_id = " + player_id + " WHERE id = " + slot_key;
         DBManager.Execute(query);

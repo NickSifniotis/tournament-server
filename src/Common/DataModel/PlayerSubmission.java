@@ -122,7 +122,7 @@ public class PlayerSubmission extends Entity
                 catch (Exception e)
                 {
                     String error = "PlayerSubmission constructor (player_id) - SQL error retrieving player data. " + e;
-                    LogService.Log(LogType.ERROR, error);
+                    DBManager.LogService(LogType.ERROR, error);
 
                     this.loadState();
                     DBManager.disconnect(connection);
@@ -282,7 +282,7 @@ public class PlayerSubmission extends Entity
             {
                 String error = "PlayerSubmission.LoadAll - Error executing SQL query: "
                         + query + ": " + e;
-                LogService.Log(LogType.ERROR, error);
+                DBManager.LogService(LogType.ERROR, error);
             }
             DBManager.disconnect(res);          // disconnect by result
         }
@@ -352,7 +352,7 @@ public class PlayerSubmission extends Entity
         {
             String error = "PlayerSubmission.GetActiveWithTeamName - Error executing SQL query: "
                     + query + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
 
         return res;
@@ -401,7 +401,7 @@ public class PlayerSubmission extends Entity
             catch (Exception e)
             {
                 String er = "Game.ResetAll - SQL error retrieving player data. " + e;
-                LogService.Log(LogType.ERROR, er);
+                DBManager.LogService(LogType.ERROR, er);
                 DBManager.disconnect(connection);
             }
 
@@ -410,10 +410,10 @@ public class PlayerSubmission extends Entity
         else
         {
             String er = "Game.ResetAll - No data error retrieving player data.";
-            LogService.Log(LogType.ERROR, er);
+            DBManager.LogService(LogType.ERROR, er);
             DBManager.disconnect(connection);   // disconnect by connection
         }
-        LogService.Log(LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
+        DBManager.LogService(LogType.TOURNAMENT, "PlayerSubmission.FixtureSlotAllocation: Returning " + fixture_position + " for submission " + this.id);
         return fixture_position;
     }
 
@@ -488,7 +488,7 @@ public class PlayerSubmission extends Entity
             catch (Exception e)
             {
                 String error = "PlayerSubmission.CountRegisteredPlayers - SQL error retrieving player data. " + e;
-                LogService.Log(LogType.ERROR, error);
+                DBManager.LogService(LogType.ERROR, error);
                 DBManager.disconnect(connection);
             }
         }

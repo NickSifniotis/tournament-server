@@ -87,7 +87,7 @@ public class GameType extends Entity
                 catch (Exception e)
                 {
                     String error = "GameType constructor (game_id) - SQL error retrieving player data. " + e;
-                    LogService.Log(LogType.ERROR, error);
+                    DBManager.LogService(LogType.ERROR, error);
 
                     this.loadState();
                     DBManager.disconnect(connection);
@@ -119,7 +119,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType constructor (recordset input) - SQL error retrieving player data. " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
     }
 
@@ -152,7 +152,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.LoadAll - Error executing SQL query: " + query + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
         }
 
         int size = temp.size();
@@ -255,7 +255,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.GameEngine - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }
@@ -286,7 +286,7 @@ public class GameType extends Entity
         catch (Exception e)
         {
             String error = "GameType.Viewer - error creating class: " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             return null;
         }

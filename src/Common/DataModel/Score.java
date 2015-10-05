@@ -68,7 +68,7 @@ public class Score extends Entity implements Comparable<Score>
         catch (Exception e)
         {
             String error = "Score constructor (resultset) - SQL error retrieving score data. " + e;
-            LogService.Log(LogType.ERROR, error);
+            DBManager.LogService(LogType.ERROR, error);
 
             load_state();
         }
@@ -96,7 +96,7 @@ public class Score extends Entity implements Comparable<Score>
                 catch (Exception e)
                 {
                     String error = "Score constructor (score_id) - SQL error retrieving player data. " + e;
-                    LogService.Log(LogType.ERROR, error);
+                    DBManager.LogService(LogType.ERROR, error);
 
                     this.load_state();
                     DBManager.disconnect(connection);

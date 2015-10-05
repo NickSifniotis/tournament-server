@@ -64,7 +64,7 @@ public class Emailer
         {
             // this should never happen!
             String error = "Emailer.SendEmail - error when attemption to load email template " + type.Template() + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+         //   LogService.Log(LogType.ERROR, error);
 
             return;
         }

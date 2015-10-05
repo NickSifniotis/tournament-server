@@ -2,6 +2,7 @@ package Common;
 
 import Services.LogService;
 import Services.Logs.LogType;
+import Services.Messages.LogMessage;
 
 import java.sql.*;
 
@@ -12,11 +13,31 @@ import java.sql.*;
  * No special functionality is supplied other than abstracting away the connection deets
  *
  */
-public class DBManager {
-
-   // private static String db_username = "nick";
-   // private static String db_password = "b64094bf";
+public class DBManager
+{
+    private static LogService logs;
     private static String db_database = "tournaments.db";
+
+
+    public static void SetLogs (LogService l)
+    {
+        logs = l;
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/201
+     *
+     * Wrapper method to make accessing the service easier.
+     *
+     * @param t - the type of log
+     * @param s - the message to save.
+     */
+    public static void LogService (LogType t, String s)
+    {
+        logs.MessageQueue().add(new LogMessage(t, s));
+    }
 
 
     /**
@@ -43,11 +64,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "Within DBManager.Execute, error executing SQL query: " + query + ": " + e;
-                LogService.Log(LogType.ERROR, error);
+                LogService(LogType.ERROR, error);
             }
         }
 
-        LogService.Log(LogType.SQL, "Executed query " + query);
+        LogService(LogType.SQL, "Executed query " + query);
     }
 
 
@@ -76,7 +97,7 @@ public class DBManager {
                 if (affected_rows != 1)
                 {
                     String error = "DBManager.ExecuteReturnKey - Insert into database failed. Affected rows: " + affected_rows + ": " + query;
-                    LogService.Log(LogType.ERROR, error);
+                    LogService(LogType.ERROR, error);
                 }
                 else
                 {
@@ -98,11 +119,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteReturnKey - Error executing SQL query: " + query + ": " + e;
-                LogService.Log(LogType.ERROR, error);
+                LogService(LogType.ERROR, error);
             }
         }
 
-        LogService.Log(LogType.SQL, "Insert a success, returning new prikey " + res + " on query " + query);
+        LogService(LogType.SQL, "Insert a success, returning new prikey " + res + " on query " + query);
         return res;
     }
 
@@ -132,11 +153,11 @@ public class DBManager {
             catch (Exception e)
             {
                 String error = "DBManager.ExecuteQuery - Error executing SQL query. Query: " + query + " Exception: " + e;
-                LogService.Log(LogType.ERROR, error);
+                LogService(LogType.ERROR, error);
             }
         }
 
-        LogService.Log(LogType.SQL, "Executed query " + query);
+        LogService(LogType.SQL, "Executed query " + query);
 
         return results;
     }
@@ -165,7 +186,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.Connect - Exception connecting to tournament database: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
         }
 
         return connection;
@@ -189,7 +210,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
         }
     }
 
@@ -206,7 +227,7 @@ public class DBManager {
         catch (Exception e)
         {
             String error = "DBManager.disconnect - Exception disconnecting from database: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
         }
     }
 
@@ -224,4 +245,5 @@ public class DBManager {
     {
         return r ? 1 : 0;
     }
+    public static String StringValue (String s) { return (s == null || s.equals("")) ? "''" : "'" + s + "'"; }
 }
