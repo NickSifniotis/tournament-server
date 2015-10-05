@@ -2,6 +2,7 @@ package TournamentServer;
 
 
 import AcademicsInterface.IPlayer;
+import Common.LogManager;
 import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
@@ -49,7 +50,7 @@ public class PlayerManager
         catch (Exception e)
         {
             String error = "PlayerManager.constructor - error creating IPlayer object: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 

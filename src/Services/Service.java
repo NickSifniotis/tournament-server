@@ -1,5 +1,6 @@
 package Services;
 
+import Common.LogManager;
 import Services.Logs.LogType;
 import Services.Messages.LogMessage;
 import Services.Messages.Message;
@@ -19,7 +20,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class Service extends Thread
 {
-    protected LogService log_service;
     private BlockingQueue<Message> message_queue;
     private boolean alive;
 
@@ -30,17 +30,13 @@ public abstract class Service extends Thread
      *
      * Constructor for this object. Create an empty message queue.
      */
-    public Service(LogService logs)
+    public Service()
     {
-        this.log_service = logs;
         this.message_queue = new LinkedBlockingQueue<>();
         this.alive = false;
 
-        if (logs != null)
-        {
-            String creation_message = "Service " + this.getClass().getName() + " created!";
-            this.log_service.MessageQueue().add(new LogMessage(LogType.TOURNAMENT, creation_message));
-        }
+        String creation_message = "Service " + this.getClass().getName() + " created!";
+        LogManager.Log(LogType.TOURNAMENT, creation_message);
     }
 
 
@@ -70,7 +66,7 @@ public abstract class Service extends Thread
         this.main_loop();
 
         String shutdown_message = "Service " + this.getClass().getName() + " shutting down.";
-        this.log_service.MessageQueue().add (new LogMessage(LogType.TOURNAMENT, shutdown_message));
+        LogManager.Log(LogType.TOURNAMENT, shutdown_message);
 
         alive = false;
     }
@@ -142,19 +138,4 @@ public abstract class Service extends Thread
      * Do whatever this service does whenever it's active and nothing else is going on.
      */
     public abstract void do_service ();
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 05/10/2015
-     *
-     * A simple wrapper class to make logging messages that much easier.
-     *
-     * @param t - the type of log message to record
-     * @param s - the message itself
-     */
-    protected void LogService (LogType t, String s)
-    {
-        this.log_service.MessageQueue().add(new LogMessage(t, s));
-    }
 }

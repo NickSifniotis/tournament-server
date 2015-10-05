@@ -1,5 +1,6 @@
 package Services;
 
+import Common.LogManager;
 import Services.Logs.LogType;
 import Services.Messages.Message;
 import Services.Messages.TwitterMessage;
@@ -28,9 +29,8 @@ public class TwitterService extends Service
      *               data repository. This object contains the authentication
      *               data needed to connect to and post tweets on twitter.
      */
-    public TwitterService(LogService logs, TwitterConfig config)
+    public TwitterService(TwitterConfig config)
     {
-        super(logs);
         this.config = config;
     }
 
@@ -87,7 +87,7 @@ public class TwitterService extends Service
         catch (Exception e)
         {
             String error = "Error sending tweet " + tweet + ": " + e;
-            LogService(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 

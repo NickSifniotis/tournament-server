@@ -15,14 +15,7 @@ import java.sql.*;
  */
 public class DBManager
 {
-    private static LogService logs;
     private static String db_database = "tournaments.db";
-
-
-    public static void SetLogs (LogService l)
-    {
-        logs = l;
-    }
 
 
     /**
@@ -36,7 +29,7 @@ public class DBManager
      */
     public static void LogService (LogType t, String s)
     {
-        logs.MessageQueue().add(new LogMessage(t, s));
+        LogManager.Log(t, s);
     }
 
 

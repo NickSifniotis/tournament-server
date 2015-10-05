@@ -1,7 +1,9 @@
 package TournamentServer;
 
+import Common.LogManager;
 import Services.LogService;
 import Services.Logs.LogType;
+import Services.Messages.LogMessage;
 import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.PlayerSubmission;
 import TournamentServer.DataModelInterfaces.Scores;
@@ -230,7 +232,7 @@ public class TournamentThread extends Thread
     {
         Tournament tournament = new Tournament(game.TournamentKey());
 
-        LogService.Log(LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + tournament.Name());
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + tournament.Name());
 
         PlayerSubmission[] players = game.Players();
 
@@ -242,7 +244,7 @@ public class TournamentThread extends Thread
 
         if (!lets_play || players.length != tournament.NumPlayers())
         {
-            LogService.Log(LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready.");
+            LogManager.Log(LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready.");
             return false;
         }
 
@@ -259,14 +261,14 @@ public class TournamentThread extends Thread
         catch (Exception e)
         {
             String error = "Error launching game " + game.PrimaryKey() + ". " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
             return false;
         }
 
         thread_pool[thread] = new GameManagerChild(game, tournament.GameEngine(), player_managers, tournament.UseNullMoves());
         thread_pool[thread].start();
 
-        LogService.Log(LogType.TOURNAMENT, "Game started!");
+        LogManager.Log(LogType.TOURNAMENT, "Game started!");
         return true;
     }
 
@@ -286,7 +288,7 @@ public class TournamentThread extends Thread
         PlayerManager[] game_players = game_thread.Players();
         Scores game_scores = game_thread.Scores();
 
-        LogService.Log(LogType.TOURNAMENT, "Attempting to end game " + game_thread.Game().PrimaryKey());
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to end game " + game_thread.Game().PrimaryKey());
 
         try
         {
@@ -298,12 +300,12 @@ public class TournamentThread extends Thread
         catch (Exception e)
         {
             String error = "Error terminating game + " + game_thread.Game().PrimaryKey() + ". " + e;
-            LogService.Log(LogType.TOURNAMENT, error);
+            LogManager.Log(LogType.TOURNAMENT, error);
         }
 
         thread_pool[thread] = null;
 
-        LogService.Log(LogType.TOURNAMENT, "Termination successful.");
+        LogManager.Log(LogType.TOURNAMENT, "Termination successful.");
     }
 
 
@@ -316,13 +318,13 @@ public class TournamentThread extends Thread
      */
     private void abort_game(int game_id)
     {
-        LogService.Log(LogType.TOURNAMENT, "Attempting to abort game " + game_id);
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to abort game " + game_id);
 
         for (GameManagerChild gm: thread_pool)
             if (gm.Game().PrimaryKey() == game_id)
                 gm.Abort();
 
-        LogService.Log(LogType.TOURNAMENT, "Abortion of game " + game_id + " finished.");
+        LogManager.Log(LogType.TOURNAMENT, "Abortion of game " + game_id + " finished.");
     }
 
 
@@ -337,12 +339,12 @@ public class TournamentThread extends Thread
      */
     private void abort_tournament (int tournament_id)
     {
-        LogService.Log(LogType.TOURNAMENT, "Attempting to reset tournament " + tournament_id);
+        LogManager.Log(LogType.TOURNAMENT, "Attempting to reset tournament " + tournament_id);
 
         Tournament t = new Tournament(tournament_id);
         t.ResetTournament();
 
-        LogService.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
+        LogManager.Log(LogType.TOURNAMENT, "Reset of tournament " + tournament_id + " successful!");
     }
 
 

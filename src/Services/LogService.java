@@ -34,9 +34,8 @@ public class LogService extends Service
      */
     public LogService ()
     {
-        super(null);
+        super();
         logfiles = new String[LogType.values().length];
-        this.log_service = this;                // lovely!
     }
 
 

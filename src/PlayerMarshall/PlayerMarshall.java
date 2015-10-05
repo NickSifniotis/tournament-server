@@ -4,6 +4,7 @@ import AcademicsInterface.IVerification;
 import AcademicsInterface.SubmissionMetadata;
 import Common.Email.EmailTypes;
 import Common.Email.Emailer;
+import Common.LogManager;
 import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
@@ -28,12 +29,6 @@ import java.nio.file.StandardCopyOption;
 
 public class PlayerMarshall extends Services.Service
 {
-    public PlayerMarshall(LogService logs)
-    {
-        super(logs);
-    }
-
-
     /**
      * Nick Sifniotis u5809912
      * 05/10/2015
@@ -82,7 +77,7 @@ public class PlayerMarshall extends Services.Service
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles == null)
-            LogService(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
+            LogManager.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
     }
@@ -109,7 +104,7 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
-            LogService(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
             return;
         }
 
@@ -121,7 +116,7 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - some sort of error creating the image. " + e;
-            LogService(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
 
             try
             {
@@ -130,7 +125,7 @@ public class PlayerMarshall extends Services.Service
             catch (Exception e2)
             {
                 error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e2;
-                LogService(LogType.ERROR, error);
+                LogManager.Log(LogType.ERROR, error);
             }
 
             return;
@@ -227,7 +222,7 @@ public class PlayerMarshall extends Services.Service
         // copy the submission over to the marshalling folder.
         try
         {
-            LogService(LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
+            LogManager.Log(LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
 
             Files.copy(extracted_submission.toPath(), Paths.get(new_submission.MarshalledSource()));
             Files.deleteIfExists(extracted_submission.toPath());
@@ -236,13 +231,13 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
-            LogService(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
         }
 
         // If this is an existing player, and we have made it this far, retire the old player.
         if (old_player != null)
         {
-            LogService(LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
+            LogManager.Log(LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
             old_player.Retire();
             submission_slot = old_player.FixtureSlotAllocation();
         }
@@ -271,7 +266,7 @@ public class PlayerMarshall extends Services.Service
             File [] files = GetNewSubmissions(tournament);
             for (File submission: files)
             {
-                LogService(LogType.TOURNAMENT, "Processing " + submission.getName() + " for tournament " + tournament.Name());
+                LogManager.Log(LogType.TOURNAMENT, "Processing " + submission.getName() + " for tournament " + tournament.Name());
                 ProcessSingleSubmission(submission, tournament);
             }
         }
@@ -291,7 +286,7 @@ public class PlayerMarshall extends Services.Service
      */
     private void SubmissionFailure (File submission, EmailTypes reason, String destination_address, Tournament t)
     {
-        LogService(LogType.TOURNAMENT, "Failed to add submission. Reason: " + reason.name());
+        LogManager.Log(LogType.TOURNAMENT, "Failed to add submission. Reason: " + reason.name());
 
         if (reason.AttachSubmission())
             Emailer.SendEmail(reason, destination_address, t.PrimaryKey(), submission.getAbsolutePath());
@@ -303,13 +298,13 @@ public class PlayerMarshall extends Services.Service
             if (!submission.delete())
             {
                 String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file.";
-                LogService(LogType.ERROR, error);
+                LogManager.Log(LogType.ERROR, error);
             }
         }
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
-            LogService(LogType.ERROR, error);
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 }

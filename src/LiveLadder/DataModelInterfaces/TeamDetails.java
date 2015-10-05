@@ -73,7 +73,7 @@ public class TeamDetails implements Comparable<TeamDetails>
         catch (Exception e)
         {
             String error = "Picture error. UsesAv = " + p.UsesAvatar() + " and path is " + p.Avatar() + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+      //      LogService.Log(LogType.ERROR, error);
         }
 
         AddScores(0, 0);
