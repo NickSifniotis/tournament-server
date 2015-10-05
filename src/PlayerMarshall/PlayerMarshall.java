@@ -12,14 +12,12 @@ import PlayerMarshall.DataModelInterfaces.Tournament;
 import Services.Messages.LogMessage;
 import Services.Messages.Message;
 import javafx.scene.image.Image;
-
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.concurrent.BlockingQueue;
 
 
 /**
@@ -30,14 +28,9 @@ import java.util.concurrent.BlockingQueue;
 
 public class PlayerMarshall extends Services.Service
 {
-    private static String last_log_message;
-    private BlockingQueue<Message> log_messenger;
-
-
-    public PlayerMarshall(BlockingQueue <Message> link)
+    public PlayerMarshall(LogService logs)
     {
-        super();
-        this.log_messenger = link;
+        super(logs);
     }
 
 
@@ -89,7 +82,7 @@ public class PlayerMarshall extends Services.Service
         File[] listOfFiles = folder.listFiles();
 
         if (listOfFiles == null)
-            LogService.Log(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
+            LogService(LogType.ERROR, "PlayerMarshall.GetNewSubmissions - " + t.InputFolder() + " is not a directory.");
 
         return listOfFiles;
     }
@@ -116,7 +109,7 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - File / Internet IO error loading file " + metadata.team_picture + ": " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
             return;
         }
 
@@ -128,7 +121,7 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall - load avatar - some sort of error creating the image. " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
 
             try
             {
@@ -137,7 +130,7 @@ public class PlayerMarshall extends Services.Service
             catch (Exception e2)
             {
                 error = "PLayerMarshall - and I can't even delete the damned thing. File: " + destination + ": " + e2;
-                LogService.Log(LogType.ERROR, error);
+                LogService(LogType.ERROR, error);
             }
 
             return;
@@ -234,7 +227,7 @@ public class PlayerMarshall extends Services.Service
         // copy the submission over to the marshalling folder.
         try
         {
-            LogService.Log(LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
+            LogService(LogType.TOURNAMENT, "Marshalling submission for player " + new_submission.PrimaryKey());
 
             Files.copy(extracted_submission.toPath(), Paths.get(new_submission.MarshalledSource()));
             Files.deleteIfExists(extracted_submission.toPath());
@@ -243,13 +236,13 @@ public class PlayerMarshall extends Services.Service
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessSingleSubmission - File IO error: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
         }
 
         // If this is an existing player, and we have made it this far, retire the old player.
         if (old_player != null)
         {
-            LogService.Log(LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
+            LogService(LogType.TOURNAMENT, "Attempting to retire player " + old_player.PrimaryKey());
             old_player.Retire();
             submission_slot = old_player.FixtureSlotAllocation();
         }
@@ -271,8 +264,6 @@ public class PlayerMarshall extends Services.Service
      */
     public void ProcessNewSubmissions ()
     {
-        LogMessage("Waiting for new submissions ..");
-
         Tournament[] tourneys = Tournament.LoadAll();
 
         for (Tournament tournament: tourneys)
@@ -280,7 +271,7 @@ public class PlayerMarshall extends Services.Service
             File [] files = GetNewSubmissions(tournament);
             for (File submission: files)
             {
-                LogMessage("Processing " + submission.getName() + " for tournament " + tournament.Name());
+                LogService(LogType.TOURNAMENT, "Processing " + submission.getName() + " for tournament " + tournament.Name());
                 ProcessSingleSubmission(submission, tournament);
             }
         }
@@ -300,7 +291,7 @@ public class PlayerMarshall extends Services.Service
      */
     private void SubmissionFailure (File submission, EmailTypes reason, String destination_address, Tournament t)
     {
-        LogMessage("Failed to add submission. Reason: " + reason.name());
+        LogService(LogType.TOURNAMENT, "Failed to add submission. Reason: " + reason.name());
 
         if (reason.AttachSubmission())
             Emailer.SendEmail(reason, destination_address, t.PrimaryKey(), submission.getAbsolutePath());
@@ -312,34 +303,13 @@ public class PlayerMarshall extends Services.Service
             if (!submission.delete())
             {
                 String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file.";
-                LogService.Log(LogType.ERROR, error);
+                LogService(LogType.ERROR, error);
             }
         }
         catch (Exception e)
         {
             String error = "PlayerMarshall.ProcessNewSubmissions - Error deleting file: " + e;
-            LogService.Log(LogType.ERROR, error);
+            LogService(LogType.ERROR, error);
         }
-    }
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 31/08/2015
-     *
-     * Dump a message to the status log.
-     *
-     * @param msg - the message to display on the gui console
-     */
-    public void LogMessage (String msg)
-    {
-        if (msg.equals (last_log_message))
-            return;
-
-        this.log_messenger.add(new LogMessage(LogType.TOURNAMENT, msg));
-
-        last_log_message = msg;
-
-        LogService.Log(LogType.TOURNAMENT, msg);
     }
 }

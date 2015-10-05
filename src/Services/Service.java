@@ -1,5 +1,7 @@
 package Services;
 
+import Services.Logs.LogType;
+import Services.Messages.LogMessage;
 import Services.Messages.Message;
 import Services.Messages.TerminateMessage;
 import java.util.concurrent.BlockingQueue;
@@ -9,6 +11,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by nsifniotis on 28/09/15.
  *
  * Your basic service class.
+ *
+ * These things all record start and stop times in the system logs, at least.
+ * Interestingly, the logging service is not able to record either its own start
+ * or its own end.
  *
  */
 public abstract class Service extends Thread
@@ -32,7 +38,8 @@ public abstract class Service extends Thread
 
         if (logs != null)
         {
-            // @TODO send a creation message.
+            String creation_message = "Service " + this.getClass().getName() + " created!";
+            this.log_service.MessageQueue().add(new LogMessage(LogType.TOURNAMENT, creation_message));
         }
     }
 
@@ -61,6 +68,10 @@ public abstract class Service extends Thread
     {
         alive = true;
         this.main_loop();
+
+        String shutdown_message = "Service " + this.getClass().getName() + " shutting down.";
+        this.log_service.MessageQueue().add (new LogMessage(LogType.TOURNAMENT, shutdown_message));
+
         alive = false;
     }
 
@@ -131,4 +142,19 @@ public abstract class Service extends Thread
      * Do whatever this service does whenever it's active and nothing else is going on.
      */
     public abstract void do_service ();
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 05/10/2015
+     *
+     * A simple wrapper class to make logging messages that much easier.
+     *
+     * @param t - the type of log message to record
+     * @param s - the message itself
+     */
+    protected void LogService (LogType t, String s)
+    {
+        this.log_service.MessageQueue().add(new LogMessage(t, s));
+    }
 }
