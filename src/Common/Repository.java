@@ -26,10 +26,6 @@ import java.util.HashMap;
  */
 public class Repository
 {
-    private static HashMap<Integer, Entity> twitter_configs;
-    private static HashMap<Integer, Entity> game_types;
-
-
     /**
      * Nick Sifniotis u5809912
      * 28/09/2015
@@ -38,8 +34,8 @@ public class Repository
      */
     public static void Initialise()
     {
-        game_types = load_from_table(Entities.GAME_TYPE);
-        twitter_configs = load_from_table(Entities.TWITTER_CONFIG);
+        for (Entities e: Entities.values())
+            Entities.data_store[e.ordinal()] = load_from_table(e);
     }
 
 
@@ -95,15 +91,26 @@ public class Repository
      * @param id - the ID of the object to return.
      * @return the object.
      */
-    public static TwitterConfig GetTwitterConfig (int id) { return (TwitterConfig) twitter_configs.get(id); }
-    public static GameType GetGameType (int id) { return (GameType) game_types.get(id); }
+    public static TwitterConfig GetTwitterConfig (int id) { return (TwitterConfig) Entities.data_store[Entities.TWITTER_CONFIG.ordinal()].get(id); }
+    public static GameType GetGameType (int id) { return (GameType) Entities.data_store[Entities.GAME_TYPE.ordinal()].get(id); }
 
     public static GameType[] GetGameTypes ()
     {
-        Object[] holding = game_types.values().toArray();
+        Object[] holding = Entities.data_store[Entities.GAME_TYPE.ordinal()].values().toArray();
         GameType[] res = new GameType[holding.length];
         for (int i = 0; i < holding.length; i ++)
             res [i] = (GameType) holding[i];
+
+        Arrays.sort(res);
+        return res;
+    }
+
+    public static TwitterConfig[] GetTwitterConfigs()
+    {
+        Object[] holding = Entities.data_store[Entities.TWITTER_CONFIG.ordinal()].values().toArray();
+        TwitterConfig[] res = new TwitterConfig[holding.length];
+        for (int i = 0; i < holding.length; i ++)
+            res [i] = (TwitterConfig) holding[i];
 
         Arrays.sort(res);
         return res;
@@ -120,10 +127,10 @@ public class Repository
      *
      * @return a new instance of the type wanted.
      */
-    public static GameType NewGameType()
+    public static Entity NewEntity (Entities type_of_thing)
     {
-        GameType newb = (GameType) new_entity(Entities.GAME_TYPE);
-        game_types.putIfAbsent(newb.id, newb);
+        Entity newb = new_entity(type_of_thing);
+        Entities.data_store[type_of_thing.ordinal()].putIfAbsent(newb.id, newb);
 
         return newb;
     }
@@ -151,7 +158,7 @@ public class Repository
         }
         catch (Exception e)
         {
-            String error = "Error instantiating new " + entity.Class().getName() + ": " + e;;
+            String error = "Error instantiating new " + entity.Class().getName() + ": " + e;
             DBManager.LogService(LogType.ERROR, error);
         }
 
@@ -163,23 +170,41 @@ public class Repository
      * Nick Sifniotis u5809912
      * 28/09/2015
      *
-     * Saves this game type.
-     * @TODO: It's fucking saving null strings as 'null'
-     * @param id - the game type record to save
+     * Saves an entity into the database.
+     *
+     * @param id - the record to save
      */
     public static void SaveGameType (int id)
     {
-        GameType game = (GameType) game_types.get(id);
+        GameType game = GetGameType(id);
         if (game == null)
             return;         // should never happen
 
-        String query = "UPDATE game_type SET name = '" + game.name
-                + "', min_players = " + game.min_players
+        String query = "UPDATE " + Entities.GAME_TYPE.TableName()
+                + " SET name = " + DBManager.StringValue(game.name)
+                + ", min_players = " + game.min_players
                 + ", max_players = " + game.max_players
-                + ", engine_class = '" + game.engine_class
-                + "', viewer_class = '" + game.viewer_class
-                + "', uses_viewer = " + DBManager.BoolValue(game.uses_viewer)
+                + ", engine_class = " + DBManager.StringValue(game.engine_class)
+                + ", viewer_class = " + DBManager.StringValue(game.viewer_class)
+                + ", uses_viewer = " + DBManager.BoolValue(game.uses_viewer)
                 + " WHERE id = " + game.id;
+
+        DBManager.Execute(query);
+    }
+
+    public static void SaveTwitterConfig (int id)
+    {
+        TwitterConfig tc = GetTwitterConfig(id);
+        if (tc == null)
+            return;
+
+        String query = "UPDATE " + Entities.TWITTER_CONFIG.TableName()
+                + " SET account_name = " + DBManager.StringValue(tc.account_name)
+                + ", access_token = " + DBManager.StringValue(tc.access_token)
+                + ", access_token_secret = " + DBManager.StringValue(tc.access_token_secret)
+                + ", consumer_key = " + DBManager.StringValue(tc.consumer_key)
+                + ", consumer_secret = " + DBManager.StringValue(tc.consumer_secret)
+                + " WHERE id = " + tc.id;
 
         DBManager.Execute(query);
     }

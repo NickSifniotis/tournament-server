@@ -1,5 +1,6 @@
 package GameManager;
 
+import Common.DataModelObject.Entities;
 import GameManager.Data.GameType;
 
 /**
@@ -53,7 +54,7 @@ public class Repository
      */
     public static GameType NewGameType()
     {
-        return new GameType(Common.Repository.NewGameType());
+        return new GameType((Common.DataModelObject.GameType)(Common.Repository.NewEntity(Entities.GAME_TYPE)));
     }
 
 

@@ -1,5 +1,7 @@
 package Common.DataModelObject;
 
+import java.util.HashMap;
+
 /**
  * Created by nsifniotis on 28/09/15.
  *
@@ -9,7 +11,10 @@ package Common.DataModelObject;
  */
 public enum Entities
 {
-    GAME_TYPE, TOURNAMENT, GAME, SUBMISSION, SCORE, TWITTER_CONFIG;
+   // GAME_TYPE, TOURNAMENT, GAME, SUBMISSION, SCORE, TWITTER_CONFIG;
+    GAME_TYPE, TWITTER_CONFIG;
+
+    public static HashMap<Integer, Entity>[] data_store = new HashMap[values().length];
 
 
     /**
@@ -23,21 +28,21 @@ public enum Entities
         String res = "";
         switch (this)
         {
-            case GAME:
-                res = "game";
-                break;
+        //    case GAME:
+        //        res = "game";
+        //        break;
             case GAME_TYPE:
                 res = "game_type";
                 break;
-            case TOURNAMENT:
-                res = "tournament";
-                break;
-            case SUBMISSION:
-                res = "submission";
-                break;
-            case SCORE:
-                res = "score";
-                break;
+        //    case TOURNAMENT:
+        //        res = "tournament";
+        //        break;
+        //    case SUBMISSION:
+        //        res = "submission";
+        //        break;
+        //    case SCORE:
+        //        res = "score";
+        //        break;
             case TWITTER_CONFIG:
                 res = "twitter_configuration";
                 break;
@@ -58,21 +63,21 @@ public enum Entities
 
         switch (this)
         {
-            case GAME:
-              //  res = "game";
-                break;
+        //    case GAME:
+              //  res =
+        //        break;
             case GAME_TYPE:
                 res = GameType.class;
                 break;
-            case TOURNAMENT:
+        //    case TOURNAMENT:
               //  res = "tournament";
-                break;
-            case SUBMISSION:
+        //        break;
+        //    case SUBMISSION:
               //  res = "submission";
-                break;
-            case SCORE:
+        //        break;
+        //    case SCORE:
              //   res = "score";
-                break;
+        //        break;
             case TWITTER_CONFIG:
                 res = TwitterConfig.class;
                 break;

@@ -15,12 +15,15 @@ import Common.LogManager;
 import Common.TwitterManager;
 import GameManager.GameManager;
 import PlayerMarshall.PlayerMarshallManager;
+import Services.Logs.LogType;
+import Services.Twitter.TwitterConfigurator;
 import TournamentServer.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 
@@ -57,22 +60,51 @@ public class TournamentManager extends Application
 
         Button game_manager_btn = new Button("Open Game Manager");
         game_manager_btn.setOnAction(e -> launch_game_manager());
-        tournament_service_btn = new Button("Start Tournament Server");
-        tournament_service_btn.setOnAction(e -> toggle_server());
+        Button twitter_btn = new Button ("Open Twitter Config");
+        twitter_btn.setOnAction(e -> launch_twitter());
 
+        this.tournament_service_btn = new Button("Start Tournament Server");
+        this.tournament_service_btn.setOnAction(e -> toggle_server());
         this.marshalling_btn = new Button("Start Player Marshall");
         this.marshalling_btn.setOnAction(e -> toggle_marshalling_service());
 
-        HBox main_row = new HBox();
-        main_row.setSpacing(10);
-        main_row.getChildren().add(game_manager_btn);
-        main_row.getChildren().add(tournament_service_btn);
-        main_row.getChildren().add(marshalling_btn);
+        HBox top_row = new HBox();
+        top_row.setSpacing(10);
+        top_row.getChildren().addAll(game_manager_btn, twitter_btn);
+        HBox second_row = new HBox();
+        second_row.setSpacing(10);
+        second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn);
 
-        Scene scene = new Scene(main_row);
+        VBox main_layout = new VBox();
+        main_layout.setSpacing(10);
+        main_layout.getChildren().addAll(top_row, second_row);
+
+        Scene scene = new Scene(main_layout);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tournament Server 2015");
         primaryStage.show();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 06/10/2015
+     *
+     * Event handler for the twitter configuration gui
+     */
+    public void launch_twitter()
+    {
+        TwitterConfigurator new_window = new TwitterConfigurator();
+        try
+        {
+            new_window.start(new Stage());
+        }
+        catch (Exception e)
+        {
+            // what could possibly have gone wrong?
+            String error = "Error launching Twitter Config window! " + e;
+            LogManager.Log(LogType.ERROR, error);
+        }
     }
 
 
@@ -92,6 +124,8 @@ public class TournamentManager extends Application
         catch (Exception e)
         {
             // fuck off
+            String error = "Error launching game manager window! " + e;
+            LogManager.Log(LogType.ERROR, error);
         }
     }
 
