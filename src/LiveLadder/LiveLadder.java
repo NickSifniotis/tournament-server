@@ -33,12 +33,6 @@ public class LiveLadder extends Application
     private ScrollPane scroller;
 
 
-    public static void main(String[] args)
-    {
-        launch(args);
-    }
-
-
     /**
      * Nick Sifniotis u5809912
      * 14/09/2015

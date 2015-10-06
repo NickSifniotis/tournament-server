@@ -14,6 +14,7 @@ import Common.Emailer;
 import Common.LogManager;
 import Common.TwitterManager;
 import GameManager.GameManager;
+import LiveLadder.LiveLadder;
 import PlayerMarshall.PlayerMarshallManager;
 import Services.Logs.LogType;
 import Services.Twitter.TwitterConfigurator;
@@ -62,6 +63,8 @@ public class TournamentManager extends Application
         game_manager_btn.setOnAction(e -> launch_game_manager());
         Button twitter_btn = new Button ("Open Twitter Config");
         twitter_btn.setOnAction(e -> launch_twitter());
+        Button ladder_btn = new Button ("Open Ladder");
+        ladder_btn.setOnAction(e -> launch_ladder());
 
         this.tournament_service_btn = new Button("Start Tournament Server");
         this.tournament_service_btn.setOnAction(e -> toggle_server());
@@ -70,7 +73,7 @@ public class TournamentManager extends Application
 
         HBox top_row = new HBox();
         top_row.setSpacing(10);
-        top_row.getChildren().addAll(game_manager_btn, twitter_btn);
+        top_row.getChildren().addAll(game_manager_btn, twitter_btn, ladder_btn);
         HBox second_row = new HBox();
         second_row.setSpacing(10);
         second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn);
@@ -83,6 +86,28 @@ public class TournamentManager extends Application
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tournament Server 2015");
         primaryStage.show();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 06/10/2015
+     *
+     * I'm getting tired of commenting ...
+     */
+    public void launch_ladder()
+    {
+        LiveLadder new_window = new LiveLadder();
+        try
+        {
+            new_window.start(new Stage());
+        }
+        catch (Exception e)
+        {
+            // wasting lines of code catching errors that will never happen
+            String error = "Error launching the live ladder: " + e;
+            LogManager.Log(LogType.ERROR, error);
+        }
     }
 
 
