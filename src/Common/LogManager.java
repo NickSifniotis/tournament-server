@@ -19,7 +19,7 @@ public class LogManager
      * Nick Sifniotis u5809912
      * 05/10/2015
      *
-     * StartService() and EndService() are called by TournamentManager and no other thing.
+     * StartService() and StopService() are called by TournamentManager and no other thing.
      *
      */
     public static void StartService()
@@ -28,7 +28,7 @@ public class LogManager
         Log (LogType.TOURNAMENT, "Log service started!");
     }
 
-    public static void EndService()
+    public static void StopService()
     {
         Log (LogType.TOURNAMENT, "Stopping log service. This will be the last message from me this session. Goodbye!");
         service.StopService();

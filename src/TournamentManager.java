@@ -12,9 +12,9 @@
 
 import Common.Emailer;
 import Common.LogManager;
+import Common.TwitterManager;
 import GameManager.GameManager;
 import PlayerMarshall.PlayerMarshallManager;
-import Services.Logs.LogType;
 import TournamentServer.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -51,6 +51,7 @@ public class TournamentManager extends Application
         LogManager.StartService();
         Common.Repository.Initialise();
         Emailer.StartService();
+        TwitterManager.StartService();
 
         primaryStage.setOnCloseRequest(e -> shutdown_request());
 
@@ -156,7 +157,7 @@ public class TournamentManager extends Application
         if (PlayerMarshallManager.Alive())
         {
             // it's on, so turn it off.
-            PlayerMarshallManager.EndService();
+            PlayerMarshallManager.StopService();
 
             this.marshalling_btn.setText("Start Player Marshall");
             this.tournament_service_btn.setDisable(false);
@@ -181,9 +182,10 @@ public class TournamentManager extends Application
     private void shutdown_request()
     {
         if (PlayerMarshallManager.Alive())
-            PlayerMarshallManager.EndService();
+            PlayerMarshallManager.StopService();
 
-        Emailer.EndService();
-        LogManager.EndService();
+        Emailer.StopService();
+        TwitterManager.StopService();
+        LogManager.StopService();
     }
 }

@@ -23,11 +23,11 @@ public class Emailer
      * Nick Sifniotis u5809912
      * 05/10/2015
      *
-     * StartService and EndService are controlled by the TournamentManager.
+     * StartService and StopService are controlled by the TournamentManager.
      */
     public static void StartService() { service.StartService(); }
 
-    public static void EndService()
+    public static void StopService()
     {
         service.StopService();
     }

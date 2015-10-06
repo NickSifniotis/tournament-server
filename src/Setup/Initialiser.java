@@ -1,6 +1,7 @@
 package Setup;
 
 import Common.DBManager;
+import Common.LogManager;
 import Common.SystemState;
 
 import java.io.File;
@@ -118,6 +119,14 @@ public class Initialiser
         DBManager.Execute("DROP TABLE IF EXISTS twitter_configuration");
         DBManager.Execute("CREATE TABLE twitter_configuration (id integer primary key, account_name string, "
                 + "consumer_key string, consumer_secret string, access_token string, access_token_secret string)");
+
+        DBManager.Execute("INSERT INTO twitter_configuration (account_name, consumer_key, consumer_secret, " +
+                "access_token, access_token_secret) VALUES (" +
+                DBManager.StringValue("BlokusTournament") + ", " +
+                DBManager.StringValue("VUvpKkoJtGpGTS8tK7qkaX3dT") + ", " +
+                DBManager.StringValue("jpN4a8JxiGZNjZGyFoy7MaIZlkubH17sUfzUmii45Si53UO8tK") + ", " +
+                DBManager.StringValue("3588649154-8XasvhTp1mVLnuWm15AFB67R6UqhkvRY43v4BDw") + ", " +
+                DBManager.StringValue("Y0ba6KAQ49CaWWynFYSIpsBxl9p9iwvddNbu7vZjJVkG2") + ")");
     }
 
 

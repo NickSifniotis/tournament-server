@@ -1,15 +1,8 @@
 package TournamentServer;
 
-import AcademicsInterface.IGameEngine;
-import Common.DataModel.Game;
-import Common.DataModel.PlayerSubmission;
-import Common.DataModel.Tournament;
-import TournamentServer.Fixtures.Fixture;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import Common.LogManager;
+import Common.TwitterManager;
+import Services.Twitter.Data.TwitterConfig;
 
 /**
  * Created by nsifniotis on 7/09/15.
@@ -93,7 +86,7 @@ public class tester {
 
         // one round is two 4player games. There is no need to represent the teams in the bye
         // in this data structure. Therefore, an 8 element ushort array should do the job.
-
+/*
         short [] round;
         short [] players = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
         int num_games = 0;
@@ -222,6 +215,25 @@ public class tester {
                 System.out.print (Arrays.toString(s) + ", ");
 
             System.out.println();
-        }
+        }*/
+
+        LogManager.StartService();
+
+        Common.Repository.Initialise();
+
+        TwitterManager.StartService();
+        TwitterConfig config = Services.Twitter.Repository.GetTwitterConfig(1);
+
+        if (config == null)
+            System.out.println("is null");
+        else
+            System.out.println("is not null");
+
+
+        TwitterManager.SendTweet(config, "Testing the twitter service!");
+
+        TwitterManager.StopService();
+        LogManager.StopService();
     }
+
 }

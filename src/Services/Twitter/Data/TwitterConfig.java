@@ -7,6 +7,8 @@ package Services.Twitter.Data;
  * This might be merged into the data repo in due course. Or
  * at least refactored, fkn public member variables..
  *
+ * @TODO does not gracefully handle twitter configs that don't exist
+ *
  */
 public class TwitterConfig
 {

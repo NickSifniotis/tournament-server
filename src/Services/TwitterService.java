@@ -54,11 +54,7 @@ public class TwitterService extends Service
                 .setOAuthConsumerSecret(config.ConsumerSecret())
                 .setOAuthAccessToken(config.AccessToken())
                 .setOAuthAccessTokenSecret(config.AccessTokenSecret());
-                /*
-                .setOAuthConsumerKey("VUvpKkoJtGpGTS8tK7qkaX3dT")
-                .setOAuthConsumerSecret("jpN4a8JxiGZNjZGyFoy7MaIZlkubH17sUfzUmii45Si53UO8tK")
-                .setOAuthAccessToken("3588649154-8XasvhTp1mVLnuWm15AFB67R6UqhkvRY43v4BDw")
-                .setOAuthAccessTokenSecret("Y0ba6KAQ49CaWWynFYSIpsBxl9p9iwvddNbu7vZjJVkG2"); */
+
         TwitterFactory tf = new TwitterFactory(cb.build());
         Twitter twitter = tf.getInstance();
 
