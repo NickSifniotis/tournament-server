@@ -1,12 +1,10 @@
 package Services.Twitter;
 
+import Common.TwitterManager;
 import Services.Twitter.Data.TwitterConfig;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -65,7 +63,9 @@ public class TwitterConfigurator extends Application
         last_row.setSpacing(20);
         Button save_button = new Button ("Save");
         save_button.setOnAction(e -> save_button_handler());
-        last_row.getChildren().addAll(save_button);
+        Button test_button = new Button ("Send Test Tweet");
+        test_button.setOnAction(e -> test_button_handler());
+        last_row.getChildren().addAll(save_button, test_button);
 
         VBox master_layout = new VBox();
         master_layout.getChildren().addAll(first_row, second_row, third_row, fourth_row, fifth_row, sixth_row, last_row);
@@ -91,6 +91,23 @@ public class TwitterConfigurator extends Application
 
         for (TwitterConfig tc: Repository.GetTwitterConfigs())
             selector.getItems().add(tc);
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 06/10/2015
+     *
+     * Fuck you and your comments
+     */
+    public void test_button_handler()
+    {
+        TwitterManager.SendTweet(this.current_config, "Test tweet being sent to account " + this.current_config.AccountName());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Twitter Test");
+        alert.setContentText("Test tweet sent - check the twitter account to see if it worked.");
+        alert.showAndWait();
     }
 
 
