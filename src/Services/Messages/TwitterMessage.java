@@ -1,5 +1,8 @@
 package Services.Messages;
 
+
+import Services.Twitter.Data.TwitterConfig;
+
 /**
  * Created by nsifniotis on 28/09/15.
  *
@@ -7,5 +10,13 @@ package Services.Messages;
  */
 public class TwitterMessage extends Message
 {
+    public TwitterConfig config;
     public String tweet;
+
+
+    public TwitterMessage (TwitterConfig c, String t)
+    {
+        this.config = c;
+        this.tweet = t;
+    }
 }

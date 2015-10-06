@@ -16,25 +16,6 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class TwitterService extends Service
 {
-    private TwitterConfig config;
-
-
-    /**
-     * Nick Sifniotis u5809912
-     * 28/09/2015
-     *
-     * The constructor for this Twitter service.
-     *
-     * @param config - the configuration object constructed from the
-     *               data repository. This object contains the authentication
-     *               data needed to connect to and post tweets on twitter.
-     */
-    public TwitterService(TwitterConfig config)
-    {
-        this.config = config;
-    }
-
-
     /**
      * Nick Sifniotis u5809912
      * 28/09/2015
@@ -52,7 +33,7 @@ public class TwitterService extends Service
             return;
 
         TwitterMessage twit = (TwitterMessage) message;
-        send_tweet(twit.tweet);
+        send_tweet(twit.config, twit.tweet);
     }
 
 
@@ -63,8 +44,9 @@ public class TwitterService extends Service
      * Sends a tweet to the twitter account tweeting this tournament.
      *
      * @param tweet - the tweet to tweet
+     * @param config - the credentials for the twitter account to post to.
      */
-    private void send_tweet (String tweet)
+    private void send_tweet (TwitterConfig config, String tweet)
     {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(false)
