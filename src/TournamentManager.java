@@ -19,6 +19,7 @@ import PlayerMarshall.PlayerMarshallManager;
 import Services.Logs.LogType;
 import Services.Twitter.TwitterConfigurator;
 import TournamentServer.*;
+import TournamentEditor.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -65,6 +66,8 @@ public class TournamentManager extends Application
         twitter_btn.setOnAction(e -> launch_twitter());
         Button ladder_btn = new Button ("Open Ladder");
         ladder_btn.setOnAction(e -> launch_ladder());
+        Button editor_btn = new Button ("Open Tournament Editor");
+        editor_btn.setOnAction(e -> launch_tournament_editor());
 
         this.tournament_service_btn = new Button("Start Tournament Server");
         this.tournament_service_btn.setOnAction(e -> toggle_server());
@@ -73,7 +76,7 @@ public class TournamentManager extends Application
 
         HBox top_row = new HBox();
         top_row.setSpacing(10);
-        top_row.getChildren().addAll(game_manager_btn, twitter_btn, ladder_btn);
+        top_row.getChildren().addAll(game_manager_btn, twitter_btn, ladder_btn, editor_btn);
         HBox second_row = new HBox();
         second_row.setSpacing(10);
         second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn);
@@ -150,6 +153,28 @@ public class TournamentManager extends Application
         {
             // fuck off
             String error = "Error launching game manager window! " + e;
+            LogManager.Log(LogType.ERROR, error);
+        }
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 07/10/2015
+     *
+     * Launches the tournament editor window.
+     */
+    private void launch_tournament_editor()
+    {
+        TournamentEditor new_window = new TournamentEditor();
+        try
+        {
+            new_window.start(new Stage());
+        }
+        catch (Exception e)
+        {
+            // fuck off
+            String error = "Error launching tournament editor window! " + e;
             LogManager.Log(LogType.ERROR, error);
         }
     }

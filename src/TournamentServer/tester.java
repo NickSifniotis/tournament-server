@@ -1,8 +1,12 @@
 package TournamentServer;
 
+import Common.DBManager;
 import Common.LogManager;
 import Common.TwitterManager;
 import Services.Twitter.Data.TwitterConfig;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
 
 /**
  * Created by nsifniotis on 7/09/15.
@@ -221,18 +225,25 @@ public class tester {
 
         Common.Repository.Initialise();
 
-        TwitterManager.StartService();
-        TwitterConfig config = Services.Twitter.Repository.GetTwitterConfig(1);
+        String query = "SELECT * FROM submission";
+        Connection con = DBManager.connect();
+        try
+        {
+            ResultSet res = DBManager.ExecuteQuery(query, con);
+            while (res.next())
+            {
+                System.out.println (res.getInt("id") + ": " + res.getString("team_name"));
+            }
+        }
+        catch (Exception e)
+        {
 
-        if (config == null)
-            System.out.println("is null");
-        else
-            System.out.println("is not null");
+        }
+        finally
+        {
+            DBManager.disconnect(con);
+        }
 
-
-        TwitterManager.SendTweet(config, "Testing the twitter service!");
-
-        TwitterManager.StopService();
         LogManager.StopService();
     }
 
