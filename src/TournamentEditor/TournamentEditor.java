@@ -51,7 +51,7 @@ public class TournamentEditor extends Application
         HBox row7 = new HBox();
         twitter_selector = new ChoiceBox<>();
         row7.setSpacing(10);
-        row7.getChildren().add(email_feed);
+        row7.getChildren().addAll(twitter_feed, twitter_selector);
 
         email_feed = new CheckBox("Use emails");
         HBox row8 = new HBox();
@@ -67,7 +67,7 @@ public class TournamentEditor extends Application
 
         VBox main_layout = new VBox();
         main_layout.setSpacing(20);
-        main_layout.getChildren().addAll(bottom_row);
+        main_layout.getChildren().addAll(row7, row8, bottom_row);
 
         Scene scene = new Scene(main_layout);
         primaryStage.setScene(scene);

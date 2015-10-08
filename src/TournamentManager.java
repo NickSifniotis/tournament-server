@@ -12,6 +12,7 @@
 
 import Common.Emailer;
 import Common.LogManager;
+import Common.SystemState;
 import Common.TwitterManager;
 import GameManager.GameManager;
 import LiveLadder.LiveLadder;
@@ -20,10 +21,13 @@ import Services.Logs.LogType;
 import Services.Twitter.TwitterConfigurator;
 import TournamentServer.*;
 import TournamentEditor.*;
+import TournamentServer.DataModelInterfaces.Tournament;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -33,7 +37,7 @@ public class TournamentManager extends Application
 {
     private Button tournament_service_btn;
     private Button marshalling_btn;
-
+    private ChoiceBox<Tournament> tournament_list;
 
     public static void main(String[] args) {
         launch(args);
@@ -53,6 +57,7 @@ public class TournamentManager extends Application
     @Override
     public void start(Stage primaryStage)
     {
+        SystemState.Initialise();
         LogManager.StartService();
         Common.Repository.Initialise();
         Emailer.StartService();
@@ -61,12 +66,15 @@ public class TournamentManager extends Application
         primaryStage.setOnCloseRequest(e -> shutdown_request());
 
         Button game_manager_btn = new Button("Open Game Manager");
+        game_manager_btn.setDisable(true);
         game_manager_btn.setOnAction(e -> launch_game_manager());
         Button twitter_btn = new Button ("Open Twitter Config");
+        twitter_btn.setDisable(true);
         twitter_btn.setOnAction(e -> launch_twitter());
         Button ladder_btn = new Button ("Open Ladder");
         ladder_btn.setOnAction(e -> launch_ladder());
         Button editor_btn = new Button ("Open Tournament Editor");
+        editor_btn.setDisable(true);
         editor_btn.setOnAction(e -> launch_tournament_editor());
 
         this.tournament_service_btn = new Button("Start Tournament Server");
@@ -81,9 +89,21 @@ public class TournamentManager extends Application
         second_row.setSpacing(10);
         second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn);
 
+        Button start_tourney = new Button ("Start");
+        start_tourney.setGraphic(SystemState.Resources.server_start);
+        start_tourney.setOnAction(e -> start_tournament());
+        Button stop_tourney = new Button ("Stop");
+        stop_tourney.setGraphic(SystemState.Resources.server_stop);
+        stop_tourney.setOnAction(e -> stop_tournament());
+        tournament_list = new ChoiceBox<>();
+        update_tournament_list();
+        HBox third_row = new HBox();
+        third_row.setSpacing(20);
+        third_row.getChildren().addAll(start_tourney, stop_tourney, tournament_list);
+
         VBox main_layout = new VBox();
         main_layout.setSpacing(10);
-        main_layout.getChildren().addAll(top_row, second_row);
+        main_layout.getChildren().addAll(top_row, second_row, third_row);
 
         Scene scene = new Scene(main_layout);
         primaryStage.setScene(scene);
@@ -271,5 +291,45 @@ public class TournamentManager extends Application
         Emailer.StopService();
         TwitterManager.StopService();
         LogManager.StopService();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 08/10/2015
+     *
+     * These two functions are event handlers that start and stop tournaments.
+     */
+    private void start_tournament()
+    {
+        if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
+            return;
+
+        Tournament new_tourney = this.tournament_list.getSelectionModel().getSelectedItem();
+        new_tourney.StartTournament();
+    }
+
+    private void stop_tournament()
+    {
+        if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
+            return;
+
+        Tournament new_tourney = this.tournament_list.getSelectionModel().getSelectedItem();
+        new_tourney.StopTournament();
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 08/10/2015
+     *
+     * Updates the tournament list dropdown box.
+     *
+     */
+    private void update_tournament_list()
+    {
+        this.tournament_list.getItems().clear();
+        for (Tournament t: Tournament.LoadAll(false))
+            this.tournament_list.getItems().add(t);
     }
 }

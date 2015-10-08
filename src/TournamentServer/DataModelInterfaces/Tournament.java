@@ -35,11 +35,12 @@ public class Tournament
      *
      * Wrapper method for the LoadAll method
      *
-     * @return an array of all Tournaments that are currently active
+     * @param active_only - TRUE if we only want active tournaments, FALSE if we want them all.
+     * @return an array of all Tournaments
      */
-    public static Tournament[] LoadAll ()
+    public static Tournament[] LoadAll (boolean active_only)
     {
-        Common.DataModel.Tournament[] all = Common.DataModel.Tournament.LoadAll(true);
+        Common.DataModel.Tournament[] all = Common.DataModel.Tournament.LoadAll(active_only);
         Tournament[] res = new Tournament[all.length];
         for (int i = 0; i < all.length; i ++)
             res[i] = new Tournament(all[i]);
@@ -58,7 +59,7 @@ public class Tournament
      */
     public static int[] LoadKeys ()
     {
-        Tournament[] all = LoadAll();
+        Tournament[] all = LoadAll(true);
         int[] keys = new int[all.length];
         for (int i = 0; i < all.length; i ++)
             keys[i] = all[i].PrimaryKey();
@@ -83,4 +84,13 @@ public class Tournament
 
 
     public void ResetTournament () { data_object.ResetTournament(); }
+    public void StartTournament () { data_object.StartTournament(); }
+    public void StopTournament () { data_object.StopTournament(); }
+
+
+    @Override
+    public String toString()
+    {
+        return data_object.Name();
+    }
 }

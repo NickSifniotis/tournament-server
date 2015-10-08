@@ -1,7 +1,9 @@
 package Common;
 
 
+import LiveLadder.Resources;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  * Created by nsifniotis on 31/08/15.
@@ -28,9 +30,9 @@ public class SystemState
 
     public static class Resources
     {
-        public static Image server_start;
-        public static Image server_stop;
-        public static Image server_reset;
+        public static ImageView server_start;
+        public static ImageView server_stop;
+        public static ImageView server_reset;
     }
 
     public static class Database
@@ -65,8 +67,16 @@ public class SystemState
 
     public static void Initialise()
     {
-        Resources.server_reset = new Image ("file:images/reset");
-        Resources.server_start = new Image ("file:images/server_start");
-        Resources.server_stop = new Image ("file:images/server_stop");
+        Resources.server_reset = new ImageView(new Image ("file:images/reset"));
+        Resources.server_start = new ImageView(new Image ("file:images/server_start"));
+        Resources.server_stop = new ImageView(new Image ("file:images/server_stop"));
+
+        Resources.server_reset.setFitWidth(25);
+        Resources.server_stop.setFitWidth(25);
+        Resources.server_start.setFitWidth(25);
+
+        Resources.server_start.setPreserveRatio(true);
+        Resources.server_reset.setPreserveRatio(true);
+        Resources.server_stop.setPreserveRatio(true);
     }
 }

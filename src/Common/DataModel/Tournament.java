@@ -258,16 +258,16 @@ public class Tournament extends Entity
 
         if (exists)
         {
-            query = "UPDATE tournament SET name = '" + this.name
-                    + "', game_id = '" + this.game_type_id
-                    + ", player_interface_class = '" + this.player_interface_class
-                    + "', verification_class = '" + this.verification_class
+            query = "UPDATE tournament SET name = " + DBManager.StringValue(this.name)
+                    + ", game_id = " + this.game_type_id
+                    + ", player_interface_class = " + DBManager.StringValue(this.player_interface_class)
+                    + ", verification_class = " + DBManager.StringValue(this.verification_class)
                     + ", allow_resubmit = " + DBManager.BoolValue(this.allow_resubmit)
                     + ", allow_submit = " + DBManager.BoolValue(this.allow_submit)
                     + ", game_on = " + DBManager.BoolValue(this.game_on)
-                    + ", use_null_move = " + DBManager.BoolValue(this.use_null_moves)
+                    + ", use_null_moves = " + DBManager.BoolValue(this.use_null_moves)
                     + ", num_players = " + this.num_players
-                    + ", timeout = '" + this.timeout
+                    + ", timeout = " + this.timeout
                     + " WHERE id = " + this.id;
 
             DBManager.Execute(query);
@@ -277,10 +277,10 @@ public class Tournament extends Entity
             query = "INSERT INTO tournament (name, game_id, player_interface_class, verification_class,"
                     + " allow_resubmit, allow_submit, game_on, num_players, timeout, use_null_moves)"
                     + " VALUES ("
-                    + "'" + this.name + "'"
+                    + DBManager.StringValue(this.name)
                     + ", " + this.game_type_id
-                    + "'" + this.player_interface_class + "'"
-                    + "'" + this.verification_class + "'"
+                    + ", " + DBManager.StringValue(this.player_interface_class)
+                    + ", " + DBManager.StringValue(this.verification_class)
                     + ", " + DBManager.BoolValue(this.allow_resubmit)
                     + ", " + DBManager.BoolValue(this.allow_submit)
                     + ", " + DBManager.BoolValue(this.game_on)
