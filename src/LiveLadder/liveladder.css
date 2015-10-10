@@ -1,33 +1,29 @@
 .header_row
 {
     -fx-font: 14px "Sans Serif";
-    -fx-background-color: #99AA66;
+    -fx-background-color: #23262A;
     -fx-padding: 8;
+    -fx-text-fill: #7C8188;
 }
 
 .player_row
 {
     -fx-font: 14px "Sans Serif";
     -fx-padding: 8;
+    -fx-text-fill: #161C25;
 }
 
-.grid
+.main_view
 {
-    -fx-padding: 10;
-}
-
-.tournament_header_row
-{
-    -fx-background-color: #FF0000;
-    -fx-alignment: center;
+    -fx-background-color: #D3D4D5;
 }
 
 .tournament_header_text
 {
     -fx-font: 20px "Serif";
-    -fx-text-alignment: center;
-    -fx-background-color: #FFFD00;
-    -fx-padding: 10 10 30 10;
+    -fx-text-fill: #7C8188;
+    -fx-background-color: #161C26;
+    -fx-padding: 14 10 14 10;
 }
 
 .selector

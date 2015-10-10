@@ -44,33 +44,28 @@ public class LiveLadder extends Application
     @Override
     public void start(Stage primaryStage)
     {
-        Resources.initialise();
-
         LadderColumnStructure.Initialise();
-        LadderColumnStructure.PERCENTAGE.Disable();
         LadderColumnStructure.DIFFERENTIAL.Disable();
 
         BorderPane main_layout = new BorderPane();
-        HBox bottom_row = new HBox ();
-        Button select_button = new Button ("Select Tournament");
-        select_button.setOnAction(e -> handleSelectButton());
-        bottom_row.getChildren().add(select_button);
+        main_layout.getStyleClass().add("main_view");
 
         HBox top_row = new HBox();
         top_row.getStyleClass().add("tournament_header_row");
         this.tournament_name = new Label ("No tournament selected");
         this.tournament_name.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         this.tournament_name.getStyleClass().add("tournament_header_text");
+        this.tournament_name.setOnMouseClicked(e -> handleSelectButton());
         top_row.getChildren().add(tournament_name);
 
         scroller = new ScrollPane();
         scroller.setFitToWidth(true);
+        scroller.getStyleClass().add("main_view");
         scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         main_layout.setTop(tournament_name);
         main_layout.setCenter(scroller);
-        main_layout.setBottom(bottom_row);
 
         Scene scene = new Scene (main_layout, 800, 600);
 
@@ -186,13 +181,13 @@ public class LiveLadder extends Application
         String style;
         for (TeamDetails team: teams)
         {
-            if (tournament.IsOn())
-                style = "#FFCC00";
+            if (!tournament.IsOn())
+                style = "#42474E";
             else
                 if (position % 2 == 0)
-                    style = "#D6D6C2";
+                    style = "#5D636A";
                 else
-                    style = "#CCCCB2";
+                    style = "#7C8188";
 
             team.AddToGrid(grid, position++, style);
         }
