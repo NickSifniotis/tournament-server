@@ -95,11 +95,14 @@ public class TournamentManager extends Application
         Button stop_tourney = new Button ("Stop");
         stop_tourney.setGraphic(SystemState.Resources.server_stop);
         stop_tourney.setOnAction(e -> stop_tournament());
+        Button reset_tourney = new Button ("Reset");
+        reset_tourney.setGraphic(SystemState.Resources.server_reset);
+        reset_tourney.setOnAction(e -> reset_tournament());
         tournament_list = new ChoiceBox<>();
         update_tournament_list();
         HBox third_row = new HBox();
         third_row.setSpacing(20);
-        third_row.getChildren().addAll(start_tourney, stop_tourney, tournament_list);
+        third_row.getChildren().addAll(start_tourney, stop_tourney, reset_tourney, tournament_list);
 
         VBox main_layout = new VBox();
         main_layout.setSpacing(10);
@@ -287,6 +290,8 @@ public class TournamentManager extends Application
     {
         if (PlayerMarshallManager.Alive())
             PlayerMarshallManager.StopService();
+        if (TournamentServer.Alive())
+            TournamentServer.StopService();
 
         Emailer.StopService();
         TwitterManager.StopService();
@@ -318,6 +323,14 @@ public class TournamentManager extends Application
         new_tourney.StopTournament();
     }
 
+    private void reset_tournament()
+    {
+        if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
+            return;
+
+        Tournament new_tourney = this.tournament_list.getSelectionModel().getSelectedItem();
+        new_tourney.ResetTournament();
+    }
 
     /**
      * Nick Sifniotis u5809912

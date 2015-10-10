@@ -232,7 +232,7 @@ public class tester {
             ResultSet res = DBManager.ExecuteQuery(query, con);
             while (res.next())
             {
-                System.out.println (res.getInt("id") + ": " + res.getString("team_name"));
+                System.out.println (res.getInt("id") + ": " + res.getString("team_name") + ":" + res.getString("playing"));
             }
         }
         catch (Exception e)

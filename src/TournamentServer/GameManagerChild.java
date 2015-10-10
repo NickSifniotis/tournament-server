@@ -178,6 +178,19 @@ public class GameManagerChild extends Thread
             LogManager.GameLog(game.PrimaryKey(), engine.LogEntry(game_state, move));
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
+
+
+
+            // sleep for a bit, give other shit a chance to catch up
+            try
+            {
+                Thread.sleep(2000);
+            }
+            catch (Exception e)
+            {
+                // received a big F off from the server
+                this.aborted = true;
+            }
         }
 
         // and send out EMAILS ABOUT IT

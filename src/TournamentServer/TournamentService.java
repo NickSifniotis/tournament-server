@@ -207,7 +207,7 @@ public class TournamentService extends Service
 
         if (!lets_play || players.length != tournament.NumPlayers())
         {
-            LogManager.Log(LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready.");
+            LogManager.Log(LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready: " + lets_play + ":" + players.length);
             return false;
         }
 

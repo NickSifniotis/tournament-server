@@ -89,7 +89,7 @@ public abstract class Service extends Thread
             do_service();
 
             Message message = message_queue.peek();
-            if (message != null)
+            while (message != null)
             {
                 // pop the message off the queue
                 try
@@ -103,6 +103,8 @@ public abstract class Service extends Thread
                     terminated = true;
                 else
                     handle_message(message);
+
+                message = message_queue.peek();
             }
 
             try
