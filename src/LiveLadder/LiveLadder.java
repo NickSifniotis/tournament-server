@@ -1,13 +1,6 @@
 package LiveLadder;
 
-
-/**
- * Created by nsifniotis on 11/09/15.
- *
- * Live ladder - watch your tournament live!
- *
- */
-
+import Common.SystemState;
 import LiveLadder.DataModelInterfaces.Game;
 import LiveLadder.DataModelInterfaces.TeamDetails;
 import LiveLadder.DataModelInterfaces.Tournament;
@@ -16,7 +9,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -26,6 +18,13 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
+/**
+ * Created by nsifniotis on 11/09/15.
+ *
+ * Live ladder - watch your tournament live!
+ *
+ */
 public class LiveLadder extends Application
 {
     private int tournament_id = 0;
@@ -69,7 +68,7 @@ public class LiveLadder extends Application
 
         Scene scene = new Scene (main_layout, 800, 600);
 
-        File f = new File("src/LiveLadder/liveladder.css");
+        File f = new File(SystemState.Resources.StyleSheets.LiveLadder);
         scene.getStylesheets().clear();
         scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 

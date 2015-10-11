@@ -1,6 +1,7 @@
 package LiveLadder;
 
 
+import Common.SystemState;
 import LiveLadder.DataModelInterfaces.Tournament;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -49,7 +50,7 @@ public class TournamentSelector
         this.refresh_list();
 
         this.scene = new Scene(row);
-        File f = new File("src/LiveLadder/liveladder.css");
+        File f = new File(SystemState.Resources.StyleSheets.LiveLadder);
         this.scene.getStylesheets().clear();
         this.scene.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
 

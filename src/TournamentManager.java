@@ -39,6 +39,7 @@ public class TournamentManager extends Application
     private Button marshalling_btn;
     private ChoiceBox<Tournament> tournament_list;
 
+
     public static void main(String[] args)
     {
         if (args.length > 0)
@@ -47,7 +48,7 @@ public class TournamentManager extends Application
                 Setup.Initialiser.CreateFileSystem();
                 Setup.Initialiser.CreateTables();
 
-                return;
+                System.exit(0);
             }
 
         launch(args);

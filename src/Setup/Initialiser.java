@@ -2,7 +2,6 @@ package Setup;
 
 import Common.DBManager;
 import Common.SystemState;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -134,7 +133,9 @@ public class Initialiser
         process_directory(SystemState.Folders.PlayerInterfaces);
         process_directory(SystemState.Folders.Marshalling);
         process_directory(SystemState.Folders.Pictures);
+        process_directory(SystemState.Folders.Submissions);
         process_directory(SystemState.Folders.Logs.Root);
+        process_directory(SystemState.Folders.Logs.SystemRoot);
         process_directory(SystemState.Folders.Logs.Game);
         process_directory(SystemState.Folders.Logs.Error);
         process_directory(SystemState.Folders.Logs.SQL);

@@ -30,6 +30,11 @@ public class SystemState
         public static ImageView server_start;
         public static ImageView server_stop;
         public static ImageView server_reset;
+
+        public static class StyleSheets
+        {
+            public static final String LiveLadder = "css/liveladder.css";
+        }
     }
 
     public static class Database
@@ -50,6 +55,7 @@ public class SystemState
         public static class Logs
         {
             public static final String Root = "logs/";
+            public static final String SystemRoot = "logs/system/";
             public static final String Error = "logs/system/errors/";
             public static final String SQL = "logs/system/sql/";
             public static final String Threads = "logs/system/threads/";
