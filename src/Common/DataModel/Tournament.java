@@ -386,6 +386,20 @@ public class Tournament extends Entity
 
     /**
      * Nick Sifniotis u5809912
+     * 12/10/2015
+     *
+     * @return true if this tournament uses an IViewer, false if it doesnt
+     */
+    public boolean UsesViewer()
+    {
+        if (this.game_type_id == -1)
+            return false;
+
+        return (new GameType(this.game_type_id).UsesViewer());
+    }
+
+    /**
+     * Nick Sifniotis u5809912
      * 7/9/2015
      *
      * Loads the player submission interface class from the Academics JAR file

@@ -16,5 +16,5 @@ package Services.Messages;
 
 public enum TSMessageType
 {
-    END, KILL_GAME, KILL_TOURNAMENT, THREAD_POOL_RESIZE
+    END, KILL_GAME, KILL_TOURNAMENT, THREAD_POOL_RESIZE, ADD_VIEWER
 }

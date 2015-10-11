@@ -1,11 +1,16 @@
 package TournamentServer;
 
+import AcademicsInterface.IViewer;
 import Common.LogManager;
+import Services.GameViewer.GameViewer;
 import Services.Logs.LogType;
 import Services.Messages.Message;
 import Services.Messages.TSMessage;
 import Services.Service;
 import TournamentServer.DataModelInterfaces.*;
+import javafx.stage.Stage;
+
+import java.util.HashMap;
 
 
 /**
@@ -20,6 +25,7 @@ import TournamentServer.DataModelInterfaces.*;
  */
 public class TournamentService extends Service
 {
+    private HashMap<Integer, GameViewer> game_windows;
     private GameManagerChild[] thread_pool;
     private int thread_pool_target;
     private int running_threads;
@@ -52,6 +58,7 @@ public class TournamentService extends Service
      */
     public TournamentService(int thread_pool_target)
     {
+        this.game_windows = new HashMap<>();
         this.thread_pool_target = thread_pool_target;
         this.thread_pool = new GameManagerChild[thread_pool_target];
         this.user_signalled_shutdown = false;
@@ -96,6 +103,11 @@ public class TournamentService extends Service
                     thread_pool = new_array;
                 }
                 break;
+            case ADD_VIEWER:
+                int tourney = msg.payload;
+                GameViewer viewer = new GameViewer();
+                viewer.start(new Stage());
+                game_windows.put(tourney, viewer);
         }
     }
 
@@ -194,9 +206,7 @@ public class TournamentService extends Service
     private boolean launch_game (Game game, int thread)
     {
         Tournament tournament = new Tournament(game.TournamentKey());
-
         LogManager.Log(LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + tournament.Name());
-
         PlayerSubmission[] players = game.Players();
 
         // games only launch one at a time. So it's fair to assume that all players that are ready
@@ -229,6 +239,18 @@ public class TournamentService extends Service
         }
 
         thread_pool[thread] = new GameManagerChild(game, tournament.GameEngine(), player_managers, tournament.UseNullMoves());
+
+        // does this tournament use a viewer? Connect the game to it.
+        if (tournament.UsesViewer())
+        {
+            GameViewer current_stage = this.game_windows.get(tournament.PrimaryKey());
+            if (current_stage != null)
+            {
+                IViewer viewer = tournament.Viewer();
+                current_stage.SetViewer(viewer);
+            }
+        }
+
         thread_pool[thread].start();
 
         LogManager.Log(LogType.TOURNAMENT, "Game started!");

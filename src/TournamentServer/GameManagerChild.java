@@ -1,9 +1,12 @@
 package TournamentServer;
 
 import AcademicsInterface.IGameEngine;
+import AcademicsInterface.IViewer;
+import AcademicsInterface.ViewedPlayers;
 import Common.Email.EmailTypes;
 import Common.Emailer;
 import Common.LogManager;
+import Services.GameViewer.GameViewer;
 import Services.LogService;
 import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.Scores;
@@ -29,6 +32,8 @@ public class GameManagerChild extends Thread
     private IGameEngine engine;
     private boolean use_nulls;
     private PlayerManager[] players;
+    private GameViewer viewer;
+    private boolean use_viewer;
 
 
     /**
@@ -47,6 +52,8 @@ public class GameManagerChild extends Thread
         this.engine = engine;
         this.players = players;
         this.use_nulls = use_nulls;
+        this.use_viewer = false;
+        this.viewer = null;
 
         this.game_scores = new Scores(game.PrimaryKey(), players);
 
@@ -64,6 +71,22 @@ public class GameManagerChild extends Thread
         }
     }
 
+
+    public void SetViewer(GameViewer v)
+    {
+        this.viewer = v;
+        this.use_viewer = true;
+
+//        viewed_players = new ViewedPlayers[this.players.length];
+//        for (int i = 0; i < this.players.length; i ++)
+//        {
+//            viewed_players[i] = new ViewedPlayers();
+//            viewed_players[i].PlayerName = this.players[i].Name();
+//        //    vp[i].PlayerPicture = this.players[i].Picture();
+//        }
+
+
+    }
 
     /**
      * Nick Sifniotis u5809912
@@ -98,6 +121,10 @@ public class GameManagerChild extends Thread
         // fuck yeah, let's RUN THIS GAME
 
         Object game_state = engine.InitialiseGame(players.length);
+
+        if (use_viewer)
+            //viewer.NewGame(game_state, viewed_players);
+            viewer.Update(game_state);
 
         while (engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted)
         {
@@ -179,6 +206,10 @@ public class GameManagerChild extends Thread
             game_state = engine.MakeMove(game_state, move);
             game_scores.Update (engine.ScoreGame(game_state));
 
+
+            // update the game screen
+            if (use_viewer)
+                viewer.Update(game_state);
 
 
             // sleep for a bit, give other shit a chance to catch up

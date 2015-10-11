@@ -2,6 +2,7 @@ package TournamentServer.DataModelInterfaces;
 
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IPlayer;
+import AcademicsInterface.IViewer;
 
 /**
  * Created by nsifniotis on 16/09/15.
@@ -78,6 +79,8 @@ public class Tournament
     public String Name() { return data_object.Name(); }
     public IPlayer PlayerInterface() { return data_object.PlayerInterface(); }
     public IGameEngine GameEngine() { return data_object.GameEngine(); }
+    public IViewer Viewer() { return data_object.Viewer(); }
+    public boolean UsesViewer() { return data_object.UsesViewer(); }
     public int Timeout() { return data_object.Timeout(); }
     public int NumPlayers() { return data_object.NumPlayers(); }
     public boolean UseNullMoves() { return data_object.UsesNullMoves(); }

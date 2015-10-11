@@ -12,6 +12,8 @@ import TournamentServer.Exceptions.NoMoveMadeException;
 import TournamentServer.Exceptions.PlayerMoveException;
 import TournamentServer.Exceptions.TimeoutException;
 
+import java.io.File;
+
 
 /**
  * Created by nsifniotis on 26/08/15.
@@ -112,4 +114,5 @@ public class PlayerManager
     public String Email() { return this.submission.Email(); }
     public void EndGame(boolean value) throws Exception { this.submission.EndGame(value); }
     public Object NullMove() { return this.my_player.NullMove(); }
+    public String Picture() { return this.submission.Picture(); }
 }
