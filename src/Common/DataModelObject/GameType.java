@@ -3,14 +3,13 @@ package Common.DataModelObject;
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
 import Common.DBManager;
-import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
-
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 
 /**
  * Created by nsifniotis on 28/09/15.
@@ -57,14 +56,14 @@ public class GameType extends Entity
      *
      * @return the things
      */
-    public String SourceFilename () { return SystemState.engines_folder + this.id + ".jar"; }
+    public String SourceFilename () { return SystemState.Folders.GameEngines + this.id + ".jar"; }
 
     public IGameEngine GameEngine () {
         if (this.engine_class.equals(""))
             return null;
 
         IGameEngine res;
-        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.GameEngines + this.id + ".jar";
 
         try
         {
@@ -95,7 +94,7 @@ public class GameType extends Entity
             return null;
 
         IViewer res;
-        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.GameEngines + this.id + ".jar";
 
         try
         {

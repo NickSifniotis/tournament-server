@@ -29,16 +29,16 @@ public enum LogType
         switch (this)
         {
             case ERROR:
-                res = SystemState.error_log_path;
+                res = SystemState.Folders.Logs.Error;
                 break;
             case TOURNAMENT:
-                res = SystemState.tournament_log_path;
+                res = SystemState.Folders.Logs.Threads;
                 break;
             case SQL:
-                res = SystemState.sql_log_path;
+                res = SystemState.Folders.Logs.SQL;
                 break;
             case GAME:
-                res = SystemState.game_log_path;
+                res = SystemState.Folders.Logs.Game;
                 break;
         }
 

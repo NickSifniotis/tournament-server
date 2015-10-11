@@ -12,9 +12,6 @@ import java.sql.*;
  */
 public class DBManager
 {
-    private static String db_database = "tournaments.db";
-
-
     /**
      * Nick Sifniotis u5809912
      * 05/10/201
@@ -168,7 +165,7 @@ public class DBManager
         try
         {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:" + SystemState.database_folder + SystemState.Database.File);
+            connection = DriverManager.getConnection("jdbc:sqlite:" + SystemState.Folders.Database + SystemState.Database.File);
         }
         catch (Exception e)
         {

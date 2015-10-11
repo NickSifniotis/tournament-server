@@ -4,7 +4,6 @@ import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IPlayer;
 import AcademicsInterface.IViewer;
 import Common.DBManager;
-import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
 import AcademicsInterface.IVerification;
@@ -400,7 +399,7 @@ public class Tournament extends Entity
             return null;
 
         IPlayer res;
-        String fullFileName = SystemState.interfaces_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.PlayerInterfaces + this.id + ".jar";
 
         try
         {
@@ -442,7 +441,7 @@ public class Tournament extends Entity
             return null;
 
         IVerification res;
-        String fullFileName = SystemState.interfaces_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.PlayerInterfaces + this.id + ".jar";
 
         try
         {

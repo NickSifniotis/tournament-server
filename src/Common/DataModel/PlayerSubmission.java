@@ -1,10 +1,8 @@
 package Common.DataModel;
 
 import Common.DBManager;
-import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -373,7 +371,7 @@ public class PlayerSubmission extends Entity
     public String Name () { return this.name; }
     public String Email () { return this.email; }
     public boolean UsesAvatar () { return this.uses_avatar; }
-    public String Avatar() { return SystemState.pictures_folder + this.id + ".pic"; }
+    public String Avatar() { return SystemState.Folders.Pictures + this.id + ".pic"; }
     public int TournamentKey() { return this.tournament_id; }
     public boolean LivePlaying() { return this.check_boolfield("playing"); }
     public boolean LiveRetired() { return this.check_boolfield("retired"); }
@@ -382,7 +380,7 @@ public class PlayerSubmission extends Entity
     public boolean Disqualified() { return this.disqualified; }
     public boolean Playing() { return this.playing; }
     public boolean ReadyToPlay () { return !(Playing() | Retired() | Disqualified()); }
-    public String MarshalledSource () { return SystemState.marshalling_folder + this.id + ".sub"; }
+    public String MarshalledSource () { return SystemState.Folders.Marshalling + this.id + ".sub"; }
     public int FixtureSlotAllocation ()
     {
         String query = "SELECT fs.* FROM fixture_slot fs, submission s WHERE"

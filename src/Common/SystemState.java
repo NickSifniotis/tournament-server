@@ -1,7 +1,6 @@
 package Common;
 
 
-import LiveLadder.Resources;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -9,8 +8,6 @@ import javafx.scene.image.ImageView;
  * Created by nsifniotis on 31/08/15.
  *
  * System constants.
- *
- * @TODO refactor this into some sort of fun tree hierarchy when you have time
  *
  */
 public class SystemState
@@ -41,26 +38,30 @@ public class SystemState
     }
 
 
+    public static class Folders
+    {
+        public static final String GameEngines = "game_engines/";
+        public static final String PlayerInterfaces = "player_interfaces/";
+        public static final String Submissions = "submissions/";
+        public static final String Marshalling = "marshalling/";
+        public static final String Pictures = "marshalling/pictures/";
+        public static final String Database = "database/";
+
+        public static class Logs
+        {
+            public static final String Root = "logs/";
+            public static final String Error = "logs/system/errors/";
+            public static final String SQL = "logs/system/sql/";
+            public static final String Threads = "logs/system/threads/";
+            public static final String Game = "logs/games/";
+        }
+    }
+
     public static final boolean DEBUG = true;
 
     public static final boolean SQL_LOGS = true;
     public static final boolean THREAD_LOGS = true;
     public static final boolean ERROR_LOGS = true;
-
-
-    // new directory structure
-    public static final String engines_folder = "game_engines/";
-    public static final String interfaces_folder = "player_interfaces/";
-    public static final String input_folder = "submissions/";
-    public static final String marshalling_folder = "marshalling/";
-    public static final String pictures_folder = "marshalling/pictures/";
-    public static final String database_folder = "database/";
-
-    // locations of log files
-    public static final String error_log_path = "logs/system/errors/";
-    public static final String sql_log_path = "logs/system/sql/";
-    public static final String tournament_log_path = "logs/system/threads/";
-    public static final String game_log_path = "logs/games/";
 
     public static final int DEFAULT_TIMEOUT = 1800;     // half an hour is long enough
 

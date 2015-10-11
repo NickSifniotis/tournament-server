@@ -92,7 +92,7 @@ public class PlayerMarshallService extends Services.Service
      */
     private void SetAvatar (PlayerSubmission player, SubmissionMetadata metadata)
     {
-        Path destination = Paths.get(SystemState.pictures_folder + player.PrimaryKey() +".pic");
+        Path destination = Paths.get(SystemState.Folders.Pictures + player.PrimaryKey() +".pic");
 
         try
         {

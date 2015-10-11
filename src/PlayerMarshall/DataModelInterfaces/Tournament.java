@@ -45,7 +45,7 @@ public class Tournament
      */
     public int PrimaryKey() { return data_object.PrimaryKey(); }
     public String Name() { return data_object.Name(); }
-    public String InputFolder() { return SystemState.input_folder + data_object.PrimaryKey() + "/"; }
+    public String InputFolder() { return SystemState.Folders.Submissions + data_object.PrimaryKey() + "/"; }
     public boolean AllowResubmit() { return data_object.AllowResubmit(); }
     public boolean AllowSubmit() { return data_object.AllowSubmit(); }
     public int AvailableSlot() throws Exception { return data_object.GetNextAvailableSlot(); }
@@ -61,9 +61,9 @@ public class Tournament
         Common.DataModel.Tournament[] tourneys = Common.DataModel.Tournament.LoadAll();
         List<Tournament> results = new LinkedList<>();
 
-        for (int i = 0; i < tourneys.length; i ++)
-            if (!tourneys[i].GameOn())
-                results.add (new Tournament(tourneys[i]));
+        for (Common.DataModel.Tournament t: tourneys)
+            if (!t.GameOn())
+                results.add (new Tournament(t));
 
         Tournament[] holding = new Tournament[results.size()];
         return results.toArray(holding);

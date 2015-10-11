@@ -129,15 +129,16 @@ public class Initialiser
      */
     public static void CreateFileSystem()
     {
-        process_directory(SystemState.database_folder);
-        process_directory(SystemState.engines_folder);
-        process_directory(SystemState.interfaces_folder);
-        process_directory(SystemState.marshalling_folder);
-        process_directory(SystemState.pictures_folder);
-        process_directory(SystemState.game_log_path);
-        process_directory(SystemState.error_log_path);
-        process_directory(SystemState.sql_log_path);
-        process_directory(SystemState.tournament_log_path);
+        process_directory(SystemState.Folders.Database);
+        process_directory(SystemState.Folders.GameEngines);
+        process_directory(SystemState.Folders.PlayerInterfaces);
+        process_directory(SystemState.Folders.Marshalling);
+        process_directory(SystemState.Folders.Pictures);
+        process_directory(SystemState.Folders.Logs.Root);
+        process_directory(SystemState.Folders.Logs.Game);
+        process_directory(SystemState.Folders.Logs.Error);
+        process_directory(SystemState.Folders.Logs.SQL);
+        process_directory(SystemState.Folders.Logs.Threads);
     }
 
 

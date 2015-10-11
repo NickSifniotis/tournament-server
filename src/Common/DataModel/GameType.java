@@ -3,7 +3,6 @@ package Common.DataModel;
 import AcademicsInterface.IGameEngine;
 import AcademicsInterface.IViewer;
 import Common.DBManager;
-import Services.LogService;
 import Services.Logs.LogType;
 import Common.SystemState;
 
@@ -231,14 +230,14 @@ public class GameType extends Entity
     public boolean UsesViewer () { return this.uses_viewer; }
     public String GameEngineClass () { return this.engine_class; }
     public String ViewerClass () { return this.viewer_class; }
-    public String SourceFilename () { return SystemState.engines_folder + this.id + ".jar"; }
+    public String SourceFilename () { return SystemState.Folders.GameEngines + this.id + ".jar"; }
 
     public IGameEngine GameEngine () {
         if (this.engine_class.equals(""))
             return null;
 
         IGameEngine res;
-        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.GameEngines + this.id + ".jar";
 
         try
         {
@@ -269,7 +268,7 @@ public class GameType extends Entity
             return null;
 
         IViewer res;
-        String fullFileName = SystemState.engines_folder + this.id + ".jar";
+        String fullFileName = SystemState.Folders.GameEngines + this.id + ".jar";
 
         try
         {
