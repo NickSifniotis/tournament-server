@@ -1,7 +1,6 @@
 package Setup;
 
 import Common.DBManager;
-import Common.LogManager;
 import Common.SystemState;
 
 import java.io.File;
@@ -17,21 +16,6 @@ import java.nio.file.Paths;
  */
 public class Initialiser
 {
-    /**
-     * Nick Sifniotis u5809912
-     * 22/09/2015
-     *
-     * Reboot the entire damn system.
-     *
-     * @param args - no args.
-     */
-    public static void main(String[] args)
-    {
-     //   CreateFileSystem();
-        CreateTables();
-    }
-
-
     /**
      * Nick Sifniotis u5809912
      * 22/09/2015

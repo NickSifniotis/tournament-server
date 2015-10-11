@@ -39,7 +39,17 @@ public class TournamentManager extends Application
     private Button marshalling_btn;
     private ChoiceBox<Tournament> tournament_list;
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
+        if (args.length > 0)
+            if (args[0].equals("-i") || args[0].equals("--install"))
+            {
+                Setup.Initialiser.CreateFileSystem();
+                Setup.Initialiser.CreateTables();
+
+                return;
+            }
+
         launch(args);
     }
 
