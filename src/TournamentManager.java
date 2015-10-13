@@ -361,19 +361,31 @@ public class TournamentManager extends Application
      */
     private void add_viewer_handler()
     {
+        String error_message = "";
         if (!TournamentServer.Alive())
-            return;
+            error_message = "Can't start the Viewer unless the tournament server is running.";
 
         if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
-            return;
+            error_message = "Select the tournament to watch from the drop down list.";
 
         if (this.viewer != null)
-            return;
+            error_message = "you can only have one viewer open at a time.";
 
+        if (!error_message.equals(""))
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setContentText(error_message);
+            alert.showAndWait();
+            return;
+        }
+
+        
         Tournament tournament = this.tournament_list.getSelectionModel().getSelectedItem();
         this.viewer = new GameViewer();
         this.viewer.SetViewer(tournament.Viewer());
         this.viewer.start(new Stage());
+
         int tournament_id = tournament.PrimaryKey();
         TournamentServer.OpenWindow(this.viewer, tournament_id);
     }
