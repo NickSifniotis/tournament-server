@@ -17,6 +17,7 @@ import Common.TwitterManager;
 import GameManager.GameManager;
 import LiveLadder.LiveLadder;
 import PlayerMarshall.PlayerMarshallManager;
+import Services.GameViewer.GameViewer;
 import Services.Logs.LogType;
 import Services.Twitter.TwitterConfigurator;
 import TournamentServer.*;
@@ -37,7 +38,9 @@ public class TournamentManager extends Application
 {
     private Button tournament_service_btn;
     private Button marshalling_btn;
+    private Button viewer_button;
     private ChoiceBox<Tournament> tournament_list;
+    private GameViewer viewer;
 
 
     public static void main(String[] args)
@@ -92,13 +95,16 @@ public class TournamentManager extends Application
         this.tournament_service_btn.setOnAction(e -> toggle_server());
         this.marshalling_btn = new Button("Start Player Marshall");
         this.marshalling_btn.setOnAction(e -> toggle_marshalling_service());
+        this.viewer_button = new Button("Open Viewer");
+        this.viewer_button.setDisable(true);
+        this.viewer_button.setOnAction(e -> add_viewer_handler());
 
         HBox top_row = new HBox();
         top_row.setSpacing(10);
         top_row.getChildren().addAll(game_manager_btn, twitter_btn, ladder_btn, editor_btn);
         HBox second_row = new HBox();
         second_row.setSpacing(10);
-        second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn);
+        second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn, this.viewer_button);
 
         Button start_tourney = new Button ("Start");
         start_tourney.setGraphic(SystemState.Resources.server_start);
@@ -241,6 +247,7 @@ public class TournamentManager extends Application
 
             this.tournament_service_btn.setText("Stop Tournament Server");
             this.marshalling_btn.setDisable(true);
+            this.viewer_button.setDisable(false);
         }
         else
         {
@@ -248,6 +255,7 @@ public class TournamentManager extends Application
 
             this.tournament_service_btn.setText("Start Tournament Server");
             this.marshalling_btn.setDisable(false);
+            this.viewer_button.setDisable(true);
         }
     }
 
@@ -342,6 +350,34 @@ public class TournamentManager extends Application
         Tournament new_tourney = this.tournament_list.getSelectionModel().getSelectedItem();
         new_tourney.ResetTournament();
     }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/10/2015
+     *
+     * Handles the 'add viewer' button click event.
+     * Sends a message to the tournament server, which will handle the request.
+     */
+    private void add_viewer_handler()
+    {
+        if (!TournamentServer.Alive())
+            return;
+
+        if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
+            return;
+
+        if (this.viewer != null)
+            return;
+
+        Tournament tournament = this.tournament_list.getSelectionModel().getSelectedItem();
+        this.viewer = new GameViewer();
+        this.viewer.SetViewer(tournament.Viewer());
+        this.viewer.start(new Stage());
+        int tournament_id = tournament.PrimaryKey();
+        TournamentServer.OpenWindow(this.viewer, tournament_id);
+    }
+
 
     /**
      * Nick Sifniotis u5809912

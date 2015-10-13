@@ -6,6 +6,7 @@ import Services.GameViewer.GameViewer;
 import Services.Logs.LogType;
 import Services.Messages.Message;
 import Services.Messages.TSMessage;
+import Services.Messages.TSViewerMessage;
 import Services.Service;
 import TournamentServer.DataModelInterfaces.*;
 import javafx.stage.Stage;
@@ -81,6 +82,15 @@ public class TournamentService extends Service
         if (!(message instanceof TSMessage))
             return;
 
+        if (message instanceof TSViewerMessage)
+        {
+            TSViewerMessage msg = (TSViewerMessage) message;
+            int tourney = msg.payload;
+            GameViewer viewer = msg.the_stage;
+            game_windows.put(tourney, viewer);
+        }
+
+
         TSMessage msg = (TSMessage) message;
 
         switch (msg.message)
@@ -103,11 +113,6 @@ public class TournamentService extends Service
                     thread_pool = new_array;
                 }
                 break;
-            case ADD_VIEWER:
-                int tourney = msg.payload;
-                GameViewer viewer = new GameViewer();
-                viewer.start(new Stage());
-                game_windows.put(tourney, viewer);
         }
     }
 

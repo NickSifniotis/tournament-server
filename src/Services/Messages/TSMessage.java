@@ -15,6 +15,9 @@ public class TSMessage extends Message
     public TSMessageType message;
     public int payload;
 
+    public TSMessage()
+    {
+    }
 
     public TSMessage(TSMessageType t, int p)
     {

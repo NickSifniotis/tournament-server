@@ -1,7 +1,9 @@
 package TournamentServer;
 
+import Services.GameViewer.GameViewer;
 import Services.Messages.TSMessage;
 import Services.Messages.TSMessageType;
+import Services.Messages.TSViewerMessage;
 
 /**
  * Created by nsifniotis on 6/10/15.
@@ -66,6 +68,21 @@ public class TournamentServer
     {
         if (service != null)
             service.MessageQueue().add(new TSMessage(TSMessageType.THREAD_POOL_RESIZE, new_size));
+    }
+
+
+    /**
+     * Nick Sifniotis u5809912
+     * 13/10/2015
+     *
+     * Sends a message to the server asking it to create a viewing window for the game.
+     *
+     * @param tournament_id - the tournament to open a window for
+     */
+    public static void OpenWindow(GameViewer v, int tournament_id)
+    {
+        if (service != null)
+            service.MessageQueue().add(new TSViewerMessage(v, tournament_id));
     }
 
 
