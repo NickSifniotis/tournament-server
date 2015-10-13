@@ -101,10 +101,10 @@ public class TournamentManager extends Application
 
         HBox top_row = new HBox();
         top_row.setSpacing(10);
-        top_row.getChildren().addAll(game_manager_btn, twitter_btn, ladder_btn, editor_btn);
+        top_row.getChildren().addAll(game_manager_btn, twitter_btn, editor_btn);
         HBox second_row = new HBox();
         second_row.setSpacing(10);
-        second_row.getChildren().addAll(this.marshalling_btn, this.tournament_service_btn, this.viewer_button);
+        second_row.getChildren().addAll(this.marshalling_btn, this.viewer_button, ladder_btn);
 
         Button start_tourney = new Button ("Start");
         start_tourney.setGraphic(SystemState.Resources.server_start);

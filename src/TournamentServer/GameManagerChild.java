@@ -167,7 +167,7 @@ public class GameManagerChild
             // sleep for a bit, give other shit a chance to catch up
             try
             {
-                Thread.sleep(2000);
+                Thread.sleep(500);
             }
             catch (Exception e)
             {
@@ -184,6 +184,18 @@ public class GameManagerChild
         for (PlayerManager p: players)
             Emailer.SendEmail(EmailTypes.GAME_OVER, p.Email(),
                     this.game.TournamentKey(), LogService.GameLogFilename(this.game.PrimaryKey()));
+
+        try
+        {
+            for (int i = 0; i < players.length; i++)
+                players[i].EndGame(game_scores.Disqualified(i));
+        }
+        catch (Exception e)
+        {
+            String error = "Error terminating game + " + game.PrimaryKey() + ". " + e;
+            LogManager.Log(LogType.TOURNAMENT, error);
+        }
+        game.EndGame();
     }
 
 

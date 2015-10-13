@@ -60,6 +60,8 @@ public class Game
     public void StartGame() { data_object.StartGame(); }
     public void EndGame() { data_object.EndGame(); }
     public void Terminate() { data_object.Terminate(); }
+    public int GameNumber() { return data_object.GameNumber(); }
+    public int RoundNumber() { return data_object.RoundNumber(); }
 
 
     /**

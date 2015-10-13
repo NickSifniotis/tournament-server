@@ -2,9 +2,6 @@ package Services.GameViewer;
 
 import AcademicsInterface.IViewer;
 import AcademicsInterface.ViewedPlayers;
-import Common.LogManager;
-import Services.Logs.LogType;
-import TournamentServer.GameManagerChild;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
@@ -22,13 +19,16 @@ public class Viewer implements IViewer
     private Group root = new Group();
     private Group board;
     private Group pieces;
+    private Group players;
 
     /* board layout */
-    private static final double BOARD_SCALE = 1.0; //4.0/3.0;
+    private static final double BOARD_SCALE = 1.5; //4.0/3.0;
     private static final int GAME_SIDE =  (int) (400*BOARD_SCALE);
     private static final int SQUARE_SIDE = (int) (15*BOARD_SCALE);
     private static final int BOARD_SIDE = 20*SQUARE_SIDE;
     private static final int BOARD_MARGIN = (GAME_SIDE-BOARD_SIDE)/2;
+    private static final double PLAYERS_SPACING = 0.1;
+    private static final int PLAYERS_SIDE = (int) (4 * (1 + PLAYERS_SPACING * 2) * SQUARE_SIDE);
 
 
     /** describe a board position */
@@ -172,13 +172,13 @@ public class Viewer implements IViewer
 
             Group rtn = new Group();
             Rectangle r1 = new Rectangle((x * SQUARE_SIDE) + 1, (y * SQUARE_SIDE) + 1, SQUARE_SIDE - 2, SQUARE_SIDE - 2);
-            r1.setFill(getColor(player));
+            r1.setFill(getColor(player.ordinal()));
             r1.setOpacity(0.8);
 
             rtn.getChildren().add(r1);
             Rectangle r2 = new Rectangle((x * SQUARE_SIDE), (y * SQUARE_SIDE), SQUARE_SIDE - 2, SQUARE_SIDE - 2);
             r2.setFill(Color.TRANSPARENT);
-            r2.setStroke(getColor(player));
+            r2.setStroke(getColor(player.ordinal()));
             rtn.getChildren().add(r2);
 
             return rtn;
@@ -215,11 +215,11 @@ public class Viewer implements IViewer
      * @param player One of the four standard blokus players
      * @return A JavaFX color for the player
      */
-    private Color getColor(Player player) {
+    private Color getColor(int player) {
         switch (player) {
-            case B: return Color.BLUE;
-            case G: return Color.GREEN;
-            case Y: return Color.GOLD;
+            case 0: return Color.BLUE;
+            case 3: return Color.GREEN;
+            case 1: return Color.GOLD;
         }
         return Color.RED;
     }
@@ -242,6 +242,18 @@ public class Viewer implements IViewer
             board.getChildren().add(l);
         }
         board.getChildren().add(boarder);
+    }
+
+
+    private void drawPlayers()
+    {
+        players = new Group();
+        for (int i = 0; i < 4; i ++)
+        {
+            Rectangle colour_square = new Rectangle(BOARD_MARGIN, (BOARD_MARGIN * 0.5) + BOARD_SIDE + ((1 + PLAYERS_SPACING * 2) * SQUARE_SIDE) + (SQUARE_SIDE * i), SQUARE_SIDE, SQUARE_SIDE);
+            colour_square.setFill(getColor(i));
+            players.getChildren().add(colour_square);
+        }
     }
 
     /**
@@ -267,8 +279,8 @@ public class Viewer implements IViewer
     @Override
     public void InitialiseViewer(javafx.stage.Stage stage)
     {
-        stage.setTitle("BlokGame");
-        Scene scene = new Scene(root, GAME_SIDE, GAME_SIDE);
+        stage.setTitle("Blokus");
+        Scene scene = new Scene(root, GAME_SIDE, GAME_SIDE + PLAYERS_SIDE);
         stage.setScene(scene);
     }
 
@@ -276,30 +288,21 @@ public class Viewer implements IViewer
     public void NewGame(Object gameState, ViewedPlayers[] players)
     {
         drawBoard();
-        root.getChildren().add(board);
+        drawPlayers();
+        root.getChildren().addAll(board, this.players);
         drawPieces((String) gameState);
     }
 
     @Override
     public void Update(Object gameState)
     {
-        LogManager.Log(LogType.ERROR, "Within Viewer update");
-
         if (gameState == null)
             return;
 
-        LogManager.Log(LogType.ERROR, "game.currentstate is : " + gameState.getClass().getName());
+        String res = (String) gameState;
+        res = res.replace(".", "....");
 
-        drawPieces((String)(gameState));
-
-//        try
-//        {
-//            Thread.sleep(500);
-//        }
-//        catch (Exception e)
-//        {
-//
-//        }
+        drawPieces(res);
     }
 
 }

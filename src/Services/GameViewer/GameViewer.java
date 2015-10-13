@@ -27,6 +27,7 @@ public class GameViewer extends Application
 {
     private IViewer viewer_controller;
     private GameManagerChild current_game;
+    private Stage stage;
 
 
     /**
@@ -40,6 +41,7 @@ public class GameViewer extends Application
     @Override
     public void start(Stage primaryStage)
     {
+        stage = primaryStage;
         viewer_controller = new Viewer();
         viewer_controller.InitialiseViewer(primaryStage);
         viewer_controller.NewGame(null, null);
@@ -107,17 +109,11 @@ public class GameViewer extends Application
         GameManagerChild res = new GameManagerChild(game, tournament.GameEngine(), player_managers, tournament.UseNullMoves());
 
         LogManager.Log(LogType.TOURNAMENT, "Game started!");
+        stage.setTitle("Round " + res.Game().RoundNumber() + "  Game " + res.Game().GameNumber());
+
         return res;
     }
 
-
-    public void update_state()
-    {
-        if (current_game == null)
-            this.viewer_controller.Update(null);
-        else
-            this.viewer_controller.Update(current_game.CurrentState());
-    }
 
     /**
      * Nick Sifniotis u5809912
@@ -128,13 +124,6 @@ public class GameViewer extends Application
     public void SetViewer(IViewer v)
     {
         viewer_controller = v;
-    }
-
-
-    public void UpdateGame(GameManagerChild game_state)
-    {
-        LogManager.Log(LogType.ERROR, "Update called with game state :" + game_state.toString());
-        current_game = game_state;
     }
 
 
@@ -151,7 +140,6 @@ public class GameViewer extends Application
             @Override
             public Boolean call()
             {
-               // LogManager.Log(LogType.ERROR, "Updating GUI with " + current_state);
                 if (current_game != null) {
                     current_game.Advance();
                     return current_game.GameOn();
@@ -167,17 +155,11 @@ public class GameViewer extends Application
             if (result)
                 viewer_controller.Update(current_game.CurrentState());
 
-            try
-            {
-                Thread.sleep (2000);
-            }
-            catch (Exception ee)
-            {
-                return;
-            }
             if (result)
                 this.AdvanceGame();
             else {
+                if (current_game != null)
+                    current_game.EndGame();
                 current_game = get_next_game();
                 this.AdvanceGame();
             }
