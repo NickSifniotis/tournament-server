@@ -550,6 +550,10 @@ public class Tournament extends Entity
         Game [] games = Game.LoadAll(tourney_list, false, false);
         for (Game g: games)
             g.Reset();
+
+        PlayerSubmission[] players = PlayerSubmission.LoadAll(this.id);
+        for (PlayerSubmission p: players)
+            p.EndingGame(false);
     }
 
 

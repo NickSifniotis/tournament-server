@@ -96,7 +96,7 @@ public class TournamentManager extends Application
         this.marshalling_btn = new Button("Start Player Marshall");
         this.marshalling_btn.setOnAction(e -> toggle_marshalling_service());
         this.viewer_button = new Button("Open Viewer");
-        this.viewer_button.setDisable(true);
+       // this.viewer_button.setDisable(true);
         this.viewer_button.setOnAction(e -> add_viewer_handler());
 
         HBox top_row = new HBox();
@@ -247,7 +247,7 @@ public class TournamentManager extends Application
 
             this.tournament_service_btn.setText("Stop Tournament Server");
             this.marshalling_btn.setDisable(true);
-            this.viewer_button.setDisable(false);
+         //   this.viewer_button.setDisable(false);
         }
         else
         {
@@ -255,7 +255,7 @@ public class TournamentManager extends Application
 
             this.tournament_service_btn.setText("Start Tournament Server");
             this.marshalling_btn.setDisable(false);
-            this.viewer_button.setDisable(true);
+          //  this.viewer_button.setDisable(true);
         }
     }
 
@@ -362,8 +362,8 @@ public class TournamentManager extends Application
     private void add_viewer_handler()
     {
         String error_message = "";
-        if (!TournamentServer.Alive())
-            error_message = "Can't start the Viewer unless the tournament server is running.";
+     //   if (!TournamentServer.Alive())
+       //     error_message = "Can't start the Viewer unless the tournament server is running.";
 
         if (this.tournament_list.getSelectionModel().getSelectedItem() == null)
             error_message = "Select the tournament to watch from the drop down list.";
@@ -380,14 +380,14 @@ public class TournamentManager extends Application
             return;
         }
 
-        
+
         Tournament tournament = this.tournament_list.getSelectionModel().getSelectedItem();
         this.viewer = new GameViewer();
         this.viewer.SetViewer(tournament.Viewer());
         this.viewer.start(new Stage());
 
-        int tournament_id = tournament.PrimaryKey();
-        TournamentServer.OpenWindow(this.viewer, tournament_id);
+        //int tournament_id = tournament.PrimaryKey();
+        //TournamentServer.OpenWindow(this.viewer, tournament_id);
     }
 
 

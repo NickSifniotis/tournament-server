@@ -254,9 +254,11 @@ public class TournamentService extends Service
                 IViewer viewer = tournament.Viewer();
                 current_stage.SetViewer(viewer);
             }
+
+            //thread_pool[thread].SetViewer(current_stage);
         }
 
-        thread_pool[thread].start();
+        //thread_pool[thread].start();
 
         LogManager.Log(LogType.TOURNAMENT, "Game started!");
         return true;

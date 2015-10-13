@@ -15,6 +15,11 @@ import java.nio.file.Paths;
  */
 public class Initialiser
 {
+    public static void main(String[] args) {
+        CreateTables();
+    }
+
+
     /**
      * Nick Sifniotis u5809912
      * 22/09/2015

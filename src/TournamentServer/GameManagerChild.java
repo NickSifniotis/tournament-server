@@ -22,7 +22,7 @@ import TournamentServer.Exceptions.PlayerMoveException;
  * PlayerManager objects that correspond to the players of this engine.
  *
  */
-public class GameManagerChild extends Thread
+public class GameManagerChild
 {
     private boolean finished;
     private boolean aborted;
@@ -32,8 +32,7 @@ public class GameManagerChild extends Thread
     private IGameEngine engine;
     private boolean use_nulls;
     private PlayerManager[] players;
-    private GameViewer viewer;
-    private boolean use_viewer;
+    private Object game_state;
 
 
     /**
@@ -52,8 +51,7 @@ public class GameManagerChild extends Thread
         this.engine = engine;
         this.players = players;
         this.use_nulls = use_nulls;
-        this.use_viewer = false;
-        this.viewer = null;
+        this.game_state = null;
 
         this.game_scores = new Scores(game.PrimaryKey(), players);
 
@@ -69,43 +67,8 @@ public class GameManagerChild extends Thread
             String error = "GameManagerChild.constructor - unable to start game " + this.game.PrimaryKey();
             LogManager.Log(LogType.ERROR, error);
         }
-    }
 
-
-    public void SetViewer(GameViewer v)
-    {
-        this.viewer = v;
-        this.use_viewer = true;
-
-//        viewed_players = new ViewedPlayers[this.players.length];
-//        for (int i = 0; i < this.players.length; i ++)
-//        {
-//            viewed_players[i] = new ViewedPlayers();
-//            viewed_players[i].PlayerName = this.players[i].Name();
-//        //    vp[i].PlayerPicture = this.players[i].Picture();
-//        }
-
-
-    }
-
-    /**
-     * Nick Sifniotis u5809912
-     * 6/9/2015
-     *
-     * Override the Thread run method
-     *
-     * 10/10 useless comment
-     *
-     */
-    @Override
-    public void run ()
-    {
-        this.finished = false;
-        this.aborted = false;
-
-        this.run_game();
-
-        this.finished = true;
+        game_state = engine.InitialiseGame(players.length);
     }
 
 
@@ -116,17 +79,11 @@ public class GameManagerChild extends Thread
      * Ok, this is the more interesting run method.
      *
      */
-    private void run_game ()
+    public void Advance ()
     {
         // fuck yeah, let's RUN THIS GAME
 
-        Object game_state = engine.InitialiseGame(players.length);
-
-        if (use_viewer)
-            //viewer.NewGame(game_state, viewed_players);
-            viewer.Update(game_state);
-
-        while (engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted)
+        if (engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted)
         {
             int current_player = engine.GetCurrentPlayer(game_state);
             Object move;
@@ -207,11 +164,6 @@ public class GameManagerChild extends Thread
             game_scores.Update (engine.ScoreGame(game_state));
 
 
-            // update the game screen
-            if (use_viewer)
-                viewer.Update(game_state);
-
-
             // sleep for a bit, give other shit a chance to catch up
             try
             {
@@ -223,11 +175,15 @@ public class GameManagerChild extends Thread
                 this.aborted = true;
             }
         }
+    }
 
+
+    public void EndGame()
+    {
         // and send out EMAILS ABOUT IT
         for (PlayerManager p: players)
             Emailer.SendEmail(EmailTypes.GAME_OVER, p.Email(),
-                this.game.TournamentKey(), LogService.GameLogFilename(this.game.PrimaryKey()));
+                    this.game.TournamentKey(), LogService.GameLogFilename(this.game.PrimaryKey()));
     }
 
 
@@ -264,4 +220,7 @@ public class GameManagerChild extends Thread
     public PlayerManager[] Players () { return this.players; }
     public boolean Finished () { return this.finished; }
     public void Abort () { this.aborted = true; this.Game().Terminate(); }
+    public Object CurrentState() { return this.game_state; }
+    public boolean GameOn() { return engine.AreYouStillAlive(game_state) && game_scores.GameOn() && !this.aborted; }
+
 }

@@ -522,17 +522,12 @@ public class PlayerSubmission extends Entity
      * Signals that a player has finished playing a game.
      *
      * @param disqualified - true if this player was disqualified
-     * @throws Exception - chucks a hissy fit if the player doesnt seem to be playing any games to end.
      */
-    public void EndingGame (boolean disqualified) throws Exception
+    public void EndingGame (boolean disqualified)
     {
-        if (!LivePlaying())
-            throw new Exception ("This player does not seem to be playing any game.");
-
-        String query = (disqualified) ? "UPDATE submission SET playing = " + DBManager.BoolValue(false)
-                                            + ", disqualified = " + DBManager.BoolValue(true)
-                                        : "UPDATE submission SET playing = " + DBManager.BoolValue(false);
-        query += " WHERE id = " + this.id;
+        String query = "UPDATE submission SET playing = " + DBManager.BoolValue(false)
+                + ", disqualified = " + DBManager.BoolValue(disqualified)
+                + " WHERE id = " + this.id;
         DBManager.Execute(query);
     }
 }
