@@ -1,5 +1,7 @@
 package TournamentServer.Fixtures;
 
+import Common.DBManager;
+
 /**
  * Created by nsifniotis on 15/10/15.
  */
@@ -75,11 +77,34 @@ public class GameMixer
 
     private static void GenerateSQL(String [] games)
     {
+        int tournament_id = 2;         // SET THIS
+        int num_players = 5;
+        String query;
+        int [] slot_priikeys = new int[num_players];
+
+        query = "INSERT INTO tournament (game_id, name, player_interface_class, verification_class," +
+                "num_players, timeout, allow_resubmit, use_null_moves, allow_submit, game_on, twitter_config_id)" +
+                "VALUES (1, 'Blokus " + num_players +" player', 'BlokusPlayer', 'BlokusPlayer', " + num_players + ", 10, 0, 1, 1, 0, 1)";
+        System.out.println (query);
+
+        for (int i = 0; i < num_players; i ++)
+        {
+            query = "INSERT INTO fixture_slot (tournament_id, submission_id) VALUES (" + tournament_id + ", 0)";
+           // slot_priikeys[i] = DBManager.ExecuteReturnKey(query);
+
+            System.out.println ("Executing " + query);
+        }
+
+        int round_number = 1;
         for (String g: games)
         {
+            query = "INSERT INTO game (tournament_id, round_number, game_number, played, in_progress)" +
+                    " VALUES (" + tournament_id + ", " + round_number + ", 1, 0, 0)";
+            System.out.println ("Executing " + query);
+
             for (int i = 0; i < g.length(); i ++)
             {
-                String query = "INSERT INTO fixture 
+
             }
         }
     }
