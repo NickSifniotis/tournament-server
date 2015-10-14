@@ -11,7 +11,7 @@ public class Fixture
 {
     public List<short[]> rounds;
     private short[][] met_before;
-    private static final int NUM_PLAYERS = 10;
+    private static final int NUM_PLAYERS = 4;
 
     public Fixture()
     {

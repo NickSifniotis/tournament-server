@@ -43,6 +43,7 @@ public class LiveLadder extends Application
     @Override
     public void start(Stage primaryStage)
     {
+        Resources.initialise();
         LadderColumnStructure.Initialise();
         LadderColumnStructure.DIFFERENTIAL.Disable();
 
@@ -78,7 +79,7 @@ public class LiveLadder extends Application
 
 
         Timeline timeline = new Timeline(new KeyFrame(
-                Duration.millis(1000),
+                Duration.millis(2000),
                 ae -> this.refresh_main_grid()));
         timeline.setCycleCount(Animation.INDEFINITE);
         timeline.play();

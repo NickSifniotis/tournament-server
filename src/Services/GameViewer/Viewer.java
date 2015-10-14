@@ -3,10 +3,13 @@ package Services.GameViewer;
 import AcademicsInterface.IViewer;
 import AcademicsInterface.ViewedPlayers;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 /**
  * Created by steveb on 8/08/2015.
@@ -20,6 +23,7 @@ public class Viewer implements IViewer
     private Group board;
     private Group pieces;
     private Group players;
+    private Group player_fields;
 
     /* board layout */
     private static final double BOARD_SCALE = 1.5; //4.0/3.0;
@@ -248,9 +252,11 @@ public class Viewer implements IViewer
     private void drawPlayers()
     {
         players = new Group();
+        player_fields = new Group();
+        players.getChildren().add(player_fields);
         for (int i = 0; i < 4; i ++)
         {
-            Rectangle colour_square = new Rectangle(BOARD_MARGIN, (BOARD_MARGIN * 0.5) + BOARD_SIDE + ((1 + PLAYERS_SPACING * 2) * SQUARE_SIDE) + (SQUARE_SIDE * i), SQUARE_SIDE, SQUARE_SIDE);
+            Rectangle colour_square = new Rectangle(BOARD_MARGIN, (BOARD_MARGIN * 1.2) + BOARD_SIDE + ((1 + PLAYERS_SPACING * 2) * SQUARE_SIDE) + (SQUARE_SIDE * (i * (1 + PLAYERS_SPACING))), SQUARE_SIDE, SQUARE_SIDE);
             colour_square.setFill(getColor(i));
             players.getChildren().add(colour_square);
         }
@@ -275,12 +281,11 @@ public class Viewer implements IViewer
         root.getChildren().add(pieces);
     }
 
-
     @Override
     public void InitialiseViewer(javafx.stage.Stage stage)
     {
         stage.setTitle("Blokus");
-        Scene scene = new Scene(root, GAME_SIDE, GAME_SIDE + PLAYERS_SIDE);
+        Scene scene = new Scene(root, GAME_SIDE, GAME_SIDE);
         stage.setScene(scene);
     }
 
@@ -288,8 +293,7 @@ public class Viewer implements IViewer
     public void NewGame(Object gameState, ViewedPlayers[] players)
     {
         drawBoard();
-        drawPlayers();
-        root.getChildren().addAll(board, this.players);
+        root.getChildren().add(board);
         drawPieces((String) gameState);
     }
 

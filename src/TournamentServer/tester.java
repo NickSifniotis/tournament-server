@@ -1,12 +1,9 @@
 package TournamentServer;
 
-import Common.DBManager;
-import Common.LogManager;
-import Common.TwitterManager;
-import Services.Twitter.Data.TwitterConfig;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
+import TournamentServer.Fixtures.Fixture;
+import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Created by nsifniotis on 7/09/15.
@@ -16,7 +13,7 @@ import java.sql.ResultSet;
  */
 public class tester {
 
-    private static final short NUM_PLAYERS = 10;
+    private static final short NUM_PLAYERS = 4;
 
 
     /**
@@ -25,7 +22,7 @@ public class tester {
      * sort the same way.
      * @param original the unsorted round
      */
-    public static short [] sort_round(short[] original)
+    public static short [] sort_2round(short[] original)
     {
         short [] res = new short[8];
 
@@ -52,6 +49,10 @@ public class tester {
         return res;
     }
 
+    public static short []sort_round (short [] array)
+    {
+        return sort_array(array);
+    }
 
     public static short [] sort_array (short [] array)
     {
@@ -78,8 +79,7 @@ public class tester {
         return res;
     }
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         // this is an interesting one. Experimenting with fixturing.
 
         // the hypothetical is a ten player tournament with four players per game
@@ -90,21 +90,20 @@ public class tester {
 
         // one round is two 4player games. There is no need to represent the teams in the bye
         // in this data structure. Therefore, an 8 element ushort array should do the job.
-/*
-        short [] round;
-        short [] players = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        short[] round;
+        short[] players = {0, 1, 2, 3};
         int num_games = 0;
 
-        HashMap <String, short []> unique_games = new HashMap<>();
+        HashMap<String, short[]> unique_games = new HashMap<>();
 
         boolean finished = false;
-        while (!finished)
-        {
+        while (!finished) {
             // Find the largest index k such that a[k] < a[k + 1].
             // If no such index exists, the permutation is the last permutation.
 
             int k = -1;
-            for (int i = 0; i < players.length - 1; i ++)
+            for (int i = 0; i < players.length - 1; i++)
                 if (players[i] < players[i + 1])
                     k = i;
 
@@ -112,11 +111,10 @@ public class tester {
                 finished = true;
 
             // the rest of the algorithm goes here.
-            if (!finished)
-            {
+            if (!finished) {
                 // Find the largest index l greater than k such that a[k] < a[l].
                 int l = -1;
-                for (int i = k; i < players.length; i ++)
+                for (int i = k; i < players.length; i++)
                     if (players[k] < players[i])
                         l = i;
 
@@ -126,20 +124,19 @@ public class tester {
                 players[l] = temp;
 
                 // Reverse the sequence from a[k + 1] up to and including the final element a[n].
-                short [] newarray = players.clone();
+                short[] newarray = players.clone();
 
-                for (int i = k + 1; i < players.length; i ++)
+                for (int i = k + 1; i < players.length; i++)
                     newarray[players.length - i + k] = players[i];
 
                 players = newarray;
 
 
-                round = new short[8];
+                round = new short[4];
                 System.arraycopy(players, 0, round, 0, round.length);
                 round = sort_round(round);
 
-                if (unique_games.putIfAbsent(hash_round(round), round) == null)
-                {
+                if (unique_games.putIfAbsent(hash_round(round), round) == null) {
                     System.out.println(hash_round(round));
                     num_games++;
                 }
@@ -147,7 +144,7 @@ public class tester {
         }
 
 
-        System.out.println ("Finished! Total unique combinations: " + num_games);
+        System.out.println("Finished! Total unique combinations: " + num_games);
 
         Fixture start = new Fixture();
 
@@ -161,31 +158,26 @@ public class tester {
         fixtures.putIfAbsent(temp.hash(), temp);
 
 
-        for (int zzz = 0; zzz < 20; zzz ++)
-        {
+        for (int zzz = 0; zzz < 20; zzz++) {
             count = 0;
             best_range = 50; // impossible
             new_fixtures = new HashMap<>();
 
             for (short[] r : unique_games.values())
-                for (Fixture f : fixtures.values())
-                {
+                for (Fixture f : fixtures.values()) {
                     temp = f.AddRound(r);
 
-                    if (temp.perfect())
-                    {
-                        System.out.println ("Perfect fixture found!!");
-                        System.out.println (temp.hash());
+                    if (temp.perfect()) {
+                        System.out.println("Perfect fixture found!!");
+                        System.out.println(temp.hash());
                         return;
 
                     }
 
-                    if (temp.range() <= best_range)
-                    {
+                    if (temp.range() <= best_range) {
                         // filters out a lot of fat before it's even inserted into the hashmap
-                        if (new_fixtures.putIfAbsent(temp.hash(), temp) == null)
-                        {
-                           // System.out.println("Adding hash " + temp.hash() + " range " + temp.range());
+                        if (new_fixtures.putIfAbsent(temp.hash(), temp) == null) {
+                            // System.out.println("Adding hash " + temp.hash() + " range " + temp.range());
                             count++;
                             best_range = temp.range();
                         }
@@ -199,52 +191,26 @@ public class tester {
 
             // filter out fixtures that have blown out their ranges too far.
             new_fixtures = new HashMap<>();
-            for (Fixture f: fixtures.values())
+            for (Fixture f : fixtures.values())
                 if (f.range() == best_range)
                     new_fixtures.putIfAbsent(f.hash(), f);
                 else
-                    count ++;
+                    count++;
 
-            System.out.println ("Total fails: " + count);
+            System.out.println("Total fails: " + count);
             fixtures = new_fixtures;
         }
 
 
         System.out.println("Results!!\n");
 
-        for (Fixture f: fixtures.values())
-        {
+        for (Fixture f : fixtures.values()) {
             System.out.print(f.hash() + ": ");
-            for (short [] s: f.rounds)
-                System.out.print (Arrays.toString(s) + ", ");
+            for (short[] s : f.rounds)
+                System.out.print(Arrays.toString(s) + ", ");
 
             System.out.println();
-        }*/
-
-        LogManager.StartService();
-
-        Common.Repository.Initialise();
-
-        String query = "SELECT * FROM submission";
-        Connection con = DBManager.connect();
-        try
-        {
-            ResultSet res = DBManager.ExecuteQuery(query, con);
-            while (res.next())
-            {
-                System.out.println (res.getInt("id") + ": " + res.getString("team_name") + ":" + res.getString("playing"));
-            }
-        }
-        catch (Exception e)
-        {
 
         }
-        finally
-        {
-            DBManager.disconnect(con);
-        }
-
-        LogManager.StopService();
     }
-
 }

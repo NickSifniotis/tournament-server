@@ -7,6 +7,7 @@ package Services.GameViewer;
  */
 
 import AcademicsInterface.IViewer;
+import AcademicsInterface.ViewedPlayers;
 import Common.LogManager;
 import Services.Logs.LogType;
 import TournamentServer.DataModelInterfaces.Game;
@@ -67,12 +68,20 @@ public class GameViewer extends Application
             game_counter ++;
         }
 
+        try
+        {
+            Thread.sleep (1000);
+        }
+        catch (Exception e)
+        {
+            // nothing
+        }
+
         return success;
     }
 
 
-    private GameManagerChild launch_game (Game game)
-    {
+    private GameManagerChild launch_game (Game game) {
         Tournament tournament = new Tournament(game.TournamentKey());
         LogManager.Log(LogType.TOURNAMENT, "Attempting to launch game " + game.PrimaryKey() + " in tournament " + tournament.Name());
         PlayerSubmission[] players = game.Players();
@@ -80,27 +89,24 @@ public class GameViewer extends Application
         // games only launch one at a time. So it's fair to assume that all players that are ready
         // to play now will still be ready to play in a couple of milliseconds.
         boolean lets_play = true;
-        for (PlayerSubmission player: players)
+        for (PlayerSubmission player : players)
             lets_play &= player.ReadyToPlay();
 
-        if (!lets_play || players.length != tournament.NumPlayers())
-        {
+        if (!lets_play || players.length != tournament.NumPlayers()) {
             LogManager.Log(LogType.TOURNAMENT, "Failed to launch game - not enough players reporting ready: " + lets_play + ":" + players.length);
             return null;
         }
 
 
         PlayerManager[] player_managers = new PlayerManager[players.length];
-        try
-        {
-            for (int i = 0; i < players.length; i++)
-            {
+        String title = "";
+        try {
+            for (int i = 0; i < players.length; i++) {
                 players[i].StartGame();
                 player_managers[i] = new PlayerManager(tournament, players[i]);
+                title += " | " + players[i].Name();
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             String error = "Error launching game " + game.PrimaryKey() + ". " + e;
             LogManager.Log(LogType.ERROR, error);
             return null;
@@ -109,8 +115,9 @@ public class GameViewer extends Application
         GameManagerChild res = new GameManagerChild(game, tournament.GameEngine(), player_managers, tournament.UseNullMoves());
 
         LogManager.Log(LogType.TOURNAMENT, "Game started!");
-        stage.setTitle("Round " + res.Game().RoundNumber() + "  Game " + res.Game().GameNumber());
+        stage.setTitle("R" + res.Game().RoundNumber() + " G" + res.Game().GameNumber() + title);
 
+        viewer_controller.NewGame(null, null);
         return res;
     }
 
