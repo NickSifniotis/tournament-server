@@ -1,7 +1,6 @@
-package TournamentServer;
+package TournamentServer.Fixtures;
 
 
-import TournamentServer.Fixtures.Fixture;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -13,7 +12,7 @@ import java.util.HashMap;
  */
 public class tester {
 
-    private static final short NUM_PLAYERS = 4;
+    private static final short NUM_PLAYERS = 5;
 
 
     /**
@@ -92,7 +91,7 @@ public class tester {
         // in this data structure. Therefore, an 8 element ushort array should do the job.
 
         short[] round;
-        short[] players = {0, 1, 2, 3};
+        short[] players = {0, 1, 2, 3, 4};
         int num_games = 0;
 
         HashMap<String, short[]> unique_games = new HashMap<>();
@@ -146,7 +145,7 @@ public class tester {
 
         System.out.println("Finished! Total unique combinations: " + num_games);
 
-        Fixture start = new Fixture();
+        Fixture start = new Fixture(NUM_PLAYERS);
 
         HashMap<String, Fixture> fixtures = new HashMap<>();
         HashMap<String, Fixture> new_fixtures;
@@ -154,11 +153,11 @@ public class tester {
         int count;
         int best_range;
 
-        temp = start.AddRound(unique_games.get("01234567"));
+        temp = start.AddRound(unique_games.get("0123"));
         fixtures.putIfAbsent(temp.hash(), temp);
 
 
-        for (int zzz = 0; zzz < 20; zzz++) {
+        for (int zzz = 0; zzz < 60; zzz++) {
             count = 0;
             best_range = 50; // impossible
             new_fixtures = new HashMap<>();
@@ -205,7 +204,7 @@ public class tester {
         System.out.println("Results!!\n");
 
         for (Fixture f : fixtures.values()) {
-            System.out.print(f.hash() + ": ");
+            System.out.println(f.hash() + ": ");
             for (short[] s : f.rounds)
                 System.out.print(Arrays.toString(s) + ", ");
 

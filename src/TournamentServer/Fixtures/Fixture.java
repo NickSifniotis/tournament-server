@@ -11,17 +11,18 @@ public class Fixture
 {
     public List<short[]> rounds;
     private short[][] met_before;
-    private static final int NUM_PLAYERS = 4;
+    private int NUM_PLAYERS;
 
-    public Fixture()
+    public Fixture(int n)
     {
+        NUM_PLAYERS = n;
         rounds = new LinkedList<>();
         met_before = new short[NUM_PLAYERS][NUM_PLAYERS];
     }
 
     public boolean perfect()
     {
-        short[] counts = new short[10];
+        short[] counts = new short[100];
 
         for (int i = 0; i < NUM_PLAYERS; i++)
             for (int j = 0; j < NUM_PLAYERS; j++)
@@ -60,7 +61,7 @@ public class Fixture
 
     public String hash()
     {
-        short[] counts = new short[10];
+        short[] counts = new short[100];
 
         for (int i = 0; i < NUM_PLAYERS; i++)
             for (int j = 0; j < NUM_PLAYERS; j++)
@@ -80,7 +81,7 @@ public class Fixture
     {
         // need to create a deep copy of this object.
 
-        Fixture res = new Fixture();
+        Fixture res = new Fixture(NUM_PLAYERS);
         for (int i = 0; i < NUM_PLAYERS; i++)
             for (int j = 0; j < NUM_PLAYERS; j++)
                 res.met_before[i][j] = this.met_before[i][j];
@@ -92,13 +93,16 @@ public class Fixture
 
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
-                if (i != j)
+                if (i != j) {
+//                    System.out.println(i + ":" + j);
+//                    System.out.println(round[i] + ":" + round[j]);
                     res.met_before[round[i]][round[j]]++;
+                }
 
-        for (int i = 4; i < 8; i++)
-            for (int j = 4; j < 8; j++)
-                if (i != j)
-                    res.met_before[round[i]][round[j]]++;
+//        for (int i = 4; i < 8; i++)
+//            for (int j = 4; j < 8; j++)
+//                if (i != j)
+//                    res.met_before[round[i]][round[j]]++;
 
         return res;
     }
