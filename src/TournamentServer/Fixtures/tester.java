@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class tester {
 
-    private static final short NUM_PLAYERS = 9;
+    private static final short NUM_PLAYERS = 10;
 
 
     /**

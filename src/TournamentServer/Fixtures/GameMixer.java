@@ -8,10 +8,20 @@ import java.nio.file.Paths;
 
 /**
  * Created by nsifniotis on 15/10/15.
+ *
+ * BLOKUS DAY
  */
 public class GameMixer
 {
-
+    /**
+     * Nick Sifniotis u5809912
+     * 15/10/2015
+     *
+     * BLOKUS DAY
+     *
+     * Unselect the number of players that there are available, and then execute this PSVM to create the fixture.
+     * @param args
+     */
     public static void main(String[] args)
     {
 //        four_player();
@@ -19,7 +29,8 @@ public class GameMixer
 //        six_player();
 //        seven_player();
 //        eight_player();
-        nine_player();
+//        nine_player();
+//        ten_player();
     }
 
 
@@ -220,6 +231,16 @@ public class GameMixer
         full_games = Reduce2(full_games);
 
         GenerateSQL2(full_games, 9);
+    }
+
+
+    private static void ten_player ()
+    {
+        String [] full_games = {"01234567", "12793468", "02681359", "06792458", "03491578", "01482357", "01563789", "05891246", "03472569", "13682479", "02781459", "02351678", "01473689", "24893567", "05691234", "12694578", "01582367", "02461389", "01793456", "03492578", "02381467", "12354689", "03672459", "05681279", "01453789", "12683457", "02591348", "04783569", "02671589", "01234679",
+        };
+
+        full_games = Reduce2(full_games);
+        GenerateSQL2(full_games, 10);
     }
 
     private static String [] Reduce2(String [] full_games)
