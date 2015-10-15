@@ -13,6 +13,10 @@ import java.nio.file.Paths;
  */
 public class GameMixer
 {
+
+    public static void main(String[] args) {
+        build(4);
+    }
     /**
      * Nick Sifniotis u5809912
      * 15/10/2015
@@ -20,17 +24,37 @@ public class GameMixer
      * BLOKUS DAY
      *
      * Unselect the number of players that there are available, and then execute this PSVM to create the fixture.
-     * @param args
+     * @param number - how many players are playing in this tournament
      */
-    public static void main(String[] args)
+    public static void build(int number)
     {
-//        four_player();
-//        five_player();
-//        six_player();
-//        seven_player();
-//        eight_player();
-//        nine_player();
-//        ten_player();
+        switch(number)
+        {
+            case 4:
+                four_player();
+                break;
+            case 5:
+                five_player();
+                break;
+            case 6:
+                six_player();
+                break;
+            case 7:
+                seven_player();
+                break;
+            case 8:
+                eight_player();
+                break;
+            case 9:
+                nine_player();
+                break;
+            case 10:
+                ten_player();
+                break;
+            default:
+                System.out.println("Unable to build a tournament with " + number + " players. This will have to be done manually.");
+                break;
+        }
     }
 
 

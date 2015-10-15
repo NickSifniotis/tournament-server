@@ -1,6 +1,7 @@
 package Common.DataModel;
 
 import Common.DBManager;
+import Common.LogManager;
 import Services.LogService;
 import Services.Logs.LogType;
 import java.sql.Connection;
@@ -390,6 +391,7 @@ public class Game extends Entity
             {
                 while (res.next())
                 {
+                    LogManager.Log(LogType.ERROR, res.getString("team_name"));
                     results.add(new PlayerSubmission(res));
                 }
             }

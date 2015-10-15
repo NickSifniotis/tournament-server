@@ -144,8 +144,8 @@ public class GameManagerChild
             {
                 if (this.use_nulls)
                 {
-                    move = players[current_player].NullMove();
                     LogManager.GameLog(game.PrimaryKey(), "Player " + current_player + " returned an illegal move: " + move + ". Skipping turn.");
+                    move = players[current_player].NullMove();
                 }
                 else
                 {

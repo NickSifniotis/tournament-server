@@ -1,6 +1,8 @@
 package LiveLadder.DataModelInterfaces;
 
 import Common.DataModel.Score;
+import Common.LogManager;
+import Services.Logs.LogType;
 
 import java.util.Arrays;
 import java.util.HashMap;

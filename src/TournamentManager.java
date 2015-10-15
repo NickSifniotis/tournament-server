@@ -10,10 +10,7 @@
  *
  */
 
-import Common.Emailer;
-import Common.LogManager;
-import Common.SystemState;
-import Common.TwitterManager;
+import Common.*;
 import GameManager.GameManager;
 import LiveLadder.LiveLadder;
 import PlayerMarshall.PlayerMarshallManager;
@@ -23,6 +20,7 @@ import Services.Twitter.TwitterConfigurator;
 import TournamentServer.*;
 import TournamentEditor.*;
 import TournamentServer.DataModelInterfaces.Tournament;
+import TournamentServer.Fixtures.GameMixer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -46,6 +44,7 @@ public class TournamentManager extends Application
     public static void main(String[] args)
     {
         if (args.length > 0)
+        {
             if (args[0].equals("-i") || args[0].equals("--install"))
             {
                 Setup.Initialiser.CreateFileSystem();
@@ -53,6 +52,15 @@ public class TournamentManager extends Application
 
                 System.exit(0);
             }
+
+            if (args[0].equals("-b") || args[0].equals ("--build"))
+            {
+                int tournament_size = Integer.parseInt (args[1]);
+                GameMixer.build(tournament_size);
+
+                System.exit(0);
+            }
+        }
 
         launch(args);
     }
@@ -117,9 +125,11 @@ public class TournamentManager extends Application
         reset_tourney.setOnAction(e -> reset_tournament());
         tournament_list = new ChoiceBox<>();
         update_tournament_list();
+        Button force_reset_players = new Button ("Force free players");
+        force_reset_players.setOnAction(e -> handle_force_reset());
         HBox third_row = new HBox();
         third_row.setSpacing(20);
-        third_row.getChildren().addAll(start_tourney, stop_tourney, reset_tourney, tournament_list);
+        third_row.getChildren().addAll(start_tourney, stop_tourney, reset_tourney, tournament_list, force_reset_players);
 
         VBox main_layout = new VBox();
         main_layout.setSpacing(10);
@@ -129,6 +139,13 @@ public class TournamentManager extends Application
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tournament Server 2015");
         primaryStage.show();
+    }
+
+
+    public void handle_force_reset()
+    {
+        String query = "UPDATE submission SET playing = 0";
+        DBManager.Execute(query);
     }
 
 
