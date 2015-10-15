@@ -99,10 +99,10 @@ public class Fixture
                     res.met_before[round[i]][round[j]]++;
                 }
 
-//        for (int i = 4; i < 8; i++)
-//            for (int j = 4; j < 8; j++)
-//                if (i != j)
-//                    res.met_before[round[i]][round[j]]++;
+        for (int i = 4; i < 8; i++)
+            for (int j = 4; j < 8; j++)
+                if (i != j)
+                    res.met_before[round[i]][round[j]]++;
 
         return res;
     }

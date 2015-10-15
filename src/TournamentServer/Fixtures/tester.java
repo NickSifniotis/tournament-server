@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class tester {
 
-    private static final short NUM_PLAYERS = 5;
+    private static final short NUM_PLAYERS = 8;
 
 
     /**
@@ -91,7 +91,10 @@ public class tester {
         // in this data structure. Therefore, an 8 element ushort array should do the job.
 
         short[] round;
-        short[] players = {0, 1, 2, 3, 4};
+        short[] players = new short[NUM_PLAYERS];
+        for (short i = 0; i < NUM_PLAYERS; i ++)
+            players[i] = i;
+
         int num_games = 0;
 
         HashMap<String, short[]> unique_games = new HashMap<>();
@@ -131,9 +134,9 @@ public class tester {
                 players = newarray;
 
 
-                round = new short[4];
+                round = new short[8];
                 System.arraycopy(players, 0, round, 0, round.length);
-                round = sort_round(round);
+                round = sort_2round(round);
 
                 if (unique_games.putIfAbsent(hash_round(round), round) == null) {
                     System.out.println(hash_round(round));
