@@ -6,8 +6,10 @@ import AcademicsInterface.ViewedPlayers;
 import Common.Email.EmailTypes;
 import Common.Emailer;
 import Common.LogManager;
+import Common.TwitterManager;
 import Services.GameViewer.GameViewer;
 import Services.LogService;
+import Services.Service;
 import TournamentServer.DataModelInterfaces.Game;
 import TournamentServer.DataModelInterfaces.Scores;
 import Services.Logs.LogType;
@@ -180,6 +182,14 @@ public class GameManagerChild
 
     public void EndGame()
     {
+        // SEND THE TWEET
+        String result_string = "Results for Round " + game.RoundNumber() + " Game " + game.GameNumber() + ": ";
+        for (int i = 0; i < players.length; i ++)
+            result_string += players[i].Name() + " " + game_scores.Score(i) + "  ";
+
+        TwitterManager.SendTweet(result_string);
+
+
         // and send out EMAILS ABOUT IT
         for (PlayerManager p: players)
             Emailer.SendEmail(EmailTypes.GAME_OVER, p.Email(),

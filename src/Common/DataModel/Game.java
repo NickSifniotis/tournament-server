@@ -176,7 +176,7 @@ public class Game extends Entity
             tournament_clause += ")";
         }
 
-        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause + " ORDER BY g.round_number";
+        query = "SELECT g.* FROM game g WHERE 1" + tournament_clause + exclusion_clause + " ORDER BY g.round_number, g.game_number";
         Connection connection = DBManager.connect();
         ResultSet records = DBManager.ExecuteQuery(query, connection);
 

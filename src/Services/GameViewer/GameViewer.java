@@ -7,7 +7,6 @@ package Services.GameViewer;
  */
 
 import AcademicsInterface.IViewer;
-import AcademicsInterface.ViewedPlayers;
 import Common.LogManager;
 import Services.Logs.LogType;
 import TournamentServer.DataModelInterfaces.Game;
@@ -15,14 +14,10 @@ import TournamentServer.DataModelInterfaces.PlayerSubmission;
 import TournamentServer.DataModelInterfaces.Tournament;
 import TournamentServer.GameManagerChild;
 import TournamentServer.PlayerManager;
-import javafx.animation.Animation;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+
 
 public class GameViewer extends Application
 {

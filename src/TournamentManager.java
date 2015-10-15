@@ -80,7 +80,7 @@ public class TournamentManager extends Application
         primaryStage.setOnCloseRequest(e -> shutdown_request());
 
         Button game_manager_btn = new Button("Open Game Manager");
-        game_manager_btn.setDisable(true);
+        //game_manager_btn.setDisable(true);
         game_manager_btn.setOnAction(e -> launch_game_manager());
         Button twitter_btn = new Button ("Open Twitter Config");
         twitter_btn.setDisable(true);

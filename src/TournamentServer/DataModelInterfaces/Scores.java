@@ -104,4 +104,6 @@ public class Scores
      */
     public boolean Disqualified (int player_position) { return this.scores[player_position].Disqualified(); }
 
+    public int Score (int index) { return this.scores[index].Score(); }
+
 }

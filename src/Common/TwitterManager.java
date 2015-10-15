@@ -2,6 +2,7 @@ package Common;
 
 import Services.Messages.TwitterMessage;
 import Services.ServiceManager;
+import Services.Twitter.*;
 import Services.Twitter.Data.TwitterConfig;
 import Services.TwitterService;
 
@@ -22,8 +23,9 @@ public class TwitterManager
 
     public static boolean Alive() { return service.Alive(); }
 
-    public static void SendTweet (TwitterConfig credentials, String tweet)
+    public static void SendTweet (String tweet)
     {
+        TwitterConfig credentials = Services.Twitter.Repository.GetTwitterConfig(1);
         service.SendMessage(new TwitterMessage(credentials, tweet));
     }
 }

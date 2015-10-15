@@ -102,7 +102,7 @@ public class TwitterConfigurator extends Application
      */
     public void test_button_handler()
     {
-        TwitterManager.SendTweet(this.current_config, "Test tweet being sent to account " + this.current_config.AccountName());
+        TwitterManager.SendTweet("Test tweet being sent to account " + this.current_config.AccountName());
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Twitter Test");
