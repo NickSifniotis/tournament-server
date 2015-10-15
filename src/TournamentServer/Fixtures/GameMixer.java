@@ -14,7 +14,12 @@ public class GameMixer
 
     public static void main(String[] args)
     {
-        eight_player();
+//        four_player();
+//        five_player();
+//        six_player();
+//        seven_player();
+//        eight_player();
+        nine_player();
     }
 
 
@@ -185,6 +190,36 @@ public class GameMixer
         full_games = Reduce(full_games);
 
         GenerateSQL(full_games, 5);
+    }
+
+    private static void four_player ()
+    {
+        String [] games = { "0123" };
+
+        // set up the array with the games that will be played.
+        String [] full_games = new String [24];
+        int counter = 0;
+        for (int i = 0; i < 24; i ++)
+            for (int j = 0; j < games.length; j ++)
+            {
+                full_games[counter] = games[j];
+                counter ++;
+            }
+
+        full_games = Reduce(full_games);
+
+        GenerateSQL(full_games, 4);
+    }
+
+    private static void nine_player ()
+    {
+        String [] full_games = { "01234567", "04782356", "02681357", "03461258", "03581247", "02451678", "01562348", "02371468", "05781346", "13482567", "01453678", "01372458", "01263578", "01682347", "12783456", "04671235", "14572368", "04581267", "02473568", "01372468", "02561348", "03462578", "02381567", "06781245", "01583467", "03571246", "01234578", "01482356", "02471568", "03452678",
+        };
+
+
+        full_games = Reduce2(full_games);
+
+        GenerateSQL2(full_games, 9);
     }
 
     private static String [] Reduce2(String [] full_games)

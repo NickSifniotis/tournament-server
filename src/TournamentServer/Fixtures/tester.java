@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class tester {
 
-    private static final short NUM_PLAYERS = 8;
+    private static final short NUM_PLAYERS = 9;
 
 
     /**
@@ -156,11 +156,11 @@ public class tester {
         int count;
         int best_range;
 
-        temp = start.AddRound(unique_games.get("0123"));
+        temp = start.AddRound(unique_games.get("01234567"));
         fixtures.putIfAbsent(temp.hash(), temp);
 
 
-        for (int zzz = 0; zzz < 60; zzz++) {
+        for (int zzz = 0; zzz < 29; zzz++) {
             count = 0;
             best_range = 50; // impossible
             new_fixtures = new HashMap<>();
@@ -208,8 +208,13 @@ public class tester {
 
         for (Fixture f : fixtures.values()) {
             System.out.println(f.hash() + ": ");
-            for (short[] s : f.rounds)
-                System.out.print(Arrays.toString(s) + ", ");
+            for (short[] s : f.rounds) {
+                String st = "\"";
+                for (short i: s)
+                    st += i;
+                st += "\"";
+                System.out.print(st + ", ");
+            }
 
             System.out.println();
 

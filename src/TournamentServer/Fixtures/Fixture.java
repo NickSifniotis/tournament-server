@@ -94,8 +94,7 @@ public class Fixture
         for (int i = 0; i < 4; i++)
             for (int j = 0; j < 4; j++)
                 if (i != j) {
-//                    System.out.println(i + ":" + j);
-//                    System.out.println(round[i] + ":" + round[j]);
+
                     res.met_before[round[i]][round[j]]++;
                 }
 
